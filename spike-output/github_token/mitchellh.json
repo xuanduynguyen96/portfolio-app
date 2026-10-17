@@ -1,8 +1,5652 @@
 {
   "profile": {
-    "status": 502,
+    "status": 200,
     "json": {
-      "nonJson": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n"
+      "data": {
+        "rateLimit": {
+          "cost": 1,
+          "remaining": 4974,
+          "limit": 5000,
+          "used": 26,
+          "resetAt": "2026-10-17T17:57:36Z"
+        },
+        "user": {
+          "login": "mitchellh",
+          "createdAt": "2008-02-27T23:27:54Z",
+          "pinnedItems": {
+            "nodes": [
+              {
+                "nameWithOwner": "ghostty-org/ghostty",
+                "isPrivate": false
+              },
+              {
+                "nameWithOwner": "mitchellh/libxev",
+                "isPrivate": false
+              },
+              {
+                "nameWithOwner": "mitchellh/zig-overlay",
+                "isPrivate": false
+              },
+              {
+                "nameWithOwner": "mitchellh/vouch",
+                "isPrivate": false
+              }
+            ]
+          },
+          "repositories": {
+            "totalCount": 106,
+            "pageInfo": {
+              "hasNextPage": true,
+              "endCursor": "Y3Vyc29yOnYyOpK0MjAyMy0xMC0zMVQyMDo0ODo1MlrODQvPwQ=="
+            },
+            "nodes": [
+              {
+                "name": "zig-overlay",
+                "nameWithOwner": "mitchellh/zig-overlay",
+                "description": "Nix flake for the Zig compiler.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-overlay",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2022-08-22T22:57:15Z",
+                "pushedAt": "2026-10-15T00:46:06Z",
+                "stargazerCount": 557,
+                "forkCount": 63,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Nix"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 14404,
+                  "edges": [
+                    {
+                      "size": 14032,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 372,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 1824
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "brew-sources.json",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "default.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mirrors.json",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "sources.json",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "templates",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "update",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "update-brew",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "dependabot.yml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    },
+                    {
+                      "name": "update.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "go-libghostty",
+                "nameWithOwner": "mitchellh/go-libghostty",
+                "description": "[Mirror] Go bindings for libghostty-vt. Source of truth: https://tangled.org/mitchellh.com/go-libghostty",
+                "homepageUrl": "https://pkg.go.dev/go.mitchellh.com/libghostty",
+                "url": "https://github.com/mitchellh/go-libghostty",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2026-04-10T15:39:00Z",
+                "pushedAt": "2026-10-14T03:18:20Z",
+                "stargazerCount": 155,
+                "forkCount": 7,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": [
+                    {
+                      "topic": {
+                        "name": "ghostty"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "libghostty"
+                      }
+                    }
+                  ]
+                },
+                "languages": {
+                  "totalSize": 776385,
+                  "edges": [
+                    {
+                      "size": 762062,
+                      "node": {
+                        "name": "Go"
+                      }
+                    },
+                    {
+                      "size": 6191,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    },
+                    {
+                      "size": 3325,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    },
+                    {
+                      "size": 2017,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 1658,
+                      "node": {
+                        "name": "CMake"
+                      }
+                    },
+                    {
+                      "size": 1132,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 92
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".agents",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".buildkite",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".tangled",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "AGENTS.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "CMakeLists.txt",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Makefile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "TODO.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "alloc.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "alloc_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "alloc_zero_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build_info.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build_info_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "cgo_shared.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "cgo_static.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "close_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "color.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "color_scheme.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "color_scheme_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "color_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "device.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "doc.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "examples",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "focus.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "focus_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "formatter.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "formatter_benchmark_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "formatter_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "get_multi.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "get_multi_benchmark_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "get_multi_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go_io.h",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "grid_ref.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "grid_ref_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "grid_ref_tracked.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "io.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "key_encoder.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "key_event.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "key_string.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "key_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "kitty_graphics.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "kitty_graphics_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mode.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mode_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mods_string.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mouse.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mouse_encoder.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mouse_event.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mouse_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "osc.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "osc_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "paste.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "paste_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "point.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_cell.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_cell_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_data.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_row.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_row_benchmark_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_row_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "render_state_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "result.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "result_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "screen.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "search.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "search_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "selection.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "selection_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "sgr.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "sgr_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "size_report.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "size_report_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "snapshot.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "snapshot_benchmark_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "snapshot_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "string_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "style.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "style_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "sys.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "sys",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "sys_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_continuation.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_continuation_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_data.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_data_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_effect.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_opt.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_opt_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "terminal_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "types.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "types_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "unicode.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "unicode_test.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "vouch",
+                "nameWithOwner": "mitchellh/vouch",
+                "description": "A community trust management system based on explicit vouches to participate.",
+                "homepageUrl": "",
+                "url": "https://github.com/mitchellh/vouch",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2026-02-05T20:50:58Z",
+                "pushedAt": "2026-10-11T03:24:12Z",
+                "stargazerCount": 5124,
+                "forkCount": 92,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Nushell"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 99171,
+                  "edges": [
+                    {
+                      "size": 97645,
+                      "node": {
+                        "name": "Nushell"
+                      }
+                    },
+                    {
+                      "size": 818,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 708,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 191
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".pinact.yaml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "AGENTS.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "CONTRIBUTING.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "COOKBOOK.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "FAQ.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "HACKING.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "VOUCHED.example.td",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "action",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "tests",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "vouch",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "VOUCHED.td",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "dependabot.yml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "scripts",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    },
+                    {
+                      "name": "update-floating-tags.yml"
+                    },
+                    {
+                      "name": "vouch-check-pr.yml"
+                    },
+                    {
+                      "name": "vouch-manage-by-discussion.yml"
+                    },
+                    {
+                      "name": "vouch-manage-by-issue.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "nixos-config",
+                "nameWithOwner": "mitchellh/nixos-config",
+                "description": "My NixOS configurations.",
+                "homepageUrl": "https://twitter.com/mitchellh/status/1346136404682625024",
+                "url": "https://github.com/mitchellh/nixos-config",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2020-05-05T05:13:41Z",
+                "pushedAt": "2026-09-28T16:39:16Z",
+                "stargazerCount": 3114,
+                "forkCount": 247,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Nix"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 45550,
+                  "edges": [
+                    {
+                      "size": 32166,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 6444,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    },
+                    {
+                      "size": 6059,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    },
+                    {
+                      "size": 706,
+                      "node": {
+                        "name": "Nu"
+                      }
+                    },
+                    {
+                      "size": 175,
+                      "node": {
+                        "name": "Tree-sitter Query"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 434
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".gitattributes",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Makefile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "lib",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "machines",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "modules",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "users",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "images",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": null
+              },
+              {
+                "name": "libxev",
+                "nameWithOwner": "mitchellh/libxev",
+                "description": "libxev is a cross-platform, high-performance event loop that provides abstractions for non-blocking IO, timers, events, and more and works on Linux (io_uring or epoll), macOS (kqueue), and Wasm + WASI. Available as both a Zig and C API.",
+                "homepageUrl": "",
+                "url": "https://github.com/mitchellh/libxev",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2023-01-07T19:52:16Z",
+                "pushedAt": "2026-07-17T05:22:40Z",
+                "stargazerCount": 3589,
+                "forkCount": 194,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Zig"
+                },
+                "repositoryTopics": {
+                  "nodes": [
+                    {
+                      "topic": {
+                        "name": "async"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "c"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "epoll"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "io-uring"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "kqueue"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "wasi"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "webassembly"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "zig"
+                      }
+                    }
+                  ]
+                },
+                "languages": {
+                  "totalSize": 801353,
+                  "edges": [
+                    {
+                      "size": 785005,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 6990,
+                      "node": {
+                        "name": "CSS"
+                      }
+                    },
+                    {
+                      "size": 4714,
+                      "node": {
+                        "name": "C++"
+                      }
+                    },
+                    {
+                      "size": 2623,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 899,
+                      "node": {
+                        "name": "JavaScript"
+                      }
+                    },
+                    {
+                      "size": 716,
+                      "node": {
+                        "name": "TypeScript"
+                      }
+                    },
+                    {
+                      "size": 253,
+                      "node": {
+                        "name": "MDX"
+                      }
+                    },
+                    {
+                      "size": 153,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 591
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig.zon",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "docs",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "examples",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "include",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "nix",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "website",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "dependabot.yml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-js",
+                "nameWithOwner": "mitchellh/zig-js",
+                "description": "Access the JS host environment from Zig compiled to WebAssembly.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-js",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2022-12-02T05:53:26Z",
+                "pushedAt": "2026-04-17T04:08:17Z",
+                "stargazerCount": 290,
+                "forkCount": 13,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Zig"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 45594,
+                  "edges": [
+                    {
+                      "size": 26464,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 16958,
+                      "node": {
+                        "name": "TypeScript"
+                      }
+                    },
+                    {
+                      "size": 1503,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 269,
+                      "node": {
+                        "name": "JavaScript"
+                      }
+                    },
+                    {
+                      "size": 247,
+                      "node": {
+                        "name": "HTML"
+                      }
+                    },
+                    {
+                      "size": 153,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 85
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig.zon",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "example",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "js",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "zig-objc",
+                "nameWithOwner": "mitchellh/zig-objc",
+                "description": "Objective-C runtime bindings for Zig (Zig calling ObjC).",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-objc",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2023-01-02T22:48:11Z",
+                "pushedAt": "2026-04-17T04:05:54Z",
+                "stargazerCount": 356,
+                "forkCount": 51,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Zig"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 74215,
+                  "edges": [
+                    {
+                      "size": 72626,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 1436,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 153,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 101
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitmodules",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig.zon",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-quickjs-ng",
+                "nameWithOwner": "mitchellh/zig-quickjs-ng",
+                "description": "Zig build and bindings for quickjs-ng",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-quickjs-ng",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2026-01-04T21:40:53Z",
+                "pushedAt": "2026-01-06T18:26:25Z",
+                "stargazerCount": 119,
+                "forkCount": 12,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Zig"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 248858,
+                  "edges": [
+                    {
+                      "size": 247749,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 1077,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 32,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 13
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "AGENTS.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig.zon",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "examples",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "typos.toml",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-mquickjs",
+                "nameWithOwner": "mitchellh/zig-mquickjs",
+                "description": "Zig build and bindings for Micro QuickJS",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-mquickjs",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2026-01-03T15:12:08Z",
+                "pushedAt": "2026-01-03T20:39:28Z",
+                "stargazerCount": 90,
+                "forkCount": 3,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Zig"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 76685,
+                  "edges": [
+                    {
+                      "size": 60861,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 14841,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 973,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 10,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 11
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig.zon",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "typos.toml",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vim-misc",
+                "nameWithOwner": "mitchellh/vim-misc",
+                "description": "My Vim configuration files.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/vim-misc",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2012-10-24T17:18:11Z",
+                "pushedAt": "2025-04-13T20:31:53Z",
+                "stargazerCount": 134,
+                "forkCount": 20,
+                "licenseInfo": null,
+                "primaryLanguage": {
+                  "name": "Vim Script"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 50041,
+                  "edges": [
+                    {
+                      "size": 46870,
+                      "node": {
+                        "name": "Vim Script"
+                      }
+                    },
+                    {
+                      "size": 3171,
+                      "node": {
+                        "name": "Lua"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 62
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "after",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "autoload",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "colors",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "ftdetect",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "ftplugin",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "lua",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "plugin",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "syntax",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "vimrc.vim",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "cli",
+                "nameWithOwner": "mitchellh/cli",
+                "description": "A Go library for implementing command-line interfaces.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/cli",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2013-11-03T06:47:54Z",
+                "pushedAt": "2024-07-22T20:43:09Z",
+                "stargazerCount": 1733,
+                "forkCount": 126,
+                "licenseInfo": {
+                  "spdxId": "MPL-2.0"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 78685,
+                  "edges": [
+                    {
+                      "size": 78308,
+                      "node": {
+                        "name": "Go"
+                      }
+                    },
+                    {
+                      "size": 377,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 169
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Makefile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "autocomplete.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "cli.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "cli_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "command.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "command_mock.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "command_mock_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.sum",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "help.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_colored.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_concurrent.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_concurrent_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_mock.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_mock_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_writer.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "ui_writer_test.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "vagrant-google",
+                "nameWithOwner": "mitchellh/vagrant-google",
+                "description": "Vagrant provider for GCE.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/vagrant-google",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2013-11-28T05:51:37Z",
+                "pushedAt": "2024-06-27T06:55:27Z",
+                "stargazerCount": 341,
+                "forkCount": 99,
+                "licenseInfo": {
+                  "spdxId": "Apache-2.0"
+                },
+                "primaryLanguage": {
+                  "name": "Ruby"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 117659,
+                  "edges": [
+                    {
+                      "size": 117659,
+                      "node": {
+                        "name": "Ruby"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 404
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".rubocop.yml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".ruby-version",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "CHANGELOG.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Gemfile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Rakefile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "example_boxes",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "google-test.box",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "google.box",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "lib",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "locales",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "tasks",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "test",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "vagrant-google.gemspec",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "vagrant-spec.config.rb",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "vagrantfile_examples",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "ci.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "mapstructure",
+                "nameWithOwner": "mitchellh/mapstructure",
+                "description": "Go library for decoding generic map values into native Go structures and vice versa.",
+                "homepageUrl": "https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc",
+                "url": "https://github.com/mitchellh/mapstructure",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2013-05-20T05:24:34Z",
+                "pushedAt": "2024-06-25T15:17:23Z",
+                "stargazerCount": 8016,
+                "forkCount": 746,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 146790,
+                  "edges": [
+                    {
+                      "size": 146790,
+                      "node": {
+                        "name": "Go"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 323
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "CHANGELOG.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "decode_hooks.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "decode_hooks_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "error.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mapstructure.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mapstructure_benchmark_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mapstructure_bugs_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mapstructure_examples_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "mapstructure_test.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "test.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "tree-sitter-proto",
+                "nameWithOwner": "mitchellh/tree-sitter-proto",
+                "description": "A tree-sitter grammar for protocol buffer files (proto3).",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/tree-sitter-proto",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2021-06-12T05:46:07Z",
+                "pushedAt": "2024-06-21T18:26:00Z",
+                "stargazerCount": 76,
+                "forkCount": 25,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "C"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 248718,
+                  "edges": [
+                    {
+                      "size": 231797,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 11077,
+                      "node": {
+                        "name": "JavaScript"
+                      }
+                    },
+                    {
+                      "size": 3262,
+                      "node": {
+                        "name": "Rust"
+                      }
+                    },
+                    {
+                      "size": 868,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 865,
+                      "node": {
+                        "name": "C++"
+                      }
+                    },
+                    {
+                      "size": 473,
+                      "node": {
+                        "name": "Scheme"
+                      }
+                    },
+                    {
+                      "size": 376,
+                      "node": {
+                        "name": "Python"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 11
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Cargo.toml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "binding.gyp",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "bindings",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "corpus",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "grammar.js",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "package.json",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "project.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "queries",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "ci.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-build-libxml2",
+                "nameWithOwner": "mitchellh/zig-build-libxml2",
+                "description": "The libxml2 library built and packaged for the Zig build system. These are not Zig language bindings to the library.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-build-libxml2",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2023-08-04T04:51:07Z",
+                "pushedAt": "2024-06-16T18:07:45Z",
+                "stargazerCount": 19,
+                "forkCount": 13,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "C"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 2449810,
+                  "edges": [
+                    {
+                      "size": 1100221,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 880308,
+                      "node": {
+                        "name": "RPGLE"
+                      }
+                    },
+                    {
+                      "size": 219966,
+                      "node": {
+                        "name": "Python"
+                      }
+                    },
+                    {
+                      "size": 119253,
+                      "node": {
+                        "name": "HTML"
+                      }
+                    },
+                    {
+                      "size": 39617,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    },
+                    {
+                      "size": 31168,
+                      "node": {
+                        "name": "JavaScript"
+                      }
+                    },
+                    {
+                      "size": 15298,
+                      "node": {
+                        "name": "Batchfile"
+                      }
+                    },
+                    {
+                      "size": 13997,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    },
+                    {
+                      "size": 8558,
+                      "node": {
+                        "name": "DIGITAL Command Language"
+                      }
+                    },
+                    {
+                      "size": 7249,
+                      "node": {
+                        "name": "M4"
+                      }
+                    },
+                    {
+                      "size": 6580,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 3919,
+                      "node": {
+                        "name": "XSLT"
+                      }
+                    },
+                    {
+                      "size": 1722,
+                      "node": {
+                        "name": "PowerShell"
+                      }
+                    },
+                    {
+                      "size": 1429,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 525,
+                      "node": {
+                        "name": "Dockerfile"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 3
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitattributes",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "override",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "update.sh",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "upstream.txt",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "upstream",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "verify.sh",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "build.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-build-macos-sdk",
+                "nameWithOwner": "mitchellh/zig-build-macos-sdk",
+                "description": "macOS SDK package for Zig build.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-build-macos-sdk",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2023-10-07T22:13:52Z",
+                "pushedAt": "2024-06-09T03:12:02Z",
+                "stargazerCount": 49,
+                "forkCount": 14,
+                "licenseInfo": {
+                  "spdxId": "NOASSERTION"
+                },
+                "primaryLanguage": {
+                  "name": "C"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 53773950,
+                  "edges": [
+                    {
+                      "size": 34358612,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 11833195,
+                      "node": {
+                        "name": "C++"
+                      }
+                    },
+                    {
+                      "size": 7492961,
+                      "node": {
+                        "name": "Objective-C"
+                      }
+                    },
+                    {
+                      "size": 82708,
+                      "node": {
+                        "name": "RPC"
+                      }
+                    },
+                    {
+                      "size": 4243,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    },
+                    {
+                      "size": 1217,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 1014,
+                      "node": {
+                        "name": "CMake"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 17
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Frameworks",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "include",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "lib",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "stub.c",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "update.sh",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "verify.sh",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "pull_request_template.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "ci.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-build-libpng",
+                "nameWithOwner": "mitchellh/zig-build-libpng",
+                "description": "The libpng library built and packaged for the Zig build system. These are not Zig language bindings to the library.",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-build-libpng",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2023-08-04T02:47:38Z",
+                "pushedAt": "2024-04-19T21:21:23Z",
+                "stargazerCount": 3,
+                "forkCount": 5,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "C"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 1611124,
+                  "edges": [
+                    {
+                      "size": 1465115,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 43856,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    },
+                    {
+                      "size": 42864,
+                      "node": {
+                        "name": "Awk"
+                      }
+                    },
+                    {
+                      "size": 12763,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    },
+                    {
+                      "size": 11448,
+                      "node": {
+                        "name": "CMake"
+                      }
+                    },
+                    {
+                      "size": 10718,
+                      "node": {
+                        "name": "DIGITAL Command Language"
+                      }
+                    },
+                    {
+                      "size": 8352,
+                      "node": {
+                        "name": "Assembly"
+                      }
+                    },
+                    {
+                      "size": 6301,
+                      "node": {
+                        "name": "C++"
+                      }
+                    },
+                    {
+                      "size": 3562,
+                      "node": {
+                        "name": "Batchfile"
+                      }
+                    },
+                    {
+                      "size": 2083,
+                      "node": {
+                        "name": "Module Management System"
+                      }
+                    },
+                    {
+                      "size": 1645,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 1429,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 988,
+                      "node": {
+                        "name": "Dockerfile"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 1
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitattributes",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig.zon",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "include",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "update.sh",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "upstream.txt",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "upstream",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "verify.sh",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "build.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "zig-build-zlib",
+                "nameWithOwner": "mitchellh/zig-build-zlib",
+                "description": "The zlib library built and packaged for the Zig build system. These are not Zig language bindings to the library.",
+                "homepageUrl": "",
+                "url": "https://github.com/mitchellh/zig-build-zlib",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2023-08-04T02:33:51Z",
+                "pushedAt": "2024-04-19T21:20:38Z",
+                "stargazerCount": 3,
+                "forkCount": 9,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "C"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 978292,
+                  "edges": [
+                    {
+                      "size": 627993,
+                      "node": {
+                        "name": "C"
+                      }
+                    },
+                    {
+                      "size": 89079,
+                      "node": {
+                        "name": "Ada"
+                      }
+                    },
+                    {
+                      "size": 75208,
+                      "node": {
+                        "name": "Pascal"
+                      }
+                    },
+                    {
+                      "size": 55627,
+                      "node": {
+                        "name": "C#"
+                      }
+                    },
+                    {
+                      "size": 45276,
+                      "node": {
+                        "name": "C++"
+                      }
+                    },
+                    {
+                      "size": 29824,
+                      "node": {
+                        "name": "HTML"
+                      }
+                    },
+                    {
+                      "size": 16413,
+                      "node": {
+                        "name": "Assembly"
+                      }
+                    },
+                    {
+                      "size": 15947,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    },
+                    {
+                      "size": 11800,
+                      "node": {
+                        "name": "Shell"
+                      }
+                    },
+                    {
+                      "size": 3323,
+                      "node": {
+                        "name": "Roff"
+                      }
+                    },
+                    {
+                      "size": 1847,
+                      "node": {
+                        "name": "SAS"
+                      }
+                    },
+                    {
+                      "size": 1545,
+                      "node": {
+                        "name": "Module Management System"
+                      }
+                    },
+                    {
+                      "size": 1429,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 1293,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 901,
+                      "node": {
+                        "name": "DIGITAL Command Language"
+                      }
+                    },
+                    {
+                      "size": 787,
+                      "node": {
+                        "name": "M4"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 1
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitattributes",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".github",
+                      "type": "tree"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "update.sh",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "upstream.txt",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "upstream",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "verify.sh",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": {
+                  "entries": [
+                    {
+                      "name": "workflows",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "workflows": {
+                  "entries": [
+                    {
+                      "name": "build.yml"
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "go-vnc",
+                "nameWithOwner": "mitchellh/go-vnc",
+                "description": "VNC client and server library for Go.",
+                "homepageUrl": "https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc",
+                "url": "https://github.com/mitchellh/go-vnc",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2013-06-05T05:37:56Z",
+                "pushedAt": "2024-04-12T21:17:30Z",
+                "stargazerCount": 303,
+                "forkCount": 84,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 29809,
+                  "edges": [
+                    {
+                      "size": 29809,
+                      "node": {
+                        "name": "Go"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 37
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "client.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "client_auth.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "client_auth_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "client_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "color.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "encoding.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "pixel_format.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "pointer.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "server_messages.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "panicwrap",
+                "nameWithOwner": "mitchellh/panicwrap",
+                "description": "panicwrap is a Go library for catching and handling panics in Go applications.",
+                "homepageUrl": "https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc",
+                "url": "https://github.com/mitchellh/panicwrap",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2013-08-05T19:00:46Z",
+                "pushedAt": "2024-04-05T14:22:42Z",
+                "stargazerCount": 452,
+                "forkCount": 70,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 17784,
+                  "edges": [
+                    {
+                      "size": 17784,
+                      "node": {
+                        "name": "Go"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 64
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.sum",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "panicwrap.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "panicwrap_test.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "go-homedir",
+                "nameWithOwner": "mitchellh/go-homedir",
+                "description": "Go library for detecting and expanding the user's home directory without cgo.",
+                "homepageUrl": "https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc",
+                "url": "https://github.com/mitchellh/go-homedir",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2014-08-19T18:44:22Z",
+                "pushedAt": "2024-03-21T10:31:41Z",
+                "stargazerCount": 1417,
+                "forkCount": 133,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 5707,
+                  "edges": [
+                    {
+                      "size": 5707,
+                      "node": {
+                        "name": "Go"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 33
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "homedir.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "homedir_test.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "protoc-gen-go-json",
+                "nameWithOwner": "mitchellh/protoc-gen-go-json",
+                "description": "Protobuf compiler plugin to generate Go JSON Marshal/Unmarshal implementations for messages using jsonpb.",
+                "homepageUrl": "https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc",
+                "url": "https://github.com/mitchellh/protoc-gen-go-json",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2019-08-06T03:38:28Z",
+                "pushedAt": "2024-03-13T21:04:34Z",
+                "stargazerCount": 233,
+                "forkCount": 41,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": [
+                    {
+                      "topic": {
+                        "name": "protobuf"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "golang"
+                      }
+                    }
+                  ]
+                },
+                "languages": {
+                  "totalSize": 7439,
+                  "edges": [
+                    {
+                      "size": 5364,
+                      "node": {
+                        "name": "Go"
+                      }
+                    },
+                    {
+                      "size": 1157,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    },
+                    {
+                      "size": 718,
+                      "node": {
+                        "name": "Dockerfile"
+                      }
+                    },
+                    {
+                      "size": 200,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 34
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Dockerfile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Makefile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "e2e",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "gen",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.sum",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "main.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "zig-libgc",
+                "nameWithOwner": "mitchellh/zig-libgc",
+                "description": "Zig-friendly library for interfacing with libgc (bdwgc) -- the Boehm-Demers-Weiser conservative garbage collector",
+                "homepageUrl": null,
+                "url": "https://github.com/mitchellh/zig-libgc",
+                "isArchived": false,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2021-12-19T03:58:13Z",
+                "pushedAt": "2024-01-19T20:28:24Z",
+                "stargazerCount": 198,
+                "forkCount": 11,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Zig"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 10093,
+                  "edges": [
+                    {
+                      "size": 8601,
+                      "node": {
+                        "name": "Zig"
+                      }
+                    },
+                    {
+                      "size": 1492,
+                      "node": {
+                        "name": "Nix"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "main",
+                  "target": {
+                    "history": {
+                      "totalCount": 20
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".envrc",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gitmodules",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "build.zig",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "example",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "flake.lock",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "flake.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "nix",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "shell.nix",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "src",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "vendor",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "go-server-timing",
+                "nameWithOwner": "mitchellh/go-server-timing",
+                "description": "Go (golang) library for creating and consuming HTTP Server-Timing headers",
+                "homepageUrl": "https://gist.github.com/mitchellh/90029601268e59a29e64e55bab1c5bdc",
+                "url": "https://github.com/mitchellh/go-server-timing",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2018-02-12T03:56:02Z",
+                "pushedAt": "2023-12-08T11:37:45Z",
+                "stargazerCount": 859,
+                "forkCount": 37,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": []
+                },
+                "languages": {
+                  "totalSize": 21262,
+                  "edges": [
+                    {
+                      "size": 21262,
+                      "node": {
+                        "name": "Go"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 43
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".travis.yml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "context.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "context_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "example",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.sum",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "header.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "header_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "metric.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "metric_test.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "middleware.go",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "middleware_test.go",
+                      "type": "blob"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              },
+              {
+                "name": "gon",
+                "nameWithOwner": "mitchellh/gon",
+                "description": "Sign, notarize, and package macOS CLI tools and applications written in any language. Available as both a CLI and a Go library.",
+                "homepageUrl": "",
+                "url": "https://github.com/mitchellh/gon",
+                "isArchived": true,
+                "isFork": false,
+                "isPrivate": false,
+                "createdAt": "2019-10-31T23:27:31Z",
+                "pushedAt": "2023-10-31T20:48:52Z",
+                "stargazerCount": 1496,
+                "forkCount": 104,
+                "licenseInfo": {
+                  "spdxId": "MIT"
+                },
+                "primaryLanguage": {
+                  "name": "Go"
+                },
+                "repositoryTopics": {
+                  "nodes": [
+                    {
+                      "topic": {
+                        "name": "macos"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "notary"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "build-tool"
+                      }
+                    },
+                    {
+                      "topic": {
+                        "name": "golang"
+                      }
+                    }
+                  ]
+                },
+                "languages": {
+                  "totalSize": 62200,
+                  "edges": [
+                    {
+                      "size": 61172,
+                      "node": {
+                        "name": "Go"
+                      }
+                    },
+                    {
+                      "size": 641,
+                      "node": {
+                        "name": "Makefile"
+                      }
+                    },
+                    {
+                      "size": 387,
+                      "node": {
+                        "name": "HCL"
+                      }
+                    }
+                  ]
+                },
+                "defaultBranchRef": {
+                  "name": "master",
+                  "target": {
+                    "history": {
+                      "totalCount": 122
+                    }
+                  }
+                },
+                "root": {
+                  "entries": [
+                    {
+                      "name": ".gitignore",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".gon.hcl",
+                      "type": "blob"
+                    },
+                    {
+                      "name": ".goreleaser.yml",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "LICENSE",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "Makefile",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "README.md",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "cmd",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "go.mod",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "go.sum",
+                      "type": "blob"
+                    },
+                    {
+                      "name": "internal",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "notarize",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "package",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "sign",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "staple",
+                      "type": "tree"
+                    },
+                    {
+                      "name": "vendor",
+                      "type": "tree"
+                    }
+                  ]
+                },
+                "dotGithub": null,
+                "workflows": null
+              }
+            ]
+          }
+        }
+      }
     }
-  }
+  },
+  "contributions": [
+    {
+      "window": {
+        "from": "2025-10-18T17:00:09.288Z",
+        "to": "2026-10-17T17:00:09.288Z"
+      },
+      "status": 200,
+      "json": {
+        "data": {
+          "rateLimit": {
+            "cost": 1,
+            "remaining": 4973,
+            "limit": 5000,
+            "used": 27,
+            "resetAt": "2026-10-17T17:57:36Z"
+          },
+          "user": {
+            "contributionsCollection": {
+              "totalCommitContributions": 3587,
+              "totalPullRequestContributions": 557,
+              "totalIssueContributions": 131,
+              "totalPullRequestReviewContributions": 487,
+              "restrictedContributionsCount": 3003,
+              "hasAnyRestrictedContributions": true,
+              "contributionCalendar": {
+                "totalContributions": 8161,
+                "weeks": [
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-10-18",
+                        "contributionCount": 9
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-10-19",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2025-10-20",
+                        "contributionCount": 21
+                      },
+                      {
+                        "date": "2025-10-21",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2025-10-22",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-10-23",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2025-10-24",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-10-25",
+                        "contributionCount": 12
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-10-26",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2025-10-27",
+                        "contributionCount": 2
+                      },
+                      {
+                        "date": "2025-10-28",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2025-10-29",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2025-10-30",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2025-10-31",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2025-11-01",
+                        "contributionCount": 4
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-11-02",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2025-11-03",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2025-11-04",
+                        "contributionCount": 2
+                      },
+                      {
+                        "date": "2025-11-05",
+                        "contributionCount": 8
+                      },
+                      {
+                        "date": "2025-11-06",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2025-11-07",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-11-08",
+                        "contributionCount": 2
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-11-09",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2025-11-10",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2025-11-11",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2025-11-12",
+                        "contributionCount": 9
+                      },
+                      {
+                        "date": "2025-11-13",
+                        "contributionCount": 5
+                      },
+                      {
+                        "date": "2025-11-14",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2025-11-15",
+                        "contributionCount": 14
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-11-16",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2025-11-17",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2025-11-18",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2025-11-19",
+                        "contributionCount": 11
+                      },
+                      {
+                        "date": "2025-11-20",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2025-11-21",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2025-11-22",
+                        "contributionCount": 12
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-11-23",
+                        "contributionCount": 2
+                      },
+                      {
+                        "date": "2025-11-24",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2025-11-25",
+                        "contributionCount": 48
+                      },
+                      {
+                        "date": "2025-11-26",
+                        "contributionCount": 36
+                      },
+                      {
+                        "date": "2025-11-27",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-11-28",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2025-11-29",
+                        "contributionCount": 24
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-11-30",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2025-12-01",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2025-12-02",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2025-12-03",
+                        "contributionCount": 11
+                      },
+                      {
+                        "date": "2025-12-04",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2025-12-05",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2025-12-06",
+                        "contributionCount": 9
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-12-07",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-12-08",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-12-09",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2025-12-10",
+                        "contributionCount": 39
+                      },
+                      {
+                        "date": "2025-12-11",
+                        "contributionCount": 34
+                      },
+                      {
+                        "date": "2025-12-12",
+                        "contributionCount": 26
+                      },
+                      {
+                        "date": "2025-12-13",
+                        "contributionCount": 16
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-12-14",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2025-12-15",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2025-12-16",
+                        "contributionCount": 40
+                      },
+                      {
+                        "date": "2025-12-17",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2025-12-18",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2025-12-19",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2025-12-20",
+                        "contributionCount": 16
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-12-21",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2025-12-22",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2025-12-23",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2025-12-24",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2025-12-25",
+                        "contributionCount": 9
+                      },
+                      {
+                        "date": "2025-12-26",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2025-12-27",
+                        "contributionCount": 12
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2025-12-28",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2025-12-29",
+                        "contributionCount": 40
+                      },
+                      {
+                        "date": "2025-12-30",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2025-12-31",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-01-01",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-01-02",
+                        "contributionCount": 2
+                      },
+                      {
+                        "date": "2026-01-03",
+                        "contributionCount": 13
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-01-04",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-01-05",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-01-06",
+                        "contributionCount": 20
+                      },
+                      {
+                        "date": "2026-01-07",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-01-08",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2026-01-09",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-01-10",
+                        "contributionCount": 17
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-01-11",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-01-12",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-01-13",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-01-14",
+                        "contributionCount": 1
+                      },
+                      {
+                        "date": "2026-01-15",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-01-16",
+                        "contributionCount": 31
+                      },
+                      {
+                        "date": "2026-01-17",
+                        "contributionCount": 2
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-01-18",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-01-19",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-01-20",
+                        "contributionCount": 44
+                      },
+                      {
+                        "date": "2026-01-21",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-01-22",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-01-23",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-01-24",
+                        "contributionCount": 16
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-01-25",
+                        "contributionCount": 5
+                      },
+                      {
+                        "date": "2026-01-26",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-01-27",
+                        "contributionCount": 32
+                      },
+                      {
+                        "date": "2026-01-28",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-01-29",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-01-30",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-01-31",
+                        "contributionCount": 16
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-02-01",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-02-02",
+                        "contributionCount": 26
+                      },
+                      {
+                        "date": "2026-02-03",
+                        "contributionCount": 37
+                      },
+                      {
+                        "date": "2026-02-04",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-02-05",
+                        "contributionCount": 29
+                      },
+                      {
+                        "date": "2026-02-06",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-02-07",
+                        "contributionCount": 45
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-02-08",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-02-09",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2026-02-10",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-02-11",
+                        "contributionCount": 1
+                      },
+                      {
+                        "date": "2026-02-12",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2026-02-13",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-02-14",
+                        "contributionCount": 12
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-02-15",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2026-02-16",
+                        "contributionCount": 48
+                      },
+                      {
+                        "date": "2026-02-17",
+                        "contributionCount": 31
+                      },
+                      {
+                        "date": "2026-02-18",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-02-19",
+                        "contributionCount": 38
+                      },
+                      {
+                        "date": "2026-02-20",
+                        "contributionCount": 23
+                      },
+                      {
+                        "date": "2026-02-21",
+                        "contributionCount": 22
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-02-22",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-02-23",
+                        "contributionCount": 34
+                      },
+                      {
+                        "date": "2026-02-24",
+                        "contributionCount": 29
+                      },
+                      {
+                        "date": "2026-02-25",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-02-26",
+                        "contributionCount": 38
+                      },
+                      {
+                        "date": "2026-02-27",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-02-28",
+                        "contributionCount": 26
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-03-01",
+                        "contributionCount": 39
+                      },
+                      {
+                        "date": "2026-03-02",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-03-03",
+                        "contributionCount": 36
+                      },
+                      {
+                        "date": "2026-03-04",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-03-05",
+                        "contributionCount": 26
+                      },
+                      {
+                        "date": "2026-03-06",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-03-07",
+                        "contributionCount": 5
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-03-08",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2026-03-09",
+                        "contributionCount": 23
+                      },
+                      {
+                        "date": "2026-03-10",
+                        "contributionCount": 65
+                      },
+                      {
+                        "date": "2026-03-11",
+                        "contributionCount": 42
+                      },
+                      {
+                        "date": "2026-03-12",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-03-13",
+                        "contributionCount": 33
+                      },
+                      {
+                        "date": "2026-03-14",
+                        "contributionCount": 16
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-03-15",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-03-16",
+                        "contributionCount": 23
+                      },
+                      {
+                        "date": "2026-03-17",
+                        "contributionCount": 23
+                      },
+                      {
+                        "date": "2026-03-18",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2026-03-19",
+                        "contributionCount": 21
+                      },
+                      {
+                        "date": "2026-03-20",
+                        "contributionCount": 71
+                      },
+                      {
+                        "date": "2026-03-21",
+                        "contributionCount": 43
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-03-22",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2026-03-23",
+                        "contributionCount": 47
+                      },
+                      {
+                        "date": "2026-03-24",
+                        "contributionCount": 46
+                      },
+                      {
+                        "date": "2026-03-25",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-03-26",
+                        "contributionCount": 20
+                      },
+                      {
+                        "date": "2026-03-27",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-03-28",
+                        "contributionCount": 34
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-03-29",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-03-30",
+                        "contributionCount": 29
+                      },
+                      {
+                        "date": "2026-03-31",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-04-01",
+                        "contributionCount": 8
+                      },
+                      {
+                        "date": "2026-04-02",
+                        "contributionCount": 8
+                      },
+                      {
+                        "date": "2026-04-03",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-04-04",
+                        "contributionCount": 17
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-04-05",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2026-04-06",
+                        "contributionCount": 56
+                      },
+                      {
+                        "date": "2026-04-07",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-04-08",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-04-09",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-04-10",
+                        "contributionCount": 32
+                      },
+                      {
+                        "date": "2026-04-11",
+                        "contributionCount": 28
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-04-12",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-04-13",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-04-14",
+                        "contributionCount": 6
+                      },
+                      {
+                        "date": "2026-04-15",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-04-16",
+                        "contributionCount": 40
+                      },
+                      {
+                        "date": "2026-04-17",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-04-18",
+                        "contributionCount": 31
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-04-19",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-04-20",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-04-21",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-04-22",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2026-04-23",
+                        "contributionCount": 41
+                      },
+                      {
+                        "date": "2026-04-24",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-04-25",
+                        "contributionCount": 67
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-04-26",
+                        "contributionCount": 8
+                      },
+                      {
+                        "date": "2026-04-27",
+                        "contributionCount": 26
+                      },
+                      {
+                        "date": "2026-04-28",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-04-29",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-04-30",
+                        "contributionCount": 31
+                      },
+                      {
+                        "date": "2026-05-01",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-05-02",
+                        "contributionCount": 24
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-05-03",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-05-04",
+                        "contributionCount": 38
+                      },
+                      {
+                        "date": "2026-05-05",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-05-06",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-05-07",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-05-08",
+                        "contributionCount": 1
+                      },
+                      {
+                        "date": "2026-05-09",
+                        "contributionCount": 1
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-05-10",
+                        "contributionCount": 1
+                      },
+                      {
+                        "date": "2026-05-11",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-05-12",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-05-13",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-05-14",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-05-15",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2026-05-16",
+                        "contributionCount": 3
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-05-17",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-05-18",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-05-19",
+                        "contributionCount": 17
+                      },
+                      {
+                        "date": "2026-05-20",
+                        "contributionCount": 23
+                      },
+                      {
+                        "date": "2026-05-21",
+                        "contributionCount": 9
+                      },
+                      {
+                        "date": "2026-05-22",
+                        "contributionCount": 17
+                      },
+                      {
+                        "date": "2026-05-23",
+                        "contributionCount": 18
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-05-24",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2026-05-25",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-05-26",
+                        "contributionCount": 8
+                      },
+                      {
+                        "date": "2026-05-27",
+                        "contributionCount": 52
+                      },
+                      {
+                        "date": "2026-05-28",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-05-29",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-05-30",
+                        "contributionCount": 29
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-05-31",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-06-01",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-06-02",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2026-06-03",
+                        "contributionCount": 1
+                      },
+                      {
+                        "date": "2026-06-04",
+                        "contributionCount": 10
+                      },
+                      {
+                        "date": "2026-06-05",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-06-06",
+                        "contributionCount": 14
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-06-07",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2026-06-08",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-06-09",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-06-10",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-06-11",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-06-12",
+                        "contributionCount": 20
+                      },
+                      {
+                        "date": "2026-06-13",
+                        "contributionCount": 28
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-06-14",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-06-15",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-06-16",
+                        "contributionCount": 40
+                      },
+                      {
+                        "date": "2026-06-17",
+                        "contributionCount": 37
+                      },
+                      {
+                        "date": "2026-06-18",
+                        "contributionCount": 31
+                      },
+                      {
+                        "date": "2026-06-19",
+                        "contributionCount": 34
+                      },
+                      {
+                        "date": "2026-06-20",
+                        "contributionCount": 10
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-06-21",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-06-22",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-06-23",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-06-24",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-06-25",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-06-26",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2026-06-27",
+                        "contributionCount": 18
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-06-28",
+                        "contributionCount": 18
+                      },
+                      {
+                        "date": "2026-06-29",
+                        "contributionCount": 21
+                      },
+                      {
+                        "date": "2026-06-30",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-07-01",
+                        "contributionCount": 5
+                      },
+                      {
+                        "date": "2026-07-02",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-07-03",
+                        "contributionCount": 65
+                      },
+                      {
+                        "date": "2026-07-04",
+                        "contributionCount": 26
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-07-05",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-07-06",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-07-07",
+                        "contributionCount": 31
+                      },
+                      {
+                        "date": "2026-07-08",
+                        "contributionCount": 21
+                      },
+                      {
+                        "date": "2026-07-09",
+                        "contributionCount": 60
+                      },
+                      {
+                        "date": "2026-07-10",
+                        "contributionCount": 38
+                      },
+                      {
+                        "date": "2026-07-11",
+                        "contributionCount": 7
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-07-12",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-07-13",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-07-14",
+                        "contributionCount": 11
+                      },
+                      {
+                        "date": "2026-07-15",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2026-07-16",
+                        "contributionCount": 1
+                      },
+                      {
+                        "date": "2026-07-17",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-07-18",
+                        "contributionCount": 1
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-07-19",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2026-07-20",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-07-21",
+                        "contributionCount": 2
+                      },
+                      {
+                        "date": "2026-07-22",
+                        "contributionCount": 21
+                      },
+                      {
+                        "date": "2026-07-23",
+                        "contributionCount": 7
+                      },
+                      {
+                        "date": "2026-07-24",
+                        "contributionCount": 3
+                      },
+                      {
+                        "date": "2026-07-25",
+                        "contributionCount": 2
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-07-26",
+                        "contributionCount": 26
+                      },
+                      {
+                        "date": "2026-07-27",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-07-28",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-07-29",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-07-30",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-07-31",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-08-01",
+                        "contributionCount": 6
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-08-02",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2026-08-03",
+                        "contributionCount": 42
+                      },
+                      {
+                        "date": "2026-08-04",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-08-05",
+                        "contributionCount": 128
+                      },
+                      {
+                        "date": "2026-08-06",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-08-07",
+                        "contributionCount": 9
+                      },
+                      {
+                        "date": "2026-08-08",
+                        "contributionCount": 8
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-08-09",
+                        "contributionCount": 36
+                      },
+                      {
+                        "date": "2026-08-10",
+                        "contributionCount": 9
+                      },
+                      {
+                        "date": "2026-08-11",
+                        "contributionCount": 23
+                      },
+                      {
+                        "date": "2026-08-12",
+                        "contributionCount": 40
+                      },
+                      {
+                        "date": "2026-08-13",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-08-14",
+                        "contributionCount": 41
+                      },
+                      {
+                        "date": "2026-08-15",
+                        "contributionCount": 36
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-08-16",
+                        "contributionCount": 21
+                      },
+                      {
+                        "date": "2026-08-17",
+                        "contributionCount": 35
+                      },
+                      {
+                        "date": "2026-08-18",
+                        "contributionCount": 76
+                      },
+                      {
+                        "date": "2026-08-19",
+                        "contributionCount": 35
+                      },
+                      {
+                        "date": "2026-08-20",
+                        "contributionCount": 49
+                      },
+                      {
+                        "date": "2026-08-21",
+                        "contributionCount": 37
+                      },
+                      {
+                        "date": "2026-08-22",
+                        "contributionCount": 12
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-08-23",
+                        "contributionCount": 8
+                      },
+                      {
+                        "date": "2026-08-24",
+                        "contributionCount": 57
+                      },
+                      {
+                        "date": "2026-08-25",
+                        "contributionCount": 64
+                      },
+                      {
+                        "date": "2026-08-26",
+                        "contributionCount": 45
+                      },
+                      {
+                        "date": "2026-08-27",
+                        "contributionCount": 55
+                      },
+                      {
+                        "date": "2026-08-28",
+                        "contributionCount": 38
+                      },
+                      {
+                        "date": "2026-08-29",
+                        "contributionCount": 22
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-08-30",
+                        "contributionCount": 29
+                      },
+                      {
+                        "date": "2026-08-31",
+                        "contributionCount": 40
+                      },
+                      {
+                        "date": "2026-09-01",
+                        "contributionCount": 39
+                      },
+                      {
+                        "date": "2026-09-02",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2026-09-03",
+                        "contributionCount": 34
+                      },
+                      {
+                        "date": "2026-09-04",
+                        "contributionCount": 64
+                      },
+                      {
+                        "date": "2026-09-05",
+                        "contributionCount": 25
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-09-06",
+                        "contributionCount": 28
+                      },
+                      {
+                        "date": "2026-09-07",
+                        "contributionCount": 53
+                      },
+                      {
+                        "date": "2026-09-08",
+                        "contributionCount": 37
+                      },
+                      {
+                        "date": "2026-09-09",
+                        "contributionCount": 71
+                      },
+                      {
+                        "date": "2026-09-10",
+                        "contributionCount": 26
+                      },
+                      {
+                        "date": "2026-09-11",
+                        "contributionCount": 44
+                      },
+                      {
+                        "date": "2026-09-12",
+                        "contributionCount": 32
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-09-13",
+                        "contributionCount": 45
+                      },
+                      {
+                        "date": "2026-09-14",
+                        "contributionCount": 75
+                      },
+                      {
+                        "date": "2026-09-15",
+                        "contributionCount": 49
+                      },
+                      {
+                        "date": "2026-09-16",
+                        "contributionCount": 64
+                      },
+                      {
+                        "date": "2026-09-17",
+                        "contributionCount": 30
+                      },
+                      {
+                        "date": "2026-09-18",
+                        "contributionCount": 56
+                      },
+                      {
+                        "date": "2026-09-19",
+                        "contributionCount": 29
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-09-20",
+                        "contributionCount": 25
+                      },
+                      {
+                        "date": "2026-09-21",
+                        "contributionCount": 98
+                      },
+                      {
+                        "date": "2026-09-22",
+                        "contributionCount": 63
+                      },
+                      {
+                        "date": "2026-09-23",
+                        "contributionCount": 58
+                      },
+                      {
+                        "date": "2026-09-24",
+                        "contributionCount": 50
+                      },
+                      {
+                        "date": "2026-09-25",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-09-26",
+                        "contributionCount": 12
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-09-27",
+                        "contributionCount": 16
+                      },
+                      {
+                        "date": "2026-09-28",
+                        "contributionCount": 13
+                      },
+                      {
+                        "date": "2026-09-29",
+                        "contributionCount": 27
+                      },
+                      {
+                        "date": "2026-09-30",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-10-01",
+                        "contributionCount": 45
+                      },
+                      {
+                        "date": "2026-10-02",
+                        "contributionCount": 15
+                      },
+                      {
+                        "date": "2026-10-03",
+                        "contributionCount": 25
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-10-04",
+                        "contributionCount": 32
+                      },
+                      {
+                        "date": "2026-10-05",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-10-06",
+                        "contributionCount": 35
+                      },
+                      {
+                        "date": "2026-10-07",
+                        "contributionCount": 4
+                      },
+                      {
+                        "date": "2026-10-08",
+                        "contributionCount": 14
+                      },
+                      {
+                        "date": "2026-10-09",
+                        "contributionCount": 11
+                      },
+                      {
+                        "date": "2026-10-10",
+                        "contributionCount": 14
+                      }
+                    ]
+                  },
+                  {
+                    "contributionDays": [
+                      {
+                        "date": "2026-10-11",
+                        "contributionCount": 12
+                      },
+                      {
+                        "date": "2026-10-12",
+                        "contributionCount": 19
+                      },
+                      {
+                        "date": "2026-10-13",
+                        "contributionCount": 49
+                      },
+                      {
+                        "date": "2026-10-14",
+                        "contributionCount": 22
+                      },
+                      {
+                        "date": "2026-10-15",
+                        "contributionCount": 24
+                      },
+                      {
+                        "date": "2026-10-16",
+                        "contributionCount": 47
+                      },
+                      {
+                        "date": "2026-10-17",
+                        "contributionCount": 0
+                      }
+                    ]
+                  }
+                ]
+              },
+              "commitContributionsByRepository": [
+                {
+                  "repository": {
+                    "nameWithOwner": "ghostty-org/ghostty",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 2802
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/zig-overlay",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 299
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/vouch",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 128
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "ghostty-org/website",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 102
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/go-libghostty",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 90
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "ghostty-org/ghostling",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 81
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/nixos-config",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 33
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/libxev",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 16
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/zig-quickjs-ng",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 14
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/zig-mquickjs",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 11
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/zig-objc",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 6
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "coder/websocket",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 2
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "mitchellh/zig-js",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 2
+                  }
+                },
+                {
+                  "repository": {
+                    "nameWithOwner": "jacobsandlund/uucode",
+                    "isPrivate": false,
+                    "isFork": false
+                  },
+                  "contributions": {
+                    "totalCount": 1
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
 }

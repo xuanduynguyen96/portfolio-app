@@ -1,5 +1,5 @@
 // Astro-only wiring: collections + data files -> pure buildCareerState(). Not unit-tested
-// (needs astro:content); keep it thin. Memoized: every page in a build shares one state.
+// (needs astro:content); keep it thin. Memoized per build: every page shares one state.
 import { getCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { skillNodeSchema } from '../../data/career-schemas';
@@ -7,15 +7,7 @@ import { siteConfig } from '../../data/site-config';
 import { skillNodes } from '../../data/skills-data';
 import { buildCareerState } from './build-career-state';
 import type { CareerState } from './career-types';
-
-/** `CAREER_RPG_NOW=YYYY-MM-DD` pins the build date (tests); means the end of that UTC day. */
-export function resolveBuildNow(value: string | undefined): Date {
-  if (value === undefined || value === '') return new Date();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error(`CAREER_RPG_NOW must be YYYY-MM-DD, got "${value}"`);
-  const now = new Date(`${value}T23:59:59.999Z`);
-  if (Number.isNaN(now.getTime())) throw new Error(`CAREER_RPG_NOW is not a real date: "${value}"`);
-  return now;
-}
+import { resolveBuildNow } from './resolve-build-now';
 
 // Raw text of content/data files, scanned for placeholder markers (HUD completeness).
 const rawSources = import.meta.glob<string>(['/src/data/*.ts', '/src/content/**/*.md'], {
@@ -57,6 +49,11 @@ async function build(): Promise<CareerState> {
 let cached: Promise<CareerState> | undefined;
 
 export function loadCareerState(): Promise<CareerState> {
-  cached ??= build();
+  // Dev server: rebuild per request so content edits (and fixes after a rule error) show up.
+  if (import.meta.env.DEV) return build();
+  cached ??= build().catch((error: unknown) => {
+    cached = undefined;
+    throw error;
+  });
   return cached;
 }

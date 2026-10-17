@@ -1,12 +1,17 @@
 // Strict zod schemas for Career RPG content. Strict = unknown keys (e.g. a hand-set `xp`
 // or `level`) fail the build: XP and levels are always computed from evidence.
 import { z } from 'astro/zod';
-import { ATTRIBUTE_IDS, EVIDENCE_TYPES } from './xp-rules';
+import { ATTRIBUTE_IDS, EVIDENCE_TYPES, SKILL_ID_PATTERN } from './xp-rules.ts';
 
 /** https only: evidence URLs end up in href attributes (no javascript:/data:/http:). */
-export const httpsUrl = z.url({ protocol: /^https$/, error: 'must be an https:// URL' });
+export const httpsUrl = z
+  .url({ protocol: /^https$/, error: 'must be an https:// URL' })
+  .refine((url) => {
+    const { username, password } = new URL(url);
+    return !username && !password;
+  }, 'must not contain credentials');
 
-export const skillIdSchema = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'skill id must be kebab-case');
+export const skillIdSchema = z.string().regex(SKILL_ID_PATTERN, 'skill id must be kebab-case');
 
 export const evidenceSchema = z.strictObject({
   type: z.enum(EVIDENCE_TYPES),

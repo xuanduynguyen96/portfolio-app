@@ -20,7 +20,7 @@ const PROJECTS = [
     questHeading: 'Quest Log',
     badge: 'Main quest',
     // Its only evidence URL is already credited to the boss quest.
-    questStatus: /^Unverified: no evidence link that is not already credited/,
+    questStatus: /^Unverified: every evidence link is already credited to another quest\. 0 XP\.$/,
   },
   {
     slug: 'cli-toolkit',

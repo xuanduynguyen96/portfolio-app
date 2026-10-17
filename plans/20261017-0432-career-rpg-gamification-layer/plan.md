@@ -1,6 +1,6 @@
 # Plan: Career RPG gamification layer (additive)
 
-Created: 2026-10-17 · Status: **In progress (implementing via /code)** · Scout: [reports/01-codebase-scout-report.md](reports/01-codebase-scout-report.md) · Prior plan: [../20261017-0254-astro-portfolio-implementation/plan.md](../20261017-0254-astro-portfolio-implementation/plan.md)
+Created: 2026-10-17 · Status: **Phases 01-08 done; 09 (docs) awaiting user approval** · Reports: [tester](reports/02-tester-report.md), [review](reports/03-code-review-report.md) · Scout: [reports/01-codebase-scout-report.md](reports/01-codebase-scout-report.md) · Prior plan: [../20261017-0254-astro-portfolio-implementation/plan.md](../20261017-0254-astro-portfolio-implementation/plan.md)
 
 ## Goal
 Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Quests + Boss Battle, Skill Tree, Recruiter Speedrun `/speedrun/`, Consistency Streak (changelog), HUD completeness. Additive: reuse `glass-card`, `section-heading`, tag/token styles. No backend, no reskin.
@@ -15,7 +15,8 @@ Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Qu
 - Deterministic "now": `CAREER_RPG_NOW` env (Playwright webServer + unit tests inject date)
 - Streak refresh = weekly scheduled CI build (cron) in existing deploy workflow
 - Native `<progress>` (labelled), `<details>` for missing list, nested `<ul>` skill tree: all work w/o JS
-- Implementation on branch `feat/career-rpg-layer` (HEAD detached now). **No commits/push without user approval**
+- Implementation on branch `feat/career-rpg-layer`
+- Deviations: 2 real changelog entries (no backdated fakes, streak 1); e2e doesn't pin `CAREER_RPG_NOW`; 24h future tolerance; projects keep real profile URL (only boss verifies); countdown math pure module; URL dedupe key coarse + skill URL reuse forbidden + `minUniqueWords` (review)
 
 ## Phases
 
@@ -23,12 +24,12 @@ Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Qu
 |---|---|---|---|---|---|
 | 01 | [Rules config, pure scoring utils, unit runner](phase-01-rules-config-scoring-utils-unit-tests.md) | P0 | M | Done | 100% |
 | 02 | [Content schema extensions + placeholder content](phase-02-content-schema-extensions.md) | P0 | M | Done | 100% |
-| 03 | [Quests & Boss Battle UI](phase-03-quests-and-boss-battle-ui.md) | P0 | M | Planned | 0% |
-| 04 | [Character Sheet + HUD completeness](phase-04-character-sheet-and-hud.md) | P0 | M | Planned | 0% |
-| 05 | [Skill Tree](phase-05-skill-tree.md) | P1 | M | Planned | 0% |
-| 06 | [Streak, changelog page, scheduled build](phase-06-streak-changelog-scheduled-build.md) | P1 | S | Planned | 0% |
-| 07 | [Recruiter Speedrun route](phase-07-recruiter-speedrun-route.md) | P0 | S | Planned | 0% |
-| 08 | [E2E, a11y, perf verification](phase-08-e2e-a11y-perf-verification.md) | P0 | M | Planned | 0% |
+| 03 | [Quests & Boss Battle UI](phase-03-quests-and-boss-battle-ui.md) | P0 | M | Done | 100% |
+| 04 | [Character Sheet + HUD completeness](phase-04-character-sheet-and-hud.md) | P0 | M | Done | 100% |
+| 05 | [Skill Tree](phase-05-skill-tree.md) | P1 | M | Done | 100% |
+| 06 | [Streak, changelog page, scheduled build](phase-06-streak-changelog-scheduled-build.md) | P1 | S | Done | 100% |
+| 07 | [Recruiter Speedrun route](phase-07-recruiter-speedrun-route.md) | P0 | S | Done | 100% |
+| 08 | [E2E, a11y, perf verification](phase-08-e2e-a11y-perf-verification.md) | P0 | M | Done | 100% |
 | 09 | [Docs update](phase-09-docs-update.md) | P1 | S | Planned | 0% |
 
 ## Dependencies

@@ -27,10 +27,7 @@ describe('weekStartUtc', () => {
 describe('computeStreak', () => {
   it('counts consecutive weeks ending this week', () => {
     const streak = computeStreak([entry('a', '2026-10-14'), entry('b', '2026-10-07'), entry('c', '2026-09-30')], NOW);
-    assert.deepEqual(
-      { current: streak.current, longest: streak.longest, totalWeeks: streak.totalWeeks },
-      { current: 3, longest: 3, totalWeeks: 3 },
-    );
+    assert.deepEqual({ current: streak.current, longest: streak.longest }, { current: 3, longest: 3 });
     assert.equal(streak.lastEntryDate?.toISOString().slice(0, 10), '2026-10-14');
   });
 
@@ -51,7 +48,7 @@ describe('computeStreak', () => {
   it('counts two entries in one week once', () => {
     const streak = computeStreak([entry('a', '2026-10-12'), entry('b', '2026-10-16')], NOW);
     assert.equal(streak.current, 1);
-    assert.equal(streak.totalWeeks, 1);
+    assert.equal(streak.longest, 1);
   });
 
   it('spans the year boundary', () => {
@@ -70,11 +67,11 @@ describe('computeStreak', () => {
 
   it('ignores entries with too-short bodies and future entries', () => {
     const streak = computeStreak([entry('short', '2026-10-14', 39), entry('future', '2026-10-19')], NOW);
-    assert.deepEqual(streak, { current: 0, longest: 0, totalWeeks: 0, lastEntryDate: null });
+    assert.deepEqual(streak, { current: 0, longest: 0, lastEntryDate: null });
   });
 
   it('returns an empty streak for no entries', () => {
-    assert.deepEqual(computeStreak([], NOW), { current: 0, longest: 0, totalWeeks: 0, lastEntryDate: null });
+    assert.deepEqual(computeStreak([], NOW), { current: 0, longest: 0, lastEntryDate: null });
   });
 });
 

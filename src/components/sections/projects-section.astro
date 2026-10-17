@@ -2,12 +2,13 @@
 import { getCollection } from 'astro:content';
 import SectionHeading from '../section-heading.astro';
 import ProjectCard from '../project-card.astro';
-import { sortProjects } from '../../utils/sort-projects';
 import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 
-const projects = sortProjects(await getCollection('projects'));
+// Card order = quest order (boss, featured, order, title: see sortQuests).
 const { quests } = await loadCareerState();
+const rank = new Map(quests.map((quest, index) => [quest.id, index]));
 const questXp = new Map(quests.map((quest) => [quest.id, quest.xp]));
+const projects = (await getCollection('projects')).sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
 ---
 
 <section id="projects" class="section" aria-labelledby="projects-title">

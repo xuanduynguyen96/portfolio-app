@@ -1,7 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
 import { skillNodes } from '../../src/data/skills-data';
+import { xpRules } from '../../src/data/xp-rules';
 
-const maxLevel = 3;
+const maxLevel = xpRules.skillEvidence.levelThresholds.length;
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const nodeLabels = (page: Page) => page.locator('#skills .skill-node-label');
 
 test.describe('skill tree', () => {
@@ -12,7 +14,7 @@ test.describe('skill tree', () => {
     const roots = skillNodes.filter((node) => !node.parent);
     await expect(page.locator('#skills').getByRole('heading', { level: 3 })).toHaveCount(roots.length);
     for (const root of roots) {
-      const heading = page.getByRole('heading', { level: 3, name: new RegExp(`^${root.label}\\s*, level [0-${maxLevel}] of ${maxLevel}`) });
+      const heading = page.getByRole('heading', { level: 3, name: new RegExp(`^${escapeRegExp(root.label)}\\s*, level [0-${maxLevel}] of ${maxLevel}`) });
       await expect(heading).toBeVisible();
       const children = page.getByRole('list', { name: `${root.label} sub-skills` }).locator(':scope > li');
       await expect(children).toHaveCount(skillNodes.filter((node) => node.parent === root.id).length);

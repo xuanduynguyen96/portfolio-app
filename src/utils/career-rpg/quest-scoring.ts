@@ -1,6 +1,6 @@
 import { QUEST_DIFFICULTIES, xpRules, type XpRules } from '../../data/xp-rules.ts';
 import type { QuestInput, RuleIssue, ScoredQuest } from './career-types.ts';
-import { countWords } from './count-words.ts';
+import { countUniqueWords, countWords } from './count-words.ts';
 import { normalizeEvidenceUrl, uniqueEvidenceUrls } from './diminishing-returns.ts';
 
 /** Boss first, then featured, ascending `order`, then title. Deterministic; returns a new array. */
@@ -14,7 +14,10 @@ export function sortQuests<T extends QuestInput>(quests: readonly T[]): T[] {
   );
 }
 
-/** Cross-entry rules: unique ids, exactly one boss (with metric + obstacle), known skills, valid URLs. */
+/**
+ * Cross-entry rules: unique ids, exactly one boss, known + unique skills, valid URLs.
+ * (Per-entry rules such as "boss needs a metric and an obstacle" live in the zod schema.)
+ */
 export function validateQuestLog(quests: readonly QuestInput[], skillIds: ReadonlySet<string>): RuleIssue[] {
   const issues: RuleIssue[] = [];
   const issue = (id: string, problem: string) => issues.push({ source: 'quest', id, problem });
@@ -26,11 +29,9 @@ export function validateQuestLog(quests: readonly QuestInput[], skillIds: Readon
     for (const skill of quest.skills) {
       if (!skillIds.has(skill)) issue(quest.id, `unknown skill "${skill}"`);
     }
+    if (new Set(quest.skills).size !== quest.skills.length) issue(quest.id, 'skill listed twice');
     for (const { url } of quest.evidence) {
       if (normalizeEvidenceUrl(url) === null) issue(quest.id, `evidence "${url}" is not a valid https URL`);
-    }
-    if (quest.isBoss && (quest.metrics.length === 0 || quest.obstacles.length === 0)) {
-      issue(quest.id, 'boss quest needs at least one metric and one obstacle');
     }
   }
 
@@ -41,15 +42,19 @@ export function validateQuestLog(quests: readonly QuestInput[], skillIds: Readon
 }
 
 /**
- * XP before tier decay. A quest scores only if its case study meets the word minimum
+ * XP before tier decay. A quest scores only if its case study meets the word minimums
  * AND it is first to claim at least one evidence URL (shared `seen` set, sorted order).
  */
 function scoreRaw(quest: QuestInput, seen: Set<string>, rules: XpRules): ScoredQuest {
   const wordCount = countWords(quest.body);
-  const fresh = uniqueEvidenceUrls(quest.evidence.map((item) => item.url)).filter((url) => !seen.has(url));
-  const base = { ...quest, wordCount, newEvidence: [] as string[], rawXp: 0, xp: 0, verified: false };
+  const uniqueWordCount = countUniqueWords(quest.body);
+  const own = uniqueEvidenceUrls(quest.evidence.map((item) => item.url));
+  const fresh = own.filter((url) => !seen.has(url));
+  const base = { ...quest, wordCount, uniqueWordCount, rawXp: 0, xp: 0, verified: false };
 
   if (wordCount < rules.quest.minBodyWords) return { ...base, status: 'body-too-short' };
+  if (uniqueWordCount < rules.quest.minUniqueWords) return { ...base, status: 'body-too-repetitive' };
+  if (own.length === 0) return { ...base, status: 'no-evidence' };
   if (fresh.length === 0) return { ...base, status: 'no-new-evidence' };
 
   fresh.forEach((url) => seen.add(url));
@@ -60,7 +65,7 @@ function scoreRaw(quest: QuestInput, seen: Set<string>, rules: XpRules): ScoredQ
     (quest.obstacles.length > 0 ? obstacleBonus : 0) +
     (quest.isBoss ? bossBonus : 0);
   const rawXp = baseXp[quest.difficulty] * multiplier;
-  return { ...base, status: 'verified', verified: true, newEvidence: fresh, rawXp, xp: rawXp };
+  return { ...base, status: 'verified', verified: true, rawXp, xp: rawXp };
 }
 
 /** Per tier: Nth best quest earns raw * decay^N, then the tier total is scaled down to its cap. */

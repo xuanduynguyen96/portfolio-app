@@ -7,7 +7,7 @@ import CompletenessHud from '../career-rpg/completeness-hud.astro';
 import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 
 const { level, attributes, streak, completeness } = await loadCareerState();
-const { nextLevelXp, currentLevelXp, totalXp } = level;
+const { nextLevelXp, totalXp } = level;
 const fmt = (xp: number) => xp.toLocaleString('en');
 ---
 
@@ -22,8 +22,8 @@ const fmt = (xp: number) => xp.toLocaleString('en');
         <XpProgressBar
           id="xp-next-level"
           label={nextLevelXp === null ? 'Max level reached' : `Progress to level ${level.level + 1}`}
-          value={nextLevelXp === null ? 1 : totalXp - currentLevelXp}
-          max={nextLevelXp === null ? 1 : nextLevelXp - currentLevelXp}
+          value={level.progress}
+          max={1}
           valueText={nextLevelXp === null ? `${fmt(totalXp)} XP` : `${fmt(totalXp)} / ${fmt(nextLevelXp)} XP`}
         />
         <StreakBadge streak={streak} />

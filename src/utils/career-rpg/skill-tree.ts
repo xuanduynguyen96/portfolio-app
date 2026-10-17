@@ -1,24 +1,31 @@
-import { ATTRIBUTE_IDS, xpRules, type XpRules } from '../../data/xp-rules.ts';
+import { ATTRIBUTE_IDS, SKILL_ID_PATTERN, xpRules, type XpRules } from '../../data/xp-rules.ts';
 import type { RuleIssue, SkillNodeInput, SkillTreeNode } from './career-types.ts';
 import { decayedSum, normalizeEvidenceUrl, uniqueEvidenceUrls } from './diminishing-returns.ts';
 
-const KEBAB_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-
-/** Unique kebab ids, known attributes, valid URLs, existing parents, no cycles. */
+/** Unique kebab ids, known attributes, valid URLs used by one node only, existing parents, no cycles. */
 export function validateSkillTree(nodes: readonly SkillNodeInput[]): RuleIssue[] {
   const issues: RuleIssue[] = [];
   const issue = (id: string, problem: string) => issues.push({ source: 'skill', id, problem });
   const byId = new Map<string, SkillNodeInput>();
+  const urlOwner = new Map<string, string>();
 
   for (const node of nodes) {
     if (byId.has(node.id)) issue(node.id, 'duplicate skill id');
     byId.set(node.id, node);
-    if (!KEBAB_ID.test(node.id)) issue(node.id, 'id must be kebab-case');
+    if (!SKILL_ID_PATTERN.test(node.id)) issue(node.id, 'id must be kebab-case');
     if (!(ATTRIBUTE_IDS as readonly string[]).includes(node.attribute)) {
       issue(node.id, `unknown attribute "${node.attribute}"`);
     }
+    const ownKeys = new Set<string>();
     for (const url of node.evidence) {
-      if (normalizeEvidenceUrl(url) === null) issue(node.id, `evidence "${url}" is not a valid https URL`);
+      const key = normalizeEvidenceUrl(url);
+      if (key !== null && ownKeys.has(key)) continue;
+      if (key !== null) ownKeys.add(key);
+      const owner = key === null ? undefined : urlOwner.get(key);
+      if (key === null) issue(node.id, `evidence "${url}" is not a valid https URL`);
+      // One link levels one skill: pasting it into every node would inflate the tree.
+      else if (owner !== undefined && owner !== node.id) issue(node.id, `evidence "${url}" already used by skill "${owner}"`);
+      else urlOwner.set(key, node.id);
     }
   }
 

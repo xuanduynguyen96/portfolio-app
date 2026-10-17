@@ -99,7 +99,8 @@ body::after {
   color: var(--color-accent-cyan);
 }
 
-/* Availability dot (hero eyebrow, /speedrun/). Status is always also shown as text. */
+/* Availability dot (hero eyebrow, /speedrun/). Decorative: pair it with visible text
+   (hero: availability note, /speedrun/: status label + note). */
 .status-dot {
   flex-shrink: 0;
   width: 0.5rem;

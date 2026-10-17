@@ -39,6 +39,17 @@ describe('validateSkillTree', () => {
     assert.deepEqual(issues, ['a: parent cycle a -> b -> a']);
   });
 
+  it('rejects one evidence URL reused across skills (even in a variant form)', () => {
+    assert.deepEqual(
+      problems([
+        skill({ id: 'a', evidence: ['https://ex.dev/repo'] }),
+        skill({ id: 'b', evidence: ['https://www.ex.dev/Repo/'] }),
+        skill({ id: 'c', evidence: ['https://ex.dev/repo', 'https://ex.dev/repo#same-node-is-fine'] }),
+      ]),
+      ['b: evidence "https://www.ex.dev/Repo/" already used by skill "a"', 'c: evidence "https://ex.dev/repo" already used by skill "a"'],
+    );
+  });
+
   it('rejects bad ids, unknown attributes and non-https evidence', () => {
     const issues = problems([
       // Deliberately invalid attribute (bypasses the type like bad content would).
@@ -80,12 +91,12 @@ describe('buildSkillTree', () => {
     assert.deepEqual(sibling.questIds, ['quest-1']);
   });
 
-  it('awards XP for a URL once: pasting it into many skills earns nothing extra', () => {
+  it('awards XP for a URL once even if the builder sees it twice (validation rejects this input)', () => {
     const url = 'https://github.com/example-user/repo';
     const nodes = Array.from({ length: 20 }, (_, index) => skill({ id: `s-${index}`, evidence: [url] }));
+    assert.equal(validateSkillTree(nodes).length, 19);
     const flat = flattenSkillTree(buildSkillTree(nodes, new Map(), new Set()));
     assert.equal(flat.reduce((total, node) => total + node.xp, 0), 40);
-    assert.ok(flat.every((node) => node.level === 1));
   });
 
   it('skips URLs already claimed by quests and caps per-node XP with decay', () => {

@@ -6,6 +6,9 @@ export const QUEST_DIFFICULTIES = ['side', 'main', 'raid'] as const;
 export const EVIDENCE_TYPES = ['repo', 'demo', 'figma', 'article', 'other'] as const;
 export const AVAILABILITY_STATUSES = ['open', 'limited', 'closed'] as const;
 
+/** Skill ids: kebab-case (shared by the zod schema and the pure validator). */
+export const SKILL_ID_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 export type AttributeId = (typeof ATTRIBUTE_IDS)[number];
 export type QuestDifficulty = (typeof QUEST_DIFFICULTIES)[number];
 export type EvidenceType = (typeof EVIDENCE_TYPES)[number];
@@ -27,6 +30,8 @@ export interface XpRules {
     baseXp: Record<QuestDifficulty, number>;
     /** Case-study body below this earns 0 XP. */
     minBodyWords: number;
+    /** Distinct words required too, so repeating one word can't pass the gate. */
+    minUniqueWords: number;
     metricBonus: number;
     obstacleBonus: number;
     bossBonus: number;
@@ -65,6 +70,7 @@ export const xpRules: XpRules = {
   quest: {
     baseXp: { side: 100, main: 250, raid: 500 },
     minBodyWords: 150,
+    minUniqueWords: 80,
     metricBonus: 0.25,
     obstacleBonus: 0.1,
     bossBonus: 0.5,
@@ -82,7 +88,7 @@ export const xpRules: XpRules = {
   streak: { minBodyWords: 40, futureToleranceHours: 24 },
   completeness: {
     minBioWords: 60,
-    placeholderEmailDomains: ['example.com', 'example.org', 'example.net', 'test'],
+    placeholderEmailDomains: ['example.com', 'example.org', 'example.net', 'example', 'test', 'invalid', 'localhost'],
   },
   speedrun: { achievements: 3, countdownSeconds: 60 },
 };

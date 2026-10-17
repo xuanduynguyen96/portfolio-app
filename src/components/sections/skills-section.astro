@@ -7,15 +7,17 @@ import { xpRules } from '../../data/xp-rules';
 
 const { skillTree, quests } = await loadCareerState();
 const questTitles = Object.fromEntries(quests.map((quest) => [quest.id, quest.title]));
-const [first, second, third] = xpRules.skillEvidence.levelThresholds;
+const unlocks = xpRules.skillEvidence.levelThresholds
+  .map((threshold, index) => `level ${index + 1} at ${threshold}`)
+  .join(', ');
 ---
 
 <section id="skills" class="section" aria-labelledby="skills-title">
   <div class="container">
     <SectionHeading index={3} label="Skills" title="Skill tree" id="skills-title" />
     <p class="skills-legend">
-      Skills level up only through evidence: linked work and verified projects. Level 1 unlocks at {first} piece of
-      evidence, level 2 at {second}, level 3 at {third}. Branches also count their sub-skills' evidence.
+      Skills level up only through evidence: linked work and verified projects, counted as pieces of evidence
+      ({unlocks}). Branches also count their sub-skills' evidence.
     </p>
     <ul class="skill-tree-roots" role="list" aria-label="Skill tree">
       {

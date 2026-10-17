@@ -7,8 +7,9 @@ export function decayedSum(values: readonly number[], decay: number, cap: number
 }
 
 /**
- * Canonical form used to dedupe evidence site-wide: https only, lowercase host,
- * no hash, no utm_* params, no trailing slash. Returns null when not a valid https URL.
+ * Canonical key used to dedupe evidence site-wide. Deliberately coarse (a false match only
+ * costs XP, a miss lets one link be farmed): lowercase host + path, no `www.`/trailing dot,
+ * no query, hash, `index.html` or trailing slash. Returns null when not a valid https URL.
  */
 export function normalizeEvidenceUrl(url: string): string | null {
   let parsed: URL;
@@ -18,11 +19,10 @@ export function normalizeEvidenceUrl(url: string): string | null {
     return null;
   }
   if (parsed.protocol !== 'https:' || !parsed.hostname) return null;
-  for (const key of [...parsed.searchParams.keys()]) {
-    if (key.toLowerCase().startsWith('utm_')) parsed.searchParams.delete(key);
-  }
-  const path = parsed.pathname.replace(/\/+$/, '');
-  return `${parsed.origin}${path}${parsed.search}`;
+  const host = parsed.hostname.toLowerCase().replace(/\.$/, '').replace(/^www\./, '');
+  const port = parsed.port ? `:${parsed.port}` : '';
+  const path = parsed.pathname.toLowerCase().replace(/\/index\.html?$/, '').replace(/\/+$/, '');
+  return `https://${host}${port}${path}`;
 }
 
 /** Normalized, de-duplicated URLs (invalid ones dropped), in first-seen order. */

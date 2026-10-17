@@ -47,7 +47,7 @@ test.describe('profile HUD', () => {
     const percent = await bar.evaluate((element) => (element as HTMLProgressElement).value);
     expect(percent).toBeGreaterThanOrEqual(0);
     expect(percent).toBeLessThanOrEqual(100);
-    await expect(bar).toHaveAttribute('aria-valuetext', new RegExp(`^${percent}% · \\d+ / 10 checks$`));
+    await expect(bar).toHaveAttribute('aria-valuetext', new RegExp(`^${percent}% · \\d+ / \\d+ checks$`));
 
     // Placeholder content is still present, so the HUD cannot be complete.
     const summary = hud.locator('summary');

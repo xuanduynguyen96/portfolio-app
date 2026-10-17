@@ -18,10 +18,14 @@ const evidenceLabel: Record<EvidenceType, string> = {
   article: 'Write-up',
   other: 'Link',
 };
-const unverifiedReason =
-  quest.status === 'body-too-short'
-    ? `case study has ${quest.wordCount} of ${xpRules.quest.minBodyWords} required words`
-    : 'no evidence link that is not already credited to another quest';
+const { minBodyWords, minUniqueWords } = xpRules.quest;
+const unverifiedReason = {
+  verified: '',
+  'body-too-short': `case study has ${quest.wordCount} of ${minBodyWords} required words`,
+  'body-too-repetitive': `case study has ${quest.uniqueWordCount} of ${minUniqueWords} required distinct words`,
+  'no-evidence': 'no evidence links',
+  'no-new-evidence': 'every evidence link is already credited to another quest',
+}[quest.status];
 ---
 
 <section class="quest-panel" aria-labelledby="quest-panel-title">

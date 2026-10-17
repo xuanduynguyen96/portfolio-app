@@ -32,7 +32,14 @@ describe('scoreQuests', () => {
     assert.equal(short.status, 'body-too-short');
     assert.equal(short.verified, false);
     assert.equal(short.xp, 0);
-    assert.deepEqual(short.newEvidence, []);
+  });
+
+  it('gives 0 XP to a long but repetitive case study', () => {
+    const body = Array(300).fill('synergy').join(' ');
+    const [padded] = scoreQuests([quest({ id: 'padded', body })], new Set());
+    assert.equal(padded.status, 'body-too-repetitive');
+    assert.equal(padded.uniqueWordCount, 1);
+    assert.equal(padded.xp, 0);
   });
 
   it('scores exactly at the word minimum', () => {
@@ -53,11 +60,11 @@ describe('scoreQuests', () => {
     assert.equal(scored[1].xp, 0);
   });
 
-  it('treats equivalent URLs (slash, hash, utm) as the same evidence', () => {
+  it('treats equivalent URLs (slash, case, query, hash) as the same evidence', () => {
     const scored = scoreQuests(
       [
         quest({ id: 'a', order: 1, evidence: [{ type: 'demo', url: 'https://demo.dev/app/' }] }),
-        quest({ id: 'b', order: 2, evidence: [{ type: 'demo', url: 'https://DEMO.dev/app?utm_source=cv#x' }] }),
+        quest({ id: 'b', order: 2, evidence: [{ type: 'demo', url: 'https://www.DEMO.dev/App?v=2#x' }] }),
       ],
       new Set(),
     );
@@ -66,7 +73,7 @@ describe('scoreQuests', () => {
 
   it('gives 0 XP to a quest without any evidence', () => {
     const [none] = scoreQuests([quest({ id: 'none', evidence: [] })], new Set());
-    assert.equal(none.status, 'no-new-evidence');
+    assert.equal(none.status, 'no-evidence');
   });
 
   it('caps a tier: ten side quests never exceed the side cap', () => {
@@ -116,7 +123,7 @@ describe('validateQuestLog', () => {
   it('reports every problem at once', () => {
     const issues = validateQuestLog(
       [
-        bossQuest({ id: 'boss', metrics: [] }),
+        bossQuest({ id: 'boss', skills: ['css', 'css'] }),
         quest({ id: 'dup', skills: ['rust'] }),
         quest({ id: 'dup', evidence: [{ type: 'other', url: 'http://insecure.dev' }] }),
       ],
@@ -126,7 +133,7 @@ describe('validateQuestLog', () => {
       issues.map((item) => item.id),
       ['boss', 'dup', 'dup', 'dup'],
     );
-    assert.match(issues[0].problem, /metric and one obstacle/);
+    assert.match(issues[0].problem, /skill listed twice/);
     assert.ok(issues.some((item) => /unknown skill "rust"/.test(item.problem)));
     assert.ok(issues.some((item) => /duplicate quest id/.test(item.problem)));
     assert.ok(issues.some((item) => /not a valid https URL/.test(item.problem)));

@@ -68,7 +68,6 @@ export function computeStreak(
   return {
     current,
     longest,
-    totalWeeks: weeks.size,
     lastEntryDate: qualifying.length > 0 ? new Date(lastEntryTime) : null,
   };
 }

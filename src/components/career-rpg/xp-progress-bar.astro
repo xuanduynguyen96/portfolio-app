@@ -10,7 +10,7 @@ interface Props {
 }
 
 const { id, label, value, max, valueText } = Astro.props;
-const safeMax = Math.max(1, max);
+const safeMax = max > 0 ? max : 1;
 const safeValue = Math.min(safeMax, Math.max(0, value));
 ---
 

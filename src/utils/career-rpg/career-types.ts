@@ -61,14 +61,13 @@ export interface RuleIssue {
   problem: string;
 }
 
-export type QuestStatus = 'verified' | 'no-new-evidence' | 'body-too-short';
+export type QuestStatus = 'verified' | 'no-evidence' | 'no-new-evidence' | 'body-too-short' | 'body-too-repetitive';
 
 export interface ScoredQuest extends QuestInput {
   status: QuestStatus;
   verified: boolean;
   wordCount: number;
-  /** Normalized evidence URLs this quest was first to claim. */
-  newEvidence: string[];
+  uniqueWordCount: number;
   /** XP before tier decay/cap. */
   rawXp: number;
   /** XP after tier decay/cap (unrounded; round for display). */
@@ -114,7 +113,6 @@ export interface StreakInfo {
   /** Consecutive ISO weeks with an entry, ending this or last week. */
   current: number;
   longest: number;
-  totalWeeks: number;
   lastEntryDate: Date | null;
 }
 

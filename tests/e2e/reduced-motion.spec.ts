@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { SITE_NAME } from './test-helpers';
 
 /** Every animatable element must be visible with no inline transform, without any scrolling. */
-async function expectStaticContentVisible(page: Page, minTargets = 10) {
+async function expectStaticContentVisible(page: Page, minTargets = 11) {
   const targets = page.locator('[data-reveal], [data-hero]');
   const count = await targets.count();
   expect(count).toBeGreaterThanOrEqual(minTargets);

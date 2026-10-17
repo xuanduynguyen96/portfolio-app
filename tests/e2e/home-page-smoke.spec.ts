@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { SECTION_IDS, SITE_NAME, expectAllRevealsVisible, expectHeroVisible, trackPageErrors } from './test-helpers';
+import { PROJECT_SLUGS, SECTION_IDS, SITE_NAME, expectAllRevealsVisible, expectHeroVisible, trackPageErrors } from './test-helpers';
 
 test.describe('home page', () => {
   test('renders metadata, hero and every section without errors', async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe('home page', () => {
     }
 
     await expectAllRevealsVisible(page);
-    await expect(page.locator('.project-card')).toHaveCount(3);
+    await expect(page.locator('.project-card')).toHaveCount(PROJECT_SLUGS.length);
     await expect(page.locator('.timeline-item')).toHaveCount(3);
     expect(errors).toEqual([]);
   });

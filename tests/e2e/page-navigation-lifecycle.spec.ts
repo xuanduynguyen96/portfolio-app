@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
-import { SITE_NAME, expectAllRevealsVisible, expectHeroVisible, trackPageErrors } from './test-helpers';
+import { BOSS, SITE_NAME, expectAllRevealsVisible, expectHeroVisible, trackPageErrors } from './test-helpers';
 
-const PROJECT_TITLE = 'Neon Analytics Dashboard';
+const PROJECT_TITLE = BOSS.title;
 // Skill tree "Proven in" links share the title, so target the project card link.
 const projectLink = (page: Page) => page.locator('#projects').getByRole('link', { name: PROJECT_TITLE, exact: true });
 
@@ -15,7 +15,7 @@ test('animations re-initialise cleanly across ClientRouter navigations', async (
 
   for (let round = 1; round <= 3; round += 1) {
     await projectLink(page).click();
-    await expect(page).toHaveURL(/\/projects\/neon-dashboard\/$/);
+    await expect(page).toHaveURL(new RegExp(`/projects/${BOSS.slug}/$`));
     await expect(page.getByRole('heading', { level: 1, name: PROJECT_TITLE })).toBeVisible();
     expect(await isSameDocument()).toBe(true);
     // Animation module re-ran and flagged itself ready after the swap.
@@ -50,7 +50,7 @@ test('browser back/forward keeps content visible', async ({ page }) => {
 
 test('mobile menu still works after a soft navigation', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 740 });
-  await page.goto('./projects/neon-dashboard/');
+  await page.goto(`./projects/${BOSS.slug}/`);
   await page.getByRole('link', { name: '← All projects' }).click();
   await expect(page).toHaveURL(/#projects$/);
 

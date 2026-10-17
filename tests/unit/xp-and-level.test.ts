@@ -59,25 +59,27 @@ describe('level curve', () => {
 });
 
 describe('computeAttributeXp', () => {
+  const none = new Map<string, string[]>();
+
   it('splits quest XP across its skills and adds skill evidence XP', () => {
-    const quests = scoreQuests([quest({ id: 'q', skills: ['typescript', 'css'] })], new Set());
+    const quests = scoreQuests([quest({ id: 'q', skills: ['typescript', 'css'] })]);
     const nodes = flattenSkillTree(
-      buildSkillTree([...baseSkills, skill({ id: 'docs', attribute: 'communication', evidence: ['https://blog.dev/post'] })], new Map(), new Set()),
+      buildSkillTree([...baseSkills, skill({ id: 'docs', attribute: 'communication' })], new Map([['docs', ['https://github.com/u/blog']]]), none),
     );
     const byId = Object.fromEntries(computeAttributeXp(quests, nodes).map((item) => [item.id, item.xp]));
     assert.deepEqual(byId, { 'code-efficiency': 125, 'ui-polish': 125, communication: 40, reliability: 0 });
   });
 
-  it('ignores unverified quests', () => {
-    const quests = scoreQuests([quest({ id: 'q', body: 'too short' })], new Set());
-    const nodes = flattenSkillTree(buildSkillTree(baseSkills, new Map(), new Set()));
+  it('a quest without skills adds no attribute XP', () => {
+    const quests = scoreQuests([quest({ id: 'q', skills: [] })]);
+    const nodes = flattenSkillTree(buildSkillTree(baseSkills, none, none));
     assert.ok(computeAttributeXp(quests, nodes).every((item) => item.xp === 0));
   });
 
   it('clamps each attribute to the cap and returns integers', () => {
     const rules: XpRules = { ...xpRules, attributeCap: 100 };
-    const quests = scoreQuests([quest({ id: 'q', difficulty: 'raid' })], new Set(), rules);
-    const nodes = flattenSkillTree(buildSkillTree(baseSkills, new Map(), new Set(), rules));
+    const quests = scoreQuests([quest({ id: 'q', difficulty: 'raid' })], rules);
+    const nodes = flattenSkillTree(buildSkillTree(baseSkills, none, none, rules));
     const scores = computeAttributeXp(quests, nodes, rules);
     assert.equal(scores.find((item) => item.id === 'code-efficiency')?.xp, 100);
     assert.ok(scores.every((item) => Number.isInteger(item.xp) && item.cap === 100));

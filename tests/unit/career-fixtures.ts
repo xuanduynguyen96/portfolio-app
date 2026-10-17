@@ -3,6 +3,7 @@ import type {
   ChangelogInput,
   ProfileInput,
   QuestInput,
+  QuestOverrideInput,
   SkillNodeInput,
 } from '../../src/utils/career-rpg/career-types.ts';
 
@@ -11,9 +12,15 @@ export function words(count: number): string {
   return Array.from({ length: count }, (_, index) => `word${index + 1}`).join(' ');
 }
 
+const noSignals = { description: false, topics: false, homepage: false, tests: false, ci: false };
+
+/** A scored-ready quest; defaults earn no bonus (base XP only). */
 export function quest(overrides: Partial<QuestInput> & { id: string }): QuestInput {
   return {
+    repo: overrides.id,
     title: overrides.id,
+    summary: `Summary of ${overrides.id}`,
+    tags: ['TypeScript'],
     difficulty: 'main',
     isBoss: false,
     featured: false,
@@ -21,34 +28,31 @@ export function quest(overrides: Partial<QuestInput> & { id: string }): QuestInp
     skills: ['typescript'],
     obstacles: [],
     metrics: [],
+    repoMetrics: [],
     evidence: [{ type: 'repo', url: `https://github.com/example-user/${overrides.id}` }],
-    body: words(200),
+    body: '',
+    signals: noSignals,
     isSample: false,
     ...overrides,
   };
 }
 
-export function bossQuest(overrides: Partial<QuestInput> & { id: string }): QuestInput {
-  return quest({
-    difficulty: 'raid',
-    isBoss: true,
-    obstacles: ['Legacy build pipeline'],
-    metrics: [{ label: 'Load time cut', value: 40, unit: '%' }],
-    ...overrides,
-  });
+export function override(overrides: Partial<QuestOverrideInput> & { id: string }): QuestOverrideInput {
+  return { obstacles: [], metrics: [], body: '', isSample: false, ...overrides };
 }
 
 export function skill(overrides: Partial<SkillNodeInput> & { id: string }): SkillNodeInput {
-  return { label: overrides.id, attribute: 'code-efficiency', evidence: [], ...overrides };
+  return { label: overrides.id, attribute: 'code-efficiency', ...overrides };
 }
 
 export const baseSkills: SkillNodeInput[] = [
   skill({ id: 'languages' }),
-  skill({ id: 'typescript', parent: 'languages' }),
+  skill({ id: 'typescript', parent: 'languages', match: { languages: ['TypeScript'] } }),
+  skill({ id: 'go', parent: 'languages', match: { languages: ['Go'] } }),
   skill({ id: 'frontend', attribute: 'ui-polish' }),
-  skill({ id: 'css', attribute: 'ui-polish', parent: 'frontend' }),
+  skill({ id: 'css', attribute: 'ui-polish', parent: 'frontend', match: { languages: ['CSS'] } }),
   skill({ id: 'collaboration', attribute: 'communication' }),
-  skill({ id: 'writing', attribute: 'communication', parent: 'collaboration' }),
+  skill({ id: 'writing', attribute: 'communication', parent: 'collaboration', match: { files: ['docs'] } }),
 ];
 
 export function entry(id: string, isoDate: string, bodyWords = 50): ChangelogInput {

@@ -18,14 +18,13 @@ const evidenceLabel: Record<EvidenceType, string> = {
   article: 'Write-up',
   other: 'Link',
 };
-const { minBodyWords, minUniqueWords } = xpRules.quest;
-const unverifiedReason = {
-  verified: '',
-  'body-too-short': `case study has ${quest.wordCount} of ${minBodyWords} required words`,
-  'body-too-repetitive': `case study has ${quest.uniqueWordCount} of ${minUniqueWords} required distinct words`,
-  'no-evidence': 'no evidence links',
-  'no-new-evidence': 'every evidence link is already credited to another quest',
-}[quest.status];
+const { minBodyWords } = xpRules.quest;
+const statusNote =
+  quest.status === 'case-study'
+    ? 'case study bonus'
+    : quest.body.trim()
+      ? `case study has ${quest.wordCount} of ${minBodyWords} words for its bonus`
+      : 'from repo facts';
 ---
 
 <section class="quest-panel" aria-labelledby="quest-panel-title">
@@ -35,7 +34,7 @@ const unverifiedReason = {
       <QuestTierBadge difficulty={quest.difficulty} isBoss={quest.isBoss} />
     </header>
     <p class="quest-xp hud-text">
-      {quest.verified ? `+${Math.round(quest.xp)} XP earned` : `Unverified: ${unverifiedReason}. 0 XP.`}
+      {`+${Math.round(quest.xp)} XP earned · ${statusNote}`}
     </p>
 
     {
@@ -50,11 +49,11 @@ const unverifiedReason = {
     }
 
     {
-      quest.metrics.length > 0 && (
+      quest.metrics.length + quest.repoMetrics.length > 0 && (
         <div class="quest-block">
           <h3 class="quest-label hud-text">Results</h3>
           <dl class="metrics">
-            {quest.metrics.map((metric) => (
+            {[...quest.metrics, ...quest.repoMetrics].map((metric) => (
               <div class="metric">
                 <dt>{metric.label}</dt>
                 <dd class="metric-value">{formatMetricValue(metric)}</dd>

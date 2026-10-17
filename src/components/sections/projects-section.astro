@@ -4,18 +4,20 @@ import SectionHeading from '../section-heading.astro';
 import ProjectCard from '../project-card.astro';
 import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 
-// Card order = quest order (boss, featured, order, title: see sortQuests).
+// Cards = public repos picked as quests, in quest order (boss, featured, order, title: see sortQuests).
 const { quests } = await loadCareerState();
-const rank = new Map(quests.map((quest, index) => [quest.id, index]));
-const questXp = new Map(quests.map((quest) => [quest.id, quest.xp]));
-const projects = (await getCollection('projects')).sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
+const overrides = new Map((await getCollection('projects')).map((entry) => [entry.id, entry.data]));
 ---
 
 <section id="projects" class="section" aria-labelledby="projects-title">
   <div class="container">
     <SectionHeading index={4} label="Projects" title="Selected work" id="projects-title" />
     <div class="projects-grid">
-      {projects.map((project) => <ProjectCard project={project} questXp={questXp.get(project.id) ?? 0} />)}
+      {
+        quests.map((quest) => (
+          <ProjectCard quest={quest} cover={overrides.get(quest.id)?.cover} coverAlt={overrides.get(quest.id)?.coverAlt} />
+        ))
+      }
     </div>
   </div>
 </section>

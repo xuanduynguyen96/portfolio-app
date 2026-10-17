@@ -1,8 +1,10 @@
-// Astro-only wiring: collections + data files -> pure buildCareerState(). Not unit-tested
+// Astro-only wiring: snapshot + collections + data files -> pure buildCareerState(). Not unit-tested
 // (needs astro:content); keep it thin. Memoized per build: every page shares one state.
 import { getCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { skillNodeSchema } from '../../data/career-schemas';
+import { githubSnapshotSchema } from '../../data/github/github-snapshot-schema';
+import snapshotJson from '../../data/github/github-snapshot.json';
 import { siteConfig } from '../../data/site-config';
 import { skillNodes } from '../../data/skills-data';
 import { PLACEHOLDER_MARKER } from '../../data/xp-rules';
@@ -20,21 +22,22 @@ const rawSources = import.meta.glob<string>(['/src/data/*.ts', '/src/content/**/
 async function build(): Promise<CareerState> {
   const [projects, changelog] = await Promise.all([getCollection('projects'), getCollection('changelog')]);
   return buildCareerState({
-    quests: projects.map((project) => ({
+    // Strict parse: a hand-edited snapshot with unexpected keys or bad links fails the build.
+    snapshot: githubSnapshotSchema.parse(snapshotJson),
+    overrides: projects.map((project) => ({
       id: project.id,
       title: project.data.title,
-      difficulty: project.data.difficulty,
-      isBoss: project.data.isBoss,
+      summary: project.data.summary,
+      tags: project.data.tags,
       featured: project.data.featured,
       order: project.data.order,
-      skills: project.data.skills,
+      isBoss: project.data.isBoss,
       obstacles: project.data.obstacles,
       metrics: project.data.metrics,
-      evidence: project.data.evidence,
       body: project.body ?? '',
       isSample: rawSources[`/${project.filePath}`]?.includes(PLACEHOLDER_MARKER) ?? false,
     })),
-    // Strict parse: a hand-set `xp`/`level` key on a skill node fails the build.
+    // Strict parse: a hand-set `evidence`/`xp`/`level` key on a skill node fails the build.
     skills: z.array(skillNodeSchema).parse(skillNodes),
     changelog: changelog.map((entry) => ({
       id: entry.id,

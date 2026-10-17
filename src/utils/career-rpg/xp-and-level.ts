@@ -2,7 +2,7 @@ import { ATTRIBUTE_IDS, xpRules, type AttributeId, type XpRules } from '../../da
 import type { AttributeScore, LevelInfo, ScoredQuest, SkillTreeNode } from './career-types.ts';
 
 /**
- * Attribute XP = verified quest XP (split evenly across the quest's skills' attributes)
+ * Attribute XP = quest XP (split evenly across the quest's skills' attributes)
  * + each skill node's own evidence XP; each attribute clamped to the cap, then rounded.
  */
 export function computeAttributeXp(
@@ -17,7 +17,7 @@ export function computeAttributeXp(
   };
 
   for (const quest of quests) {
-    if (!quest.verified || quest.skills.length === 0) continue;
+    if (quest.skills.length === 0) continue;
     const share = quest.xp / quest.skills.length;
     quest.skills.forEach((skill) => add(attributeOf.get(skill), share));
   }

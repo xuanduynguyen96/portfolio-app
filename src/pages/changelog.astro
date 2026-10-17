@@ -2,13 +2,10 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/base-layout.astro';
 import GlassCard from '../components/glass-card.astro';
-import StreakBadge from '../components/career-rpg/streak-badge.astro';
 import { siteConfig } from '../data/site-config';
-import { loadCareerState } from '../utils/career-rpg/load-career-state';
 import { formatEntryDate } from '../utils/format-date-range';
 import { withBasePath } from '../utils/with-base-path';
 
-const { streak } = await loadCareerState();
 const entries = (await getCollection('changelog')).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime() || b.id.localeCompare(a.id),
 );
@@ -22,13 +19,12 @@ const rendered = await Promise.all(entries.map(async (entry) => ({ entry, ...(aw
   <article class="changelog container" aria-labelledby="changelog-title">
     <a class="back-link hud-text" href={withBasePath('/')}>← Home</a>
     <header class="changelog-header">
-      <p class="eyebrow">Consistency streak</p>
+      <p class="eyebrow">Build log</p>
       <h1 id="changelog-title">Changelog</h1>
       <p class="changelog-lead">
-        A dated log of what shipped. Every ISO week (Monday to Sunday, UTC) with an entry extends the streak. It is
-        computed when the site is built and refreshed by a weekly scheduled build.
+        A dated log of what shipped on this site. The consistency streak on the character sheet comes from public GitHub
+        activity instead: every ISO week (Monday to Sunday, UTC) with a contribution extends it.
       </p>
-      <StreakBadge streak={streak} />
     </header>
     {
       rendered.length === 0 ? (

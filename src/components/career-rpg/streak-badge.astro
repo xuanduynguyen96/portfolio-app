@@ -2,24 +2,25 @@
 import PixelIcon from '../pixel-icon.astro';
 import type { StreakInfo } from '../../utils/career-rpg/career-types';
 import { formatEntryDate } from '../../utils/format-date-range';
-import { withBasePath } from '../../utils/with-base-path';
 
 interface Props {
   streak: StreakInfo;
+  /** GitHub profile: where the activity behind the streak lives. */
+  href: string;
 }
 
-const { streak } = Astro.props;
+const { streak, href } = Astro.props;
 const weeks = (count: number) => `${count}-week`;
 const text =
   streak.current > 0
     ? `${weeks(streak.current)} streak · best ${streak.longest}`
-    : streak.lastEntryDate
-      ? `Streak paused · last entry ${formatEntryDate(streak.lastEntryDate)}`
-      : 'No changelog entries yet';
+    : streak.lastActiveWeek
+      ? `Streak paused · last active week of ${formatEntryDate(streak.lastActiveWeek)}`
+      : 'No GitHub activity yet';
 ---
 
-<a class="streak-badge pixel-frame hud-text" href={withBasePath('/changelog/')} data-streak={streak.current}>
-  <span class="streak-flame"><PixelIcon name="streak" /></span>{text}<span class="visually-hidden"> (view changelog)</span>
+<a class="streak-badge pixel-frame hud-text" href={href} target="_blank" rel="noopener noreferrer" data-streak={streak.current}>
+  <span class="streak-flame"><PixelIcon name="streak" /></span>{text}<span class="visually-hidden"> (GitHub profile, opens in new tab)</span>
 </a>
 
 <style>

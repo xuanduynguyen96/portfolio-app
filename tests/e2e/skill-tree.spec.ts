@@ -1,6 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 import { skillNodes } from '../../src/data/skills-data';
 import { xpRules } from '../../src/data/xp-rules';
+import { repoMatchesSkill } from '../../src/utils/github-character/repo-skill-matches.ts';
+import { SNAPSHOT } from './career-mirror';
+
+/** Nodes proven by at least one public repo in the committed snapshot. */
+const provenSkills = new Set(skillNodes.filter((node) => SNAPSHOT.repos.some((repo) => repoMatchesSkill(repo, node.match))).map((node) => node.id));
 
 const maxLevel = xpRules.skillEvidence.levelThresholds.length;
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -27,7 +32,7 @@ test.describe('skill tree', () => {
 
   test('locked nodes are labelled and level pips are decorative', async ({ page }) => {
     await page.goto('./');
-    const unproven = skillNodes.filter((node) => node.parent && !node.evidence?.length);
+    const unproven = skillNodes.filter((node) => node.parent && !provenSkills.has(node.id));
     expect(unproven.length).toBeGreaterThan(0);
     await expect(page.locator('#skills .skill-node--locked').first()).toContainText('(locked)');
     const pips = page.locator('#skills .skill-pips');
@@ -35,10 +40,10 @@ test.describe('skill tree', () => {
     for (const group of await pips.all()) await expect(group).toHaveAttribute('aria-hidden', 'true');
   });
 
-  test('evidence links open safely and verified quests link to their case study', async ({ page }) => {
+  test('repo evidence links open safely and quests link to their page', async ({ page }) => {
     await page.goto('./');
     const evidence = page.locator('#skills details.skill-evidence');
-    expect(await evidence.count()).toBe(skillNodes.filter((node) => node.evidence?.length).length);
+    expect(await evidence.count()).toBe(provenSkills.size);
     await evidence.first().locator('summary').click();
     const link = evidence.first().getByRole('link');
     await expect(link.first()).toHaveAttribute('href', /^https:\/\//);

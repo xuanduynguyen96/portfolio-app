@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import { PLACEHOLDER_MARKER, xpRules } from '../../src/data/xp-rules';
 import { siteConfig } from '../../src/data/site-config';
@@ -26,9 +26,13 @@ test.describe('recruiter speedrun', () => {
       await expect(card.locator('.achievement-label')).not.toBeEmpty();
       const href = (await card.getByRole('link').getAttribute('href')) ?? '';
       expect(href).toMatch(/^\/portfolio-app\/projects\/[a-z0-9-]+\/$/);
-      // Metrics from placeholder project files must be labelled as sample data.
+      // Hand-reported metrics from a draft (placeholder) override are sample data; repo facts never are.
       const slug = href.split('/').at(-2);
-      const isSample = readFileSync(`src/content/projects/${slug}.md`, 'utf8').includes(PLACEHOLDER_MARKER);
+      const file = `src/content/projects/${slug}.md`;
+      const text = existsSync(file) ? readFileSync(file, 'utf8') : '';
+      const label = (await card.locator('.achievement-label').textContent())?.trim() ?? '';
+      const overrideLabels = [...text.matchAll(/label:\s*([^,}]+)/g)].map((match) => match[1].trim());
+      const isSample = text.includes(PLACEHOLDER_MARKER) && overrideLabels.includes(label);
       anySample ||= isSample;
       await expect(card.locator('.sample-tag')).toHaveCount(isSample ? 1 : 0);
     }

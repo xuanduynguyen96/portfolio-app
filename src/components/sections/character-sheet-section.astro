@@ -8,7 +8,7 @@ import PixelIcon from '../pixel-icon.astro';
 import { attributeIcons } from '../../data/pixel-icon-map';
 import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 
-const { level, attributes, streak, completeness } = await loadCareerState();
+const { level, attributes, streak, completeness, githubUrl } = await loadCareerState();
 const { nextLevelXp, totalXp } = level;
 const fmt = (xp: number) => xp.toLocaleString('en');
 ---
@@ -36,7 +36,7 @@ const fmt = (xp: number) => xp.toLocaleString('en');
           max={1}
           valueText={nextLevelXp === null ? `${fmt(totalXp)} XP` : `${fmt(totalXp)} / ${fmt(nextLevelXp)} XP`}
         />
-        <StreakBadge streak={streak} />
+        <StreakBadge streak={streak} href={githubUrl} />
       </GlassCard>
 
       <GlassCard class="attributes" data-reveal>

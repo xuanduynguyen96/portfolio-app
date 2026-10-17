@@ -2,8 +2,7 @@ import { expect, type Page } from '@playwright/test';
 
 export const SITE_NAME = 'Xuan Duy Nguyen';
 export const SECTION_IDS = ['about', 'character', 'skills', 'projects', 'experience', 'contact'] as const;
-export const PROJECT_SLUGS = ['neon-dashboard', 'realtime-chat', 'cli-toolkit'] as const;
-export const BOSS_SLUG = 'neon-dashboard';
+export { BOSS, BOSS_SLUG, DERIVED_PROJECT, PROJECT_SLUGS, PROJECTS } from './career-mirror';
 export const CAREER_PAGES = ['./speedrun/', './changelog/'] as const;
 export const INFO_PAGES = ['./credits/'] as const;
 

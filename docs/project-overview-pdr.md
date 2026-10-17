@@ -1,10 +1,10 @@
 # Project Overview & PDR
 
-Last updated: 2026-10-17 · Version: v1.1 (0.1.0 in package.json)
+Last updated: 2026-10-17 · Version: v1.2 (0.1.0 in package.json)
 
 ## Vision
 
-Personal developer portfolio that looks futuristic (dark neon, glass, motion) yet stays fast, accessible and cheap to host. Static site on GitHub Pages; no backend.
+Personal developer portfolio with an RPG look (pixel icons and frames, dungeon dark + parchment light themes, motion) that stays fast, accessible and cheap to host. Static site on GitHub Pages; no backend.
 
 ## Audience
 
@@ -15,7 +15,7 @@ Personal developer portfolio that looks futuristic (dark neon, glass, motion) ye
 
 - Single-page home: Hero, About, Skills, Projects, Experience, Contact.
 - Project detail pages from Markdown content collection (`/projects/<slug>/`).
-- Custom 404 ("Signal lost", noindex).
+- Custom 404 ("Off the map", noindex).
 - GSAP motion: hero text reveal, scroll reveals, card spotlight; page transitions via Astro `ClientRouter`.
 - SEO: title/description, canonical, Open Graph + Twitter card, OG image.
 - CI: type check + e2e on every PR/push; auto-deploy on `master`.
@@ -31,11 +31,18 @@ Gamified layer on v1; every number is computed at build time from evidence, noth
 - Recruiter speedrun (`/speedrun/`): availability, top 3 achievements, contact, decorative 60s countdown.
 - Anti-gaming + schema strictness: evidence-only XP, build fails on invalid content.
 
+## Scope v1.2: RPG theme (done)
+
+Restyle only; scoring and content model unchanged. Details: [design-guidelines.md](design-guidelines.md).
+
+- Themes: parchment (light) and dungeon (dark); follows system, header toggle forces one (remembered, no flash; no JS = system).
+- MedievalSharp headings, Pixelify Sans HUD labels, Space Grotesk body; hand-authored 8x8 pixel icons; pixel-framed panels.
+- `/credits/`: fonts, icons, libraries and their licenses.
+
 ## Non-goals (v1)
 
 - Three.js / WebGL hero
 - CMS or admin UI (content = files in repo)
-- Light theme / theme switcher
 - Contact form backend (mailto only)
 - Blog, i18n, analytics, cookies
 
@@ -68,9 +75,10 @@ Gamified layer on v1; every number is computed at build time from evidence, noth
 | Area | Target |
 |------|--------|
 | Performance | Lighthouse >=95 all categories; CLS 0; static-first, minimal JS |
-| Accessibility | no serious/critical axe-core violations (wcag2a/2aa/21aa + best-practice tags) on home, project, 404, `/speedrun/`, `/changelog/`; visible focus, skip link, semantic landmarks |
+| Accessibility | no serious/critical axe-core violations (wcag2a/2aa/21aa + best-practice tags) on home, project, 404, `/speedrun/`, `/changelog/`, `/credits/`, in both themes; visible focus, skip link, semantic landmarks |
 | Resilience | Works with no JS, JS failure, or `prefers-reduced-motion: reduce`: content never stays hidden |
 | Browsers | Evergreen Chromium tested in CI; Firefox/WebKit untested (see roadmap) |
+| Theming | Light + dark share one token set; no theme flash; works with no JS (system scheme); forced-colors keeps frames visible |
 | Privacy | No trackers, no third-party requests (fonts self-hosted) |
 | Maintainability | Files <200 lines, kebab-case, TS strict, documented conventions |
 | Determinism | Career state is pure: same content + `CAREER_RPG_NOW` => same output; scoring unit-tested without Astro |
@@ -78,7 +86,7 @@ Gamified layer on v1; every number is computed at build time from evidence, noth
 ## Success metrics
 
 - Lighthouse (local preview; `/`, project, `/speedrun/`, `/changelog/`): mobile 98-99/100/100/100, desktop 100/100/100/100; CLS 0 (desktop 0.0001, pre-existing nav font swap).
-- 95 unit + 56 Playwright tests green (e2e ~37s locally).
+- 116 unit + 86 Playwright tests green; axe 0 serious/critical in both themes.
 - Deploy from `master` push with no manual steps after one-time Pages setup.
 
 ## Constraints and dependencies
@@ -99,3 +107,4 @@ Gamified layer on v1; every number is computed at build time from evidence, noth
 |------|--------|
 | 2026-10-17 | v1 implemented (phases 1-8), docs written |
 | 2026-10-17 | v1.1 Career RPG layer (phases 01-09): quests/boss, character sheet + HUD, skill tree, streak + changelog, `/speedrun/`, F6-F12 |
+| 2026-10-17 | v1.2 RPG theme + light theme, pixel icons, `/credits/` |

@@ -5,7 +5,7 @@
 - File names: kebab-case, descriptive (`hero-text-reveal.ts`, `skip-to-content-link.astro`).
 - Keep files <200 lines; split by responsibility.
 - TypeScript strict (`astro/tsconfigs/strict`, see `tsconfig.json`). Run `npm run check` before pushing.
-- Plain CSS only. Colors, spacing, type, radii, motion timing come from tokens in `src/styles/design-tokens.css`; no magic values.
+- Plain CSS only. Colors, spacing, type, radii, motion timing come from tokens in `src/styles/design-tokens.css`; no magic values. Literal colors only in `public/favicon.svg` and the theme head script.
 - No UI framework, no Tailwind. Add dependencies only when needed (YAGNI).
 - Content lives in data/content files, never in components.
 
@@ -38,6 +38,8 @@ JS and CSS find animated elements by data attributes, not classes/ids.
 | `data-hero-title` | `hero-text-reveal.ts` | SplitText char reveal (also set `data-hero`) |
 | `data-spotlight` | `card-spotlight.ts`, `effects.css` | Pointer-follow glow on `.glass` |
 | `data-menu-toggle`, `data-menu` | `mobile-menu.ts` | Mobile nav button / panel |
+| `data-theme-toggle` | `theme-head-script.astro` (delegated click) | Light/dark toggle button; `aria-pressed` = dark. No per-element JS |
+| `data-caret` | `effects.css` | Pixel caret on hover/focus; blinks only under `html[data-motion="ok"]` |
 
 Rules:
 1. New animation = new module in `src/scripts/animations/`, called from `init-animations.ts` inside the `gsap.matchMedia()` callback, so `mm.revert()` cleans it up.
@@ -50,6 +52,32 @@ Rules:
 
 See [system-architecture.md](system-architecture.md) for the flag lifecycle.
 
+## Theme head script
+
+`src/components/theme-head-script.astro` (inline, in `<head>`) is the only writer of `html[data-theme]`; never set it from CSS, components or other scripts.
+
+- Runs before first paint; reads `localStorage` (`rpg-theme`, always in try/catch, in-memory fallback), else the system scheme.
+- Copies the theme to `newDocument` on `astro:before-swap`, re-applies on `astro:after-swap`. Handles toggle clicks by delegation (works if the bundle fails).
+- `:root:not([data-theme])` means no JS: CSS follows the system, the toggle hides.
+- It holds literal hexes (pre-CSS) that must match `--color-bg` in `design-tokens.css`; update both plus `theme-toggle.spec.ts`.
+- Colors elsewhere are `light-dark()` tokens; never write per-theme overrides in components.
+
+## Pixel icons
+
+Design rules: [design-guidelines.md](design-guidelines.md#pixel-icons).
+
+- Render only through `<PixelIcon name size label? />`; sizes 16/24/32/48.
+- Add an icon: (1) add an 8-row x 8-char grid (`#` ink, `+` shade, `.` empty) to `src/data/pixel-icons-career.ts` or `-hud.ts`; `PixelIconName` derives from the keys. (2) Map ids to it in `src/data/pixel-icon-map.ts` if needed. (3) Update `tests/unit/pixel-icons.test.ts` (grid shape, non-empty, names). (4) It appears in the `/credits/` gallery automatically.
+- Grid -> SVG path logic lives in `src/utils/pixel-icon-path.ts` (unit-tested).
+- Decorative (`aria-hidden`) unless it stands alone; then pass `label`.
+- Do not hand-write SVG icons in components.
+
+## Typography utilities
+
+- `.hud-text` (Pixelify, tracking) replaces the old `.mono`; use it for labels, numbers, dates. Keep >=14px.
+- h1/h2 render in MedievalSharp and must be >=32px; smaller h2 gets `class="h2-compact"`.
+- Code uses `--font-mono` (system mono).
+
 ## Accessibility rules
 
 - One `<h1>` per page; sections labelled via `aria-labelledby`.
@@ -59,6 +87,7 @@ See [system-architecture.md](system-architecture.md) for the flag lifecycle.
 - External links: `target="_blank"` + `rel="noopener noreferrer"` (`NeonButton external`).
 - Touch targets >=44px (`neon-button` min-height 2.75rem).
 - Gradient `.neon-text` is for large display text only.
+- Never set `box-shadow` on `.glass`/`.pixel-frame` (it is the frame); override `--frame-*` vars. Forced-colors fallback is in `effects.css`.
 - Respect `prefers-reduced-motion`: no motion, content visible.
 - Progressive enhancement: no JS => nav visible, content visible.
 

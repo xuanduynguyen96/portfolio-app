@@ -44,6 +44,26 @@ Plan: `plans/20261017-0432-career-rpg-gamification-layer/` (phases 01-09, report
 
 Before merge: user review; commit/push only after approval.
 
+## v1.2: RPG theme redesign (done, branch `feat/rpg-theme-redesign`)
+
+Plan: `plans/20261017-0821-rpg-theme-redesign/` (reports in `reports/`). Design: [design-guidelines](design-guidelines.md). Career RPG scoring untouched (restyle only).
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| 01 | Tokens (`light-dark()`), theme head script, toggle | Done |
+| 02 | Fonts: MedievalSharp, Pixelify Sans; JetBrains Mono dropped | Done |
+| 03 | Hand-authored 8x8 pixel icon system + unit tests | Done |
+| 04 | Pixel-frame surfaces + core components | Done |
+| 05 | Career RPG components restyle | Done |
+| 06 | Motion adaptation (stepped easing, caret) | Done |
+| 07 | Opt-in chiptune SFX | Deferred |
+| 08 | `/credits/` page (A done); external pixel packs (B) | B skipped |
+| 09 | Verification, docs, changelog | Done (116 unit, 86 e2e) |
+
+Deferred follow-ups: opt-in SFX (07), external CC0 packs (08B), `<symbol>` sprite sheet (only if HTML weight grows), recolor project covers + OG image to the RPG palette (still cyan/magenta). Open decisions: plan.md "Unresolved Questions".
+
+Before merge: user approval received; commit per phase after review.
+
 ## v2 ideas (unscheduled)
 
 | Idea | Notes |
@@ -52,7 +72,7 @@ Before merge: user review; commit/push only after approval.
 | Contact form service | Static-friendly (Formspree/Web3Forms style); replaces mailto-only; needs spam + privacy review |
 | Three.js hero | Lazy-loaded, reduced-motion + low-power fallback; watch Lighthouse/CLS |
 | Blog | Second content collection + RSS |
-| Light theme | Token override set + toggle; re-run contrast/axe |
+| Theme polish | 3-state toggle (reset to system), recolor covers + OG image, opt-in SFX, external pixel packs |
 | Sitemap | `@astrojs/sitemap` (+ robots.txt) |
 | Supply chain hardening | SHA-pinned actions + Dependabot for npm and Actions |
 | Cross-browser tests | Add Firefox + WebKit Playwright projects |
@@ -74,3 +94,4 @@ Before merge: user review; commit/push only after approval.
 |------|--------|
 | 2026-10-17 | v1 implemented; docs written |
 | 2026-10-17 | v1.1 Career RPG layer implemented (phases 01-09); docs updated |
+| 2026-10-17 | v1.2 RPG theme + light (parchment) theme implemented; SFX, external packs, sprite sheet, cover/OG recolor deferred; docs updated |

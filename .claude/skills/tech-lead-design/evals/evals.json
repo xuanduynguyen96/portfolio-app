@@ -1,0 +1,23 @@
+{
+  "skill_name": "tech-lead-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Analyze the shift assignment engine design. I need a design decision document for the implementation strategy. The PRD is at docs/SPECIFICATIONS/prds/phase-1c-shift-assignment-engine.md. Store the decision doc in docs/designs/shift-assignments-engine/. Please scan the codebase to ensure we're consistent with existing patterns (Handler → Service → Repository used in Phase 1B). Context: Phase 1C, must handle 100 employees × 50 locations in under 10 seconds, research shows greedy algorithm is sufficient for MVP.",
+      "expected_output": "Design Decision Document with Context, Options Evaluated (e.g., embedded algorithm vs. separate package vs. CSP solver), Recommendation with clear rationale, Sub-Decisions, Key Assumptions, Implementation Considerations, Database Schema with diagrams, Implementation Order, and Decision Log. Ready for team review and implementation planning.",
+      "files": ["docs/SPECIFICATIONS/prds/phase-1c-shift-assignment-engine.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a design decision document for the request management system. Analyze docs/SPECIFICATIONS/prds/phase-1d-request-management.md and store the output in docs/designs/request-management/. Don't scan codebase for this one. Key architectural question: should we build a generic state machine for approvals or hard-code request-type-specific workflows? We need to handle leave requests, work requests, and swap requests with different approval rules.",
+      "expected_output": "Design Decision Document comparing generic state machine vs. hard-coded workflows. Evaluate trade-offs between flexibility and simplicity. Include Sub-Decisions on validation, notification strategy, and audit trail. Provide schema diagram for request workflow. Implementation order with testing strategy and team readiness.",
+      "files": ["docs/SPECIFICATIONS/prds/phase-1d-request-management.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "We need to design the API for listing and filtering shifts across multiple locations and dates. Start with docs/SPECIFICATIONS/prds/phase-1b\prd-6.2-list-location-shifts.md as context. Store the design decision in docs/designs/location-shifts-api/. The main decision is: do we build REST endpoints per resource vs. a generic query builder vs. GraphQL? We need fast queries but also simple API contracts. Context: Phase 1B, following Handler → Service → Repository pattern, API responses should be cacheable.",
+      "expected_output": "Design Decision Document evaluating REST per-resource vs. generic query builder vs. GraphQL. Clear recommendation with trade-offs. Sub-Decisions on response format, pagination, filtering strategy, and caching approach. Architecture diagram showing integration with existing API. Implementation considerations including query performance and rollout plan.",
+      "files": ["docs/SPECIFICATIONS/prds/phase-1b/prd-6.2-list-location-shifts.md"]
+    }
+  ]
+}

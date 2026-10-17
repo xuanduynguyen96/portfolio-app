@@ -1,0 +1,100 @@
+/* Decorative effects: background grid + scanlines, glass surfaces, neon text, spotlight. */
+
+/* Background grid (fades toward edges) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgb(0 255 240 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 255 240 / 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 30%, transparent 100%);
+}
+
+/* Scanlines + ambient glow blobs */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px),
+    radial-gradient(40rem 30rem at 85% -5%, rgb(255 43 214 / 0.12), transparent 70%),
+    radial-gradient(40rem 30rem at 5% 20%, rgb(0 255 240 / 0.1), transparent 70%);
+}
+
+/* Glass surface */
+.glass {
+  position: relative;
+  background: var(--color-surface-glass);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition:
+    border-color var(--duration-base) var(--ease-out-expo),
+    background-color var(--duration-base) var(--ease-out-expo);
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: var(--color-bg-elevated);
+  }
+}
+
+/* Pointer spotlight: --spot-x/--spot-y set by card-spotlight.ts */
+.glass[data-spotlight]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    22rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
+    rgb(0 255 240 / 0.1),
+    transparent 60%
+  );
+  transition: opacity var(--duration-slow) var(--ease-out-expo);
+}
+
+.glass[data-spotlight]:hover {
+  border-color: var(--color-border-glow);
+  background-color: var(--color-surface-glass-hover);
+}
+
+.glass[data-spotlight]:hover::before {
+  opacity: 1;
+}
+
+/* Gradient neon text: decorative/large display text only. Solid color fallback first. */
+.neon-text {
+  color: var(--color-accent-cyan);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .neon-text {
+    background: linear-gradient(100deg, var(--color-accent-cyan) 10%, var(--color-accent-magenta) 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+.glow-cyan {
+  text-shadow: 0 0 18px rgb(0 255 240 / 0.45);
+}
+
+/* Mono eyebrow label, e.g. "// 01 about" */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--color-accent-cyan);
+}

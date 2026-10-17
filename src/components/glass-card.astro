@@ -1,0 +1,22 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'div'> & {
+  /** Rendered element; use 'article' or 'li' when semantically appropriate. */
+  as?: 'div' | 'article' | 'li';
+  /** Pointer-follow spotlight on hover (see card-spotlight.ts). */
+  spotlight?: boolean;
+};
+
+const { as: Tag = 'div', spotlight = true, class: className, ...rest } = Astro.props;
+---
+
+<Tag class:list={['glass', 'glass-card', className]} data-spotlight={spotlight ? '' : undefined} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .glass-card {
+    padding: var(--space-6);
+  }
+</style>

@@ -1,0 +1,23 @@
+---
+import TagChip from './tag-chip.astro';
+
+interface Props {
+  tags: string[];
+  /** Accessible list label, e.g. "Technologies" */
+  label: string;
+}
+
+const { tags, label } = Astro.props;
+---
+
+<ul class="tag-list" role="list" aria-label={label}>
+  {tags.map((tag) => <TagChip label={tag} />)}
+</ul>
+
+<style>
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+</style>

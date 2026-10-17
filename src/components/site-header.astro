@@ -1,0 +1,194 @@
+---
+import { siteConfig } from '../data/site-config';
+import { withBasePath } from '../utils/with-base-path';
+
+const initials = siteConfig.name
+  .split(/\s+/)
+  .map((word) => word.charAt(0).toUpperCase())
+  .join('');
+
+const navItems = [
+  { label: 'About', href: withBasePath('/#about') },
+  { label: 'Skills', href: withBasePath('/#skills') },
+  { label: 'Projects', href: withBasePath('/#projects') },
+  { label: 'Experience', href: withBasePath('/#experience') },
+  { label: 'Contact', href: withBasePath('/#contact') },
+];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo mono" href={withBasePath('/')} aria-label="Home">
+      <span aria-hidden="true">&lt;</span>{initials}<span aria-hidden="true">/&gt;</span>
+    </a>
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-menu-toggle
+    >
+      <span class="visually-hidden">Menu</span>
+      <span class="menu-icon" aria-hidden="true"></span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Primary" data-menu>
+      <ul role="list">
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  import '../scripts/mobile-menu';
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: rgb(5 7 13 / 0.72);
+    border-bottom: 1px solid var(--color-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: 4rem;
+  }
+
+  .logo {
+    color: var(--color-text);
+    font-weight: 700;
+    letter-spacing: var(--tracking-mono);
+    text-decoration: none;
+  }
+
+  .logo span {
+    color: var(--color-accent-cyan);
+  }
+
+  .site-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+  }
+
+  .site-nav a {
+    position: relative;
+    display: inline-block;
+    padding-block: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    transition: color var(--duration-fast) ease-out;
+  }
+
+  .site-nav a::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0.25rem;
+    height: 1px;
+    background: var(--color-accent-cyan);
+    box-shadow: var(--shadow-glow-cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-out-expo);
+  }
+
+  .site-nav a:hover,
+  .site-nav a:focus-visible {
+    color: var(--color-text);
+  }
+
+  .site-nav a:hover::after,
+  .site-nav a:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  .menu-toggle {
+    display: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after {
+    display: block;
+    width: 1.125rem;
+    height: 2px;
+    background: var(--color-accent-cyan);
+    border-radius: 1px;
+    transition: transform var(--duration-base) var(--ease-out-expo);
+  }
+
+  .menu-icon {
+    position: relative;
+  }
+
+  .menu-icon::before,
+  .menu-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .menu-icon::before {
+    transform: translateY(-6px);
+  }
+
+  .menu-icon::after {
+    transform: translateY(6px);
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-icon {
+    background: transparent;
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-icon::before {
+    transform: rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-icon::after {
+    transform: rotate(-45deg);
+  }
+
+  /* html[data-menu-enhanced] is set before paint by base-layout (no-JS: nav always visible). */
+  @media (max-width: 47.99rem) {
+    :global(html[data-menu-enhanced]) .menu-toggle {
+      display: grid;
+    }
+
+    :global(html[data-menu-enhanced]) .site-nav {
+      display: none;
+      flex-basis: 100%;
+      padding-bottom: var(--space-4);
+    }
+
+    :global(html[data-menu-enhanced]) .site-nav[data-open] {
+      display: block;
+    }
+
+    :global(html[data-menu-enhanced]) .site-nav ul {
+      flex-direction: column;
+    }
+  }
+</style>

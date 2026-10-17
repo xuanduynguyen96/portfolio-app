@@ -1,0 +1,125 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/base-layout.astro';
+import NeonButton from '../../components/neon-button.astro';
+import TagList from '../../components/tag-list.astro';
+import { siteConfig } from '../../data/site-config';
+import { withBasePath } from '../../utils/with-base-path';
+
+export const getStaticPaths = (async () => {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, tags, cover, coverAlt, repoUrl, demoUrl } = project.data;
+const { Content } = await render(project);
+---
+
+<BaseLayout title={`${title} | ${siteConfig.name}`} description={summary}>
+  <article class="project-detail container" aria-labelledby="project-title">
+    <a class="back-link mono" href={withBasePath('/#projects')}>← All projects</a>
+    <header class="project-header">
+      <p class="eyebrow">Case study</p>
+      <h1 id="project-title" transition:name={`project-title-${project.id}`}>{title}</h1>
+      <p class="project-summary">{summary}</p>
+      <TagList tags={tags} label="Technologies" />
+      <div class="project-actions">
+        {repoUrl && <NeonButton href={repoUrl} external>View code ↗</NeonButton>}
+        {demoUrl && <NeonButton href={demoUrl} variant="ghost" external>Live demo ↗</NeonButton>}
+      </div>
+    </header>
+    {
+      cover && (
+        <Image
+          class="project-cover glass"
+          src={cover}
+          alt={coverAlt}
+          width={1200}
+          height={675}
+          loading="eager"
+          transition:name={`project-cover-${project.id}`}
+        />
+      )
+    }
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .project-detail {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-7) var(--space-section);
+  }
+
+  .back-link {
+    width: fit-content;
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .project-header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
+    letter-spacing: -0.03em;
+  }
+
+  .project-summary {
+    max-width: 44rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .project-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    padding: 0;
+  }
+
+  .prose {
+    display: grid;
+    gap: var(--space-4);
+    max-width: 44rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .prose :global(h2) {
+    margin-top: var(--space-5);
+    color: var(--color-text);
+    font-size: var(--text-h3);
+  }
+
+  .prose :global(ul) {
+    padding-left: var(--space-5);
+  }
+
+  .prose :global(code) {
+    color: var(--color-accent-cyan);
+    font-size: 0.9em;
+  }
+</style>

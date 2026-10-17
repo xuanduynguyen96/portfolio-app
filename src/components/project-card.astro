@@ -1,0 +1,103 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import TagList from './tag-list.astro';
+import { withBasePath } from '../utils/with-base-path';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, summary, tags, cover, coverAlt, repoUrl, demoUrl } = project.data;
+const detailHref = withBasePath(`/projects/${project.id}/`);
+---
+
+<article class="glass project-card" data-spotlight data-reveal>
+  {
+    cover && (
+      <Image
+        class="project-cover"
+        src={cover}
+        alt={coverAlt}
+        width={600}
+        height={338}
+        loading="lazy"
+        transition:name={`project-cover-${project.id}`}
+      />
+    )
+  }
+  <div class="project-body">
+    <h3 transition:name={`project-title-${project.id}`}>
+      <a href={detailHref}>{title}</a>
+    </h3>
+    <p class="project-summary">{summary}</p>
+    <TagList tags={tags} label={`${title} technologies`} />
+    <p class="project-links mono">
+      <a href={detailHref} aria-label={`Read case study: ${title}`}>Case study →</a>
+      {
+        repoUrl && (
+          <a href={repoUrl} target="_blank" rel="noopener noreferrer" aria-label={`${title} source code (opens in new tab)`}>
+            Code ↗
+          </a>
+        )
+      }
+      {
+        demoUrl && (
+          <a href={demoUrl} target="_blank" rel="noopener noreferrer" aria-label={`${title} live demo (opens in new tab)`}>
+            Live ↗
+          </a>
+        )
+      }
+    </p>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .project-cover {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .project-body {
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--space-5);
+  }
+
+  h3 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    color: var(--color-accent-cyan);
+  }
+
+  .project-summary {
+    color: var(--color-text-muted);
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    font-size: var(--text-sm);
+  }
+
+  .project-links a {
+    text-decoration: none;
+  }
+
+  .project-links a:hover {
+    text-decoration: underline;
+  }
+</style>

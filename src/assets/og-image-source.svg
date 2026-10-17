@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="t" x1="0" x2="1"><stop offset="0" stop-color="#00fff0"/><stop offset="1" stop-color="#ff2bd6"/></linearGradient>
+    <radialGradient id="g1" cx=".9" cy="0" r=".6"><stop offset="0" stop-color="#ff2bd6" stop-opacity=".25"/><stop offset="1" stop-color="#ff2bd6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="g2" cx=".05" cy=".3" r=".6"><stop offset="0" stop-color="#00fff0" stop-opacity=".2"/><stop offset="1" stop-color="#00fff0" stop-opacity="0"/></radialGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse"><path d="M48 0H0V48" fill="none" stroke="#00fff0" stroke-opacity=".08"/></pattern>
+  </defs>
+  <rect width="1200" height="630" fill="#05070d"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <rect width="1200" height="630" fill="url(#g1)"/>
+  <rect width="1200" height="630" fill="url(#g2)"/>
+  <text x="96" y="200" font-family="DejaVu Sans Mono, monospace" font-size="30" fill="#00fff0" letter-spacing="4">// PORTFOLIO</text>
+  <text x="96" y="330" font-family="DejaVu Sans, sans-serif" font-weight="bold" font-size="92" fill="#e6fbff">Xuan Duy Nguyen</text>
+  <text x="96" y="420" font-family="DejaVu Sans Mono, monospace" font-weight="bold" font-size="46" fill="url(#t)">Software Engineer</text>
+  <rect x="96" y="480" width="220" height="4" rx="2" fill="url(#t)"/>
+</svg>

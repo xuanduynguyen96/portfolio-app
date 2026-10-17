@@ -5,7 +5,8 @@ import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
 const TOKEN = process.env.PROBE_TOKEN ?? '';
 const LABEL = process.env.PROBE_LABEL ?? 'GITHUB_TOKEN';
 const OWNER = 'xuanduynguyen96';
-const COMPARE = ['mitchellh', 'jakevdp', 'sindresorhus'];
+const COMPARE = (process.env.PROBE_LOGINS ?? 'mitchellh,jakevdp,sindresorhus').split(',');
+const SKIP_OWNER = process.env.PROBE_SKIP_OWNER === '1';
 const OUT = `spike-output/${LABEL.toLowerCase()}`;
 const summary: string[] = [];
 const log = (line: string) => { console.log(line); summary.push(line); };
@@ -34,12 +35,12 @@ const REPO_FIELDS = `
   workflows: object(expression: "HEAD:.github/workflows") { ... on Tree { entries { name } } }
 `;
 
-const PROFILE = `query($login: String!, $after: String) {
+const PROFILE = `query($login: String!, $after: String, $first: Int!) {
   rateLimit { cost remaining limit used resetAt }
   user(login: $login) {
     login createdAt
     pinnedItems(first: 6, types: REPOSITORY) { nodes { ... on Repository { nameWithOwner isPrivate } } }
-    repositories(first: 50, after: $after, ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC,
+    repositories(first: $first, after: $after, ownerAffiliations: OWNER, isFork: false, privacy: PUBLIC,
                  orderBy: { field: PUSHED_AT, direction: DESC }) {
       totalCount pageInfo { hasNextPage endCursor } nodes { ${REPO_FIELDS} }
     }
@@ -76,7 +77,12 @@ function years(createdAt: string, now: Date): { from: string; to: string }[] {
 
 async function probe(login: string, allYears: boolean) {
   const raw: Record<string, unknown> = {};
-  const p = await gql(PROFILE, { login, after: null });
+  let p = await gql(PROFILE, { login, after: null, first: 50 });
+  for (const first of [25, 10]) {
+    if (p.status < 500) break;
+    log(`- profile HTTP ${p.status} at larger page; retrying with first=${first}`);
+    p = await gql(PROFILE, { login, after: null, first });
+  }
   raw.profile = p;
   const user = p.json?.data?.user;
   log(`\n### ${login}\n- profile HTTP ${p.status}; errors: ${JSON.stringify(p.json?.errors ?? null)}`);
@@ -114,7 +120,7 @@ async function probe(login: string, allYears: boolean) {
 mkdirSync(OUT, { recursive: true });
 log(`## Probe with ${LABEL} (token present: ${TOKEN.length > 0})`);
 if (TOKEN) {
-  await probe(OWNER, true);
+  if (!SKIP_OWNER) await probe(OWNER, true);
   for (const login of COMPARE) await probe(login, false);
   const rl = await gql('{ rateLimit { cost remaining limit used resetAt } viewer { login } }', {});
   log(`\n- final rateLimit + viewer: HTTP ${rl.status} ${JSON.stringify(rl.json)}`);

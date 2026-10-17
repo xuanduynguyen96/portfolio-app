@@ -25,6 +25,8 @@ jobs:
         env:
           PROBE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PROBE_LABEL: GITHUB_TOKEN
+          PROBE_SKIP_OWNER: '1'
+          PROBE_LOGINS: mitchellh,spf13
 
       - name: Probe with PAT if configured
         run: node scripts/spike/probe-github-graphql.ts
@@ -32,7 +34,12 @@ jobs:
           PROBE_TOKEN: ${{ secrets.GH_SNAPSHOT_PAT }}
           PROBE_LABEL: PAT
 
-      - name: V8 dispatch deploy workflow (verify job only on non-master ref)
+      - name: V8 dispatch (skipped on rerun)
+        if: false
+        run: true
+
+      - name: V8 dispatch-original
+        if: false deploy workflow (verify job only on non-master ref)
         run: |
           set +e
           gh workflow run deploy-to-github-pages.yml --ref "$GITHUB_REF_NAME"

@@ -6,7 +6,7 @@ Reviewer: code-reviewer agent, 2026-10-17. Scope: phases 01-07 (~3.6k lines). Cr
 | # | Sev | Finding | Status |
 |---|---|---|---|
 | H1 | High | Evidence dedupe bypass via query/`www.`/case/trailing dot/`index.html` | **Fixed**: coarse key (lowercase host+path, no query/hash/www/dot/index) + tests |
-| H2 | High | Placeholder metrics render as speedrun achievements; master deploys them | **Open: user decision** (deploy gate vs "sample data" label) |
+| H2 | High | Placeholder metrics render as speedrun achievements; master deploys them | **Fixed (user choice)**: per-quest `isSample` -> "Sample data" note + "Sample" tags on /speedrun/ |
 | M1 | Med | Word gate padding (`a a a`, hidden spans, link defs) | **Fixed**: `minUniqueWords: 80`, strip hidden els + link defs, new `body-too-repetitive` status |
 | M2 | Med | One URL levels many skill nodes | **Fixed**: build fails when a URL (normalized) is reused across skills |
 | M3 | Med | Duplicate skill in a quest -> duplicate "Proven in" links | **Fixed**: `skill listed twice` rule |
@@ -23,6 +23,5 @@ Reviewer: code-reviewer agent, 2026-10-17. Scope: phases 01-07 (~3.6k lines). Cr
 Strict schemas + aggregated named rule errors; https enforced twice; safe external links; native progress/details; nested-list tree; no-JS + reduced-motion tested; UTC-deterministic dates; tier decay + caps; deterministic boss-first URL claim; CI schedule correct.
 
 ## Unresolved questions
-1. H2: deploy-only placeholder gate (fail build when placeholders remain) or visible "sample data" label on /speedrun/?
-2. M9/Q5: cross-check changelog dates vs git history in CI, or keep as honour system?
-3. HUD public once 100% (plan Q1)?
+1. M9/Q5: cross-check changelog dates vs git history in CI, or keep as honour system?
+2. HUD public once 100% (plan Q1)?

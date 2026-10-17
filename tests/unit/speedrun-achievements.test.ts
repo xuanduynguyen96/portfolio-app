@@ -28,7 +28,7 @@ describe('pickTopAchievements', () => {
       new Set(),
     );
     const picked = pickTopAchievements(quests, 3);
-    assert.deepEqual(picked[1], { questId: 'boss', questTitle: 'boss', label: 'Bundle', value: 12, unit: 'KB' });
+    assert.deepEqual(picked[1], { questId: 'boss', questTitle: 'boss', label: 'Bundle', value: 12, unit: 'KB', isSample: false });
     assert.equal('unit' in picked[2], false);
   });
 
@@ -42,6 +42,17 @@ describe('pickTopAchievements', () => {
       new Set(),
     );
     assert.deepEqual(pickTopAchievements(quests, 3).map((item) => item.questId), ['boss']);
+  });
+
+  it('marks metrics from placeholder quests as sample data', () => {
+    const quests = scoreQuests(
+      [bossQuest({ id: 'boss', isSample: true }), quest({ id: 'real', featured: true, metrics: [metric('Users', 5)] })],
+      new Set(),
+    );
+    assert.deepEqual(
+      pickTopAchievements(quests, 3).map((item) => [item.questId, item.isSample]),
+      [['boss', true], ['real', false]],
+    );
   });
 
   it('returns fewer (or none) without throwing when metrics run out', () => {

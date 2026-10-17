@@ -30,6 +30,8 @@ export interface QuestInput {
   evidence: Evidence[];
   /** Markdown case-study body. */
   body: string;
+  /** Source file still carries the placeholder marker: its metrics are sample data. */
+  isSample: boolean;
 }
 
 export interface SkillNodeInput {
@@ -134,6 +136,8 @@ export interface Achievement {
   label: string;
   value: number;
   unit?: string;
+  /** From a quest whose content is still placeholder (shown with a "sample data" label). */
+  isSample: boolean;
 }
 
 export interface CareerState {

@@ -24,6 +24,7 @@ export function pickTopAchievements(quests: readonly ScoredQuest[], count: numbe
         label: metric.label,
         value: metric.value,
         ...(metric.unit === undefined ? {} : { unit: metric.unit }),
+        isSample: quest.isSample,
       });
     }
   }

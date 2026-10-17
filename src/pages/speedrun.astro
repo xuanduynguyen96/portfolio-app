@@ -1,10 +1,9 @@
 ---
 import BaseLayout from '../layouts/base-layout.astro';
-import GlassCard from '../components/glass-card.astro';
+import AchievementCard from '../components/career-rpg/achievement-card.astro';
 import NeonButton from '../components/neon-button.astro';
 import { siteConfig } from '../data/site-config';
 import { xpRules } from '../data/xp-rules';
-import { formatMetricValue } from '../utils/career-rpg/format-metric';
 import { formatClock } from '../utils/career-rpg/countdown-clock';
 import { loadCareerState } from '../utils/career-rpg/load-career-state';
 import { withBasePath } from '../utils/with-base-path';
@@ -14,6 +13,7 @@ const { status, note } = siteConfig.availability;
 const statusLabel = { open: 'Open to work', limited: 'Limited availability', closed: 'Not available' }[status];
 const seconds = xpRules.speedrun.countdownSeconds;
 const startClock = formatClock(seconds);
+const hasSample = achievements.some((achievement) => achievement.isSample);
 ---
 
 <BaseLayout
@@ -43,16 +43,18 @@ const startClock = formatClock(seconds);
     <section class="speedrun-block" aria-labelledby="achievements-title">
       <h2 id="achievements-title">Top achievements</h2>
       {
+        hasSample && (
+          <p class="sample-note mono">
+            <strong>Sample data:</strong> metrics marked “Sample” come from placeholder projects and are not real
+            results yet.
+          </p>
+        )
+      }
+      {
         achievements.length > 0 ? (
           <ol class="achievements" role="list">
             {achievements.map((achievement) => (
-              <GlassCard as="li" class="achievement" data-reveal>
-                <p class="achievement-value neon-text">{formatMetricValue(achievement)}</p>
-                <p class="achievement-label">{achievement.label}</p>
-                <p class="achievement-quest mono">
-                  <a href={withBasePath(`/projects/${achievement.questId}/`)}>{achievement.questTitle} →</a>
-                </p>
-              </GlassCard>
+              <AchievementCard achievement={achievement} />
             ))}
           </ol>
         ) : (
@@ -152,22 +154,17 @@ const startClock = formatClock(seconds);
     gap: var(--space-5);
   }
 
-  .achievement {
-    display: grid;
-    align-content: start;
-    gap: var(--space-2);
-  }
-
-  .achievement-value {
-    width: fit-content;
-    font-size: var(--text-h2);
-    font-weight: 700;
-    line-height: var(--leading-tight);
-  }
-
-  .achievement-quest,
   .speedrun-empty {
     color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .sample-note {
+    max-width: 44rem;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-accent-magenta);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
     font-size: var(--text-sm);
   }
 

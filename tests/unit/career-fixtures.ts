@@ -23,6 +23,7 @@ export function quest(overrides: Partial<QuestInput> & { id: string }): QuestInp
     metrics: [],
     evidence: [{ type: 'repo', url: `https://github.com/example-user/${overrides.id}` }],
     body: words(200),
+    isSample: false,
     ...overrides,
   };
 }

@@ -1,5 +1,6 @@
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import { xpRules } from '../../src/data/xp-rules';
+import { PLACEHOLDER_MARKER, xpRules } from '../../src/data/xp-rules';
 import { siteConfig } from '../../src/data/site-config';
 import { SITE_NAME, trackPageErrors } from './test-helpers';
 
@@ -19,11 +20,19 @@ test.describe('recruiter speedrun', () => {
     const count = await cards.count();
     expect(count).toBeGreaterThan(0);
     expect(count).toBeLessThanOrEqual(xpRules.speedrun.achievements);
+    let anySample = false;
     for (const card of await cards.all()) {
       await expect(card.locator('.achievement-value')).toHaveText(/\d/);
       await expect(card.locator('.achievement-label')).not.toBeEmpty();
-      await expect(card.getByRole('link')).toHaveAttribute('href', /^\/portfolio-app\/projects\/[a-z0-9-]+\/$/);
+      const href = (await card.getByRole('link').getAttribute('href')) ?? '';
+      expect(href).toMatch(/^\/portfolio-app\/projects\/[a-z0-9-]+\/$/);
+      // Metrics from placeholder project files must be labelled as sample data.
+      const slug = href.split('/').at(-2);
+      const isSample = readFileSync(`src/content/projects/${slug}.md`, 'utf8').includes(PLACEHOLDER_MARKER);
+      anySample ||= isSample;
+      await expect(card.locator('.sample-tag')).toHaveCount(isSample ? 1 : 0);
     }
+    await expect(page.locator('.sample-note')).toHaveCount(anySample ? 1 : 0);
 
     const next = page.getByRole('region', { name: 'Next step' });
     await expect(next.getByRole('link', { name: 'Email me' })).toHaveAttribute('href', `mailto:${siteConfig.email}`);

@@ -5,6 +5,7 @@ import { z } from 'astro/zod';
 import { skillNodeSchema } from '../../data/career-schemas';
 import { siteConfig } from '../../data/site-config';
 import { skillNodes } from '../../data/skills-data';
+import { PLACEHOLDER_MARKER } from '../../data/xp-rules';
 import { buildCareerState } from './build-career-state';
 import type { CareerState } from './career-types';
 import { resolveBuildNow } from './resolve-build-now';
@@ -31,6 +32,7 @@ async function build(): Promise<CareerState> {
       metrics: project.data.metrics,
       evidence: project.data.evidence,
       body: project.body ?? '',
+      isSample: rawSources[`/${project.filePath}`]?.includes(PLACEHOLDER_MARKER) ?? false,
     })),
     // Strict parse: a hand-set `xp`/`level` key on a skill node fails the build.
     skills: z.array(skillNodeSchema).parse(skillNodes),

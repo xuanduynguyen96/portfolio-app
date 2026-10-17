@@ -1,6 +1,6 @@
 # Plan: Career RPG gamification layer (additive)
 
-Created: 2026-10-17 · Status: **Phases 01-08 done; 09 (docs) awaiting user approval** · Reports: [tester](reports/02-tester-report.md), [review](reports/03-code-review-report.md) · Scout: [reports/01-codebase-scout-report.md](reports/01-codebase-scout-report.md) · Prior plan: [../20261017-0254-astro-portfolio-implementation/plan.md](../20261017-0254-astro-portfolio-implementation/plan.md)
+Created: 2026-10-17 · Status: **Done (user approved 2026-10-17)** · Reports: [tester](reports/02-tester-report.md), [review](reports/03-code-review-report.md) · Scout: [reports/01-codebase-scout-report.md](reports/01-codebase-scout-report.md) · Prior plan: [../20261017-0254-astro-portfolio-implementation/plan.md](../20261017-0254-astro-portfolio-implementation/plan.md)
 
 ## Goal
 Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Quests + Boss Battle, Skill Tree, Recruiter Speedrun `/speedrun/`, Consistency Streak (changelog), HUD completeness. Additive: reuse `glass-card`, `section-heading`, tag/token styles. No backend, no reskin.
@@ -30,7 +30,7 @@ Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Qu
 | 06 | [Streak, changelog page, scheduled build](phase-06-streak-changelog-scheduled-build.md) | P1 | S | Done | 100% |
 | 07 | [Recruiter Speedrun route](phase-07-recruiter-speedrun-route.md) | P0 | S | Done | 100% |
 | 08 | [E2E, a11y, perf verification](phase-08-e2e-a11y-perf-verification.md) | P0 | M | Done | 100% |
-| 09 | [Docs update](phase-09-docs-update.md) | P1 | S | Planned | 0% |
+| 09 | [Docs update](phase-09-docs-update.md) | P1 | S | Done | 100% |
 
 ## Dependencies
 ```
@@ -51,6 +51,10 @@ Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Qu
 - Lighthouse >=95 all categories (home, project, speedrun), CLS 0
 - All files <200 lines, kebab-case; docs + README updated
 - Weekly cron build present; no secrets added
+
+## Post-review decisions (user)
+- Placeholder metrics: **"Sample data" label** on /speedrun/ (per quest, from placeholder marker in its source); no deploy gate
+- Docs: approved -> phase 09
 
 ## Unresolved Questions
 1. HUD completeness public to recruiters, or hide behind `siteConfig` flag once 100%/in prod? (default: shown)

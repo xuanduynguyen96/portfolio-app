@@ -1,0 +1,48 @@
+# SPIKE ONLY (plan phase 00). Never merged; branch deleted after the report.
+name: Spike GitHub GraphQL probe
+
+on:
+  push:
+    branches: ['spike/**']
+    paths-ignore: ['spike-output/**']
+
+permissions:
+  contents: write # commit public probe output back to this spike branch
+  actions: write # V8: dispatch another workflow with GITHUB_TOKEN
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: Probe with GITHUB_TOKEN (V1-V7, V9)
+        run: node scripts/spike/probe-github-graphql.ts
+        env:
+          PROBE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROBE_LABEL: GITHUB_TOKEN
+
+      - name: Probe with PAT if configured
+        run: node scripts/spike/probe-github-graphql.ts
+        env:
+          PROBE_TOKEN: ${{ secrets.GH_SNAPSHOT_PAT }}
+          PROBE_LABEL: PAT
+
+      - name: V8 dispatch deploy workflow (verify job only on non-master ref)
+        run: |
+          set +e
+          gh workflow run deploy-to-github-pages.yml --ref "$GITHUB_REF_NAME"
+          echo "- V8 gh workflow run exit code: $?" | tee -a "$GITHUB_STEP_SUMMARY"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Commit probe output to spike branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add spike-output
+          git commit -m 'spike: probe output' && git push

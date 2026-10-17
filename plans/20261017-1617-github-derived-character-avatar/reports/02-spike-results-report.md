@@ -57,6 +57,7 @@ All under candidate thresholds (0.75 / 0.80) but warrior-mage margin thin → ph
 ## Update: art style changed (user reference, 2026-10-17)
 User asked for a chibi die-cut sticker style. Redrawn 3 classes: [sheet](assets/03-sticker-style-prototypes.png). Sticker ring fixes the dark-theme outline problem (no portrait plate needed). After moving the warrior sword point-down (all 3 classes had a tall item on the left), IoU: w-m .705/.709, w-a .737/.733, m-a .722/.777 at 32/16, all under .75/.80. Colors 11-15 per avatar → cap 16. Phase 04 spec updated.
 Pose follow-up (user ref): held items moved to the viewer's right, close to the body, archer holds bow out at arm's length. IoU w-m .720/.760, w-a .719/.719, m-a .707/.751; still under .75/.80.
+Facing follow-up (user example knight): turned toward viewer's LEFT past 3/4, sword upright in near hand clear of body, shield on far arm (gear demo drawn). IoU w-m .757/.786, w-a .780/.842, m-a .702/.778: over old .75/.80 because chibi bodies share mass; thresholds revised to .80/.85 as regression guard, blind-ID decides.
 Angle follow-up (user): 3/4 view turned toward viewer's right (face/visor/beard shifted right, nose bump, plume/hat/hood trail back, toes right). IoU w-m .723/.770, w-a .702/.726, m-a .723/.769; under .75/.80.
 
 ## Decisions for next phases

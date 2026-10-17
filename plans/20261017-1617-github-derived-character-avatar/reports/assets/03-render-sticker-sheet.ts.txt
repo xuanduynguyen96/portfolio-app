@@ -1,10 +1,10 @@
 // Sticker sheet: 2px rounded die-cut ring on padded 36x36 canvas, grid-paper + dungeon backgrounds, IoU.
 import { writeFileSync } from 'node:fs';
-import { N, archer, mage, warrior, type Grid } from './sticker-prototypes.ts';
+import { N, archer, mage, warrior, warriorWithShield, type Grid } from './sticker-prototypes.ts';
 
 const C: Record<string, string> = {
   o: '#2a1f1d', s: '#e9b58f', S: '#c78c6c', p: '#e08f7a', h: '#7a5232', H: '#53371f',
-  k: '#c9ccd1', i: '#9a9ea6', I: '#676b74', y: '#d9a441', Y: '#9c6e24',
+  k: '#b4b9c1', i: '#7f858f', I: '#535862', y: '#d9a441', Y: '#9c6e24',
   r: '#b5473a', R: '#7a2c26', c: '#7d9db3', u: '#557a91', U: '#3b5868', e: '#cfc8ba', E: '#9e978a',
   f: '#8fa865', g: '#6b8447', G: '#4a5e31', l: '#8f5f3a', L: '#5f3d24', w: '#946238', W: '#64401f',
   a: '#86d6e3', A: '#3f98ad', x: '#ffffff', '#': '#fbf7ee',
@@ -34,7 +34,7 @@ function svg(g: Grid, size: number, sil = false) {
   }
   return `<svg viewBox="0 0 ${n} ${n}" width="${size}" height="${size}" shape-rendering="crispEdges" style="filter:drop-shadow(0 ${size / 40}px ${size / 40}px rgb(0 0 0/.25))">${d}</svg>`;
 }
-const looks: Record<string, Grid> = { warrior: warrior(), mage: mage(), archer: archer() };
+const looks: Record<string, Grid> = { warrior: warrior(), mage: mage(), archer: archer(), 'warrior+shield': warriorWithShield() };
 const names = Object.keys(looks);
 const mask = (g: Grid) => g.map((r) => r.map((c) => c !== '.'));
 const pool = (m: boolean[][]) => Array.from({ length: N / 2 }, (_, y) => Array.from({ length: N / 2 }, (_, x) =>

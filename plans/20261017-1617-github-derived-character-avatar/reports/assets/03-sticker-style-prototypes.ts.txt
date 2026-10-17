@@ -31,81 +31,95 @@ export function outline(g: Grid): Grid {
   return out;
 }
 
-// 3/4 view facing the viewer's right: face shifted right, nose bump, back of head on the left, toes right.
+// Turned toward the viewer's LEFT (user example): face/visor on the left, back of head on the right,
+// plume/hat tip/hood point trail right, weapon upright in the near (left) hand, shield slot on the far (right) arm.
 function face(g: Grid, eyeY: number) {
-  px(g, 'o', [[15, eyeY], [15, eyeY + 1], [19, eyeY], [19, eyeY + 1]]);
-  px(g, 'p', [[14, eyeY + 2], [20, eyeY + 2]]); // blush
-  px(g, 's', [[22, eyeY + 1]]); // nose bump past the far cheek
+  px(g, 'o', [[11, eyeY], [11, eyeY + 1], [15, eyeY], [15, eyeY + 1]]); // far eye near the edge
+  px(g, 'p', [[10, eyeY + 2], [16, eyeY + 2]]);
+  px(g, 's', [[9, eyeY + 1]]); // nose bump
 }
 function legsAndBoots(g: Grid, leg: string) {
-  rect(g, 12, 25, 3, 3, leg); rect(g, 18, 25, 3, 3, leg);
-  shaded(g, 12, 28, 4, 3, 'llL'); shaded(g, 18, 28, 4, 3, 'llL'); // toes point right
+  rect(g, 11, 25, 3, 3, leg); rect(g, 17, 25, 3, 3, leg);
+  shaded(g, 10, 28, 4, 3, 'llL'); shaded(g, 16, 28, 4, 3, 'llL'); // toes point left
 }
 
 export function warrior(): Grid {
   const g = blank();
-  rows(g, 9, 0, ['   rrr', ' rrrR ', 'rRR   ']); // plume trails back
-  shaded(g, 10, 3, 12, 12, 'kiI'); px(g, '.', [[10, 3], [21, 3]]);
-  rect(g, 11, 4, 2, 9, 'k'); px(g, 'I', [[12, 9], [12, 10], [12, 11]]); // side of helm + hinge
-  rect(g, 14, 7, 8, 1, 'y'); rect(g, 14, 8, 8, 1, 'o'); rect(g, 18, 9, 2, 4, 'o'); // T visor shifted right
-  px(g, 'Y', [[17, 9], [17, 10], [17, 11], [17, 12], [20, 9], [20, 10], [20, 11], [20, 12]]);
-  shaded(g, 11, 15, 10, 9, 'kiI');
-  shaded(g, 6, 14, 6, 4, 'kiI'); shaded(g, 20, 14, 4, 3, 'kiI'); // near pauldron big, far small
-  shaded(g, 16, 17, 4, 7, 'rrR'); // tabard shifted right
-  rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[17, 23], [18, 23]]);
-  rect(g, 9, 18, 2, 3, 'i'); rect(g, 8, 21, 3, 2, 'I');
+  rows(g, 17, 0, ['  rr   ', ' rrrR  ', '  rrRR ', '    RRR', '     RR']); // plume trails back
+  shaded(g, 10, 3, 12, 12, 'kiI'); px(g, '.', [[10, 3], [21, 3], [10, 14]]);
+  rect(g, 10, 7, 8, 1, 'y'); rect(g, 10, 8, 7, 1, 'o'); rect(g, 10, 9, 8, 1, 'Y'); px(g, 'y', [[17, 8]]); // visor on the front
+  rect(g, 19, 6, 1, 7, 'I'); // back plate seam
+  shaded(g, 11, 15, 10, 8, 'kiI');
+  rect(g, 11, 14, 8, 1, 'o'); // neck shadow separates helm from chest
+  shaded(g, 18, 14, 4, 3, 'iiI'); // far pauldron
+  rect(g, 11, 22, 10, 1, 'L'); px(g, 'y', [[13, 22], [14, 22]]);
+  shaded(g, 12, 23, 3, 4, 'rrR'); // tabard flap at the front
   legsAndBoots(g, 'I');
-  shaded(g, 22, 18, 4, 3, 'iiI'); // sword fist
-  rect(g, 21, 21, 7, 1, 'y'); rect(g, 21, 22, 7, 1, 'Y');
-  rect(g, 23, 23, 1, 7, 'k'); rect(g, 24, 23, 1, 8, 'i'); rect(g, 25, 23, 1, 7, 'I');
+  rect(g, 21, 17, 2, 4, 'I'); rect(g, 21, 21, 2, 2, 'I'); // far arm
+  shaded(g, 9, 14, 5, 3, 'kiI'); rect(g, 9, 17, 2, 2, 'i'); // near pauldron + arm
+  // sword upright in the near fist, held clear of the body
+  rect(g, 4, 6, 1, 11, 'k'); rect(g, 5, 5, 1, 12, 'i'); rect(g, 6, 6, 1, 11, 'I');
+  rect(g, 2, 17, 7, 1, 'y'); rect(g, 2, 18, 7, 1, 'Y');
+  shaded(g, 4, 19, 6, 3, 'iiI'); px(g, 'y', [[5, 22]]);
   return outline(g);
+}
+
+/** Demo gear layer: tier-2 shield on the far arm, seen at an angle (testing slot). */
+export function warriorWithShield(): Grid {
+  const g = warrior().map((r) => r.map((c) => c));
+  rows(g, 19, 14, [
+    '  yyyy   ', ' yiiiiy  ', 'yiiiiiiY ', 'yiiiiiIY ', 'yiiyiiIY ', 'yiyyyiIY ', 'yiiyiiIY ',
+    'yiiyiiIY ', 'yiiiiIIY ', ' yiiiIY  ', ' yYIIIY  ', '  YYYY   ',
+  ]);
+  return outline(g.map((r) => r.map((c) => (c === 'o' ? '.' : c))).map((r, y) => r.map((c, x) => (warrior()[y][x] === 'o' && c === '.' ? 'o' : c))));
 }
 
 export function mage(): Grid {
   const g = blank();
-  rows(g, 10, 0, ['uc    ', 'Uuuc  ', ' Uuuc ']); // hat tip trails back
+  rows(g, 17, 0, ['    cu', '  cuuU', ' cuuU ']); // hat tip trails back
   rect(g, 14, 3, 5, 1, 'u'); rect(g, 13, 4, 6, 2, 'u'); rect(g, 12, 6, 8, 2, 'u');
-  px(g, 'c', [[13, 4], [13, 5], [12, 6], [12, 7]]); px(g, 'U', [[18, 3], [18, 4], [18, 5], [19, 6], [19, 7]]);
+  px(g, 'c', [[14, 3], [13, 4], [13, 5], [12, 6], [12, 7]]); px(g, 'U', [[18, 3], [18, 4], [18, 5], [19, 6], [19, 7]]);
   rect(g, 11, 8, 10, 1, 'y');
-  rect(g, 8, 9, 16, 1, 'U'); rect(g, 9, 9, 14, 1, 'u');
+  rect(g, 7, 9, 16, 1, 'U'); rect(g, 7, 9, 15, 1, 'u');
   rect(g, 10, 10, 12, 5, 's'); rect(g, 10, 10, 12, 1, 'S');
-  rect(g, 10, 10, 3, 5, 'e'); rect(g, 12, 10, 1, 5, 'E'); // hair at the back of the head
+  rect(g, 18, 10, 4, 5, 'e'); rect(g, 21, 10, 1, 5, 'E'); rect(g, 18, 10, 1, 5, 'E'); // hair at the back
   face(g, 11);
-  // robe first, beard on top (falls forward, shifted right)
   shaded(g, 11, 15, 10, 8, 'cuU');
-  rect(g, 11, 22, 10, 1, 'L'); px(g, 'y', [[18, 22], [19, 22]]);
+  rect(g, 11, 22, 10, 1, 'L'); px(g, 'y', [[12, 22], [13, 22]]);
   shaded(g, 10, 23, 12, 4, 'cuU'); shaded(g, 9, 27, 14, 3, 'cuU'); rect(g, 9, 29, 14, 1, 'U');
-  rows(g, 13, 13, [' eeeeeee  ', 'eeeeeeeeeE', 'eeeeeeeeEE', ' eeeeeeeE ', '  eeeeeE  ', '   eeeE   ', '    eE    ']);
-  px(g, 'E', [[17, 13], [18, 13]]);
-  rect(g, 12, 30, 3, 1, 'L'); rect(g, 18, 30, 4, 1, 'L');
-  rect(g, 9, 16, 2, 5, 'u'); rect(g, 21, 16, 2, 4, 'U'); rect(g, 9, 21, 2, 2, 's');
-  rect(g, 25, 6, 1, 25, 'w'); rect(g, 26, 6, 1, 25, 'W');
-  rows(g, 23, 0, ['  aa  ', ' axaa ', ' aaaA ', '  aA  ', ' y  y ', '  yy  ']);
-  rect(g, 22, 19, 4, 2, 's'); rect(g, 22, 19, 4, 1, 'S');
+  rows(g, 8, 13, ['  eeeeeee ', 'eeeeeeeeeE', 'eeeeeeeeEE', ' eeeeeeeE ', '  eeeeeE  ', '  eeeE    ', '  eE      ']); // beard forward
+  px(g, 'E', [[12, 13], [13, 13]]);
+  rect(g, 10, 30, 4, 1, 'L'); rect(g, 17, 30, 3, 1, 'L');
+  rect(g, 21, 16, 2, 5, 'U'); rect(g, 21, 21, 2, 2, 'S'); // far arm at the side
+  rect(g, 9, 16, 2, 3, 'u'); // near sleeve
+  rect(g, 5, 6, 1, 25, 'w'); rect(g, 6, 6, 1, 25, 'W');
+  rows(g, 3, 0, ['  aa  ', ' axaa ', ' aaaA ', '  aA  ', ' y  y ', '  yy  ']);
+  rect(g, 6, 19, 4, 2, 's'); rect(g, 6, 20, 4, 1, 'S');
   return outline(g);
 }
 
 export function archer(): Grid {
   const g = blank();
-  rows(g, 10, 0, ['f  ', 'ffg']); // hood point trails back
-  rect(g, 12, 2, 8, 1, 'g'); rect(g, 11, 3, 11, 1, 'g'); rect(g, 10, 4, 12, 11, 'g');
-  px(g, 'f', [[12, 2], [11, 3], [10, 4], [10, 5], [10, 6], [10, 7], [11, 4], [12, 3]]);
-  // face opening on the right; back of hood on the left with inner shadow
-  rect(g, 14, 6, 8, 8, 's'); rect(g, 14, 6, 8, 2, 'h'); rect(g, 14, 6, 8, 1, 'H'); px(g, 'h', [[14, 8]]);
-  rect(g, 13, 6, 1, 8, 'G'); rect(g, 13, 4, 9, 2, 'g'); rect(g, 14, 5, 8, 1, 'G');
+  rows(g, 19, 0, ['  g', 'gGG']); // hood point trails back
+  rect(g, 12, 2, 8, 1, 'g'); rect(g, 10, 3, 11, 1, 'g'); rect(g, 10, 4, 12, 11, 'g');
+  px(g, 'f', [[12, 2], [10, 3], [11, 3], [10, 4], [10, 5]]); rect(g, 21, 5, 1, 10, 'G');
+  // face opening on the left, back of hood on the right with inner shadow
+  rect(g, 10, 6, 8, 8, 's'); rect(g, 10, 6, 8, 2, 'h'); rect(g, 10, 6, 8, 1, 'H'); px(g, 'h', [[17, 8]]);
+  rect(g, 18, 6, 1, 8, 'G'); rect(g, 10, 4, 9, 2, 'g'); rect(g, 10, 5, 8, 1, 'G');
   face(g, 9);
   shaded(g, 9, 14, 14, 4, 'fgG'); px(g, '.', [[9, 17], [22, 17]]);
   shaded(g, 11, 18, 10, 6, 'fgG');
-  px(g, 'L', [[13, 18], [14, 19], [15, 20], [16, 21], [17, 22], [18, 22]]);
-  rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[17, 23], [18, 23]]);
-  rect(g, 9, 18, 2, 2, 'g'); rect(g, 9, 20, 2, 2, 'l'); rect(g, 9, 22, 2, 2, 's');
+  px(g, 'L', [[19, 18], [18, 19], [17, 20], [16, 21], [15, 22], [14, 22]]);
+  rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[12, 23], [13, 23]]);
+  rect(g, 21, 18, 2, 2, 'G'); rect(g, 21, 20, 2, 2, 'L'); rect(g, 21, 22, 2, 2, 'S'); // far arm at the side
   legsAndBoots(g, 'H');
-  rows(g, 25, 3, [
-    'w     ', 'Ww    ', ' Ww   ', '  Ww  ', '   Ww ', '   Ww ', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww',
-    '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '   Ww ', '   Ww ', '  Ww  ', ' Ww   ', 'Ww    ',
-    'w     ',
+  rows(g, 0, 3, [
+    '     w', '    wW', '   wW ', '  wW  ', ' wW   ', ' wW   ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ',
+    'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', ' wW   ', ' wW   ', '  wW  ', '   wW ', '    wW',
+    '     w',
   ]);
-  for (let y = 4; y < 27; y++) if (g[y][25] === '.') g[y][25] = 'e';
-  rect(g, 21, 15, 4, 2, 'g'); rect(g, 21, 16, 4, 1, 'G'); rect(g, 25, 15, 2, 2, 'l'); rect(g, 27, 15, 2, 2, 's');
+  for (let y = 4; y < 27; y++) if (g[y][5] === '.') g[y][5] = 'e';
+  // near arm held out to the left, gripping the bow
+  rect(g, 7, 15, 4, 2, 'g'); rect(g, 7, 16, 4, 1, 'G'); rect(g, 5, 15, 2, 2, 'l'); rect(g, 3, 15, 2, 2, 's');
   return outline(g);
 }

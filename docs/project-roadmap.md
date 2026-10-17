@@ -26,6 +26,24 @@ Plan details: `plans/20261017-0254-astro-portfolio-implementation/` (status trac
 - [ ] First workflow run: confirm action versions resolve
 - [ ] Regenerate `public/og-image.png` if the name/tagline changes
 
+## v1.1: Career RPG layer (done, branch `feat/career-rpg-layer`)
+
+Plan: `plans/20261017-0432-career-rpg-gamification-layer/` (phases 01-09, reports in `reports/`). Design: [system-architecture](system-architecture.md#career-rpg-pipeline).
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| 01 | Rules (`xp-rules.ts`), pure scoring utils, unit tests | Done |
+| 02 | Strict content schemas (`career-schemas.ts`, `content.config.ts`) | Done |
+| 03 | Quest tiers + boss battle UI | Done |
+| 04 | Character sheet + Profile HUD | Done |
+| 05 | Skill tree | Done |
+| 06 | Streak, `changelog` collection, weekly scheduled build | Done |
+| 07 | `/speedrun/` recruiter route | Done |
+| 08 | e2e, a11y, perf verification (56 e2e, 95 unit; Lighthouse mobile 98-99/100/100/100, desktop 100x4, CLS 0) | Done |
+| 09 | README + docs | Done |
+
+Before merge: user review; commit/push only after approval.
+
 ## v2 ideas (unscheduled)
 
 | Idea | Notes |
@@ -44,9 +62,15 @@ Plan details: `plans/20261017-0254-astro-portfolio-implementation/` (status trac
 - Only Chromium covered by e2e.
 - Action major versions unverified until first run.
 - Tests hardcode placeholder content and base path (see deployment guide for what to update).
+- Streak refreshes only on rebuild (weekly scheduled CI run; GitHub pauses schedules after 60 days without repo activity).
+- Changelog dates are self-attested: backdating is not verified.
+- Evidence URLs and metrics are self-attested; nothing is checked against the target (no fetch, no ownership proof).
+- Current content is placeholder (HUD 40%); only the boss verifies because all projects share the GitHub profile URL.
+- e2e does not pin `CAREER_RPG_NOW`, so streak assertions accept any valid state.
 
 ## Changelog
 
 | Date | Change |
 |------|--------|
 | 2026-10-17 | v1 implemented; docs written |
+| 2026-10-17 | v1.1 Career RPG layer implemented (phases 01-09); docs updated |

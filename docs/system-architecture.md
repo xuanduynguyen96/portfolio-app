@@ -7,17 +7,20 @@ Fully static site. No server runtime, no API. Astro renders HTML at build; a sma
 ```mermaid
 flowchart LR
   D[src/data/*.ts] --> P
-  C[src/content/projects/*.md<br/>zod schema] --> P
+  C[src/content/projects + changelog *.md<br/>strict zod schemas] --> R[loadCareerState<br/>Career RPG engine]
+  D --> R
+  R --> P
   P[pages + components<br/>Astro build] --> O[dist/ static HTML, CSS, JS, images]
   O --> G[GitHub Pages<br/>/portfolio-app/]
 ```
 
 ## Build pipeline
 
-1. `astro build` loads the `projects` collection (`src/content.config.ts`), validating frontmatter (summary <=160, `coverAlt` required with `cover`). Invalid content fails the build.
-2. `src/pages/index.astro` renders six sections; `src/pages/projects/[slug].astro` emits one page per entry (`getStaticPaths`, slug = file name); `404.astro` emits `404.html`.
-3. `astro:assets` optimizes cover images; Fontsource CSS/woff2 bundled (no external requests).
-4. Output in `dist/` under base `/portfolio-app`.
+1. `astro build` loads the `projects` and `changelog` collections (`src/content.config.ts`, strict zod: unknown keys fail; summary <=160, `coverAlt` required with `cover`, boss needs metric + obstacle). Invalid content fails the build.
+2. `loadCareerState()` runs cross-entry rules + scoring once per build ([Career RPG pipeline](#career-rpg-pipeline)); a rule violation throws `CareerRuleError` and fails the build.
+3. `src/pages/index.astro` renders seven sections; `src/pages/projects/[slug].astro` emits one page per entry (`getStaticPaths`, slug = file name); `speedrun.astro`, `changelog.astro`, `404.astro` emit their pages.
+4. `astro:assets` optimizes cover images; Fontsource CSS/woff2 bundled (no external requests).
+5. Output in `dist/` under base `/portfolio-app`.
 
 ## Page / component tree
 
@@ -26,14 +29,64 @@ BaseLayout (head SEO + root-flag script + ClientRouter)
 ├── SkipToContentLink
 ├── SiteHeader (logo initials, nav, menu toggle)  -> scripts/mobile-menu.ts
 ├── <main id="main">
-│   ├── index: Hero > About > Skills > Projects(ProjectCard*) > Experience > Contact
-│   ├── projects/[slug]: back link, header, TagList, cover, markdown prose
+│   ├── index: Hero > About > CharacterSheet > Skills(tree) > Projects(ProjectCard*) > Experience > Contact
+│   ├── projects/[slug]: back link, header, TagList, cover, BossBattlePanel (quest log), markdown prose
+│   ├── speedrun: availability, AchievementCard*, contact CTAs, decorative countdown
+│   ├── changelog: StreakBadge, entries newest first
 │   └── 404: "Signal lost" + NeonButton home
 ├── SiteFooter
 └── scripts/animations/init-animations.ts
 ```
 
 `base-layout.astro` props: `title`, `description`, `ogImage`, `noindex` (omits canonical, adds `robots noindex`; used by 404).
+
+## Career RPG pipeline
+
+Everything gamified is derived at build time; there is no runtime state. Rules and weights live only in `src/data/xp-rules.ts` (link, don't copy numbers into docs).
+
+```mermaid
+flowchart LR
+  P[projects/*.md] --> L
+  X[changelog/*.md] --> L
+  S[skills-data.ts] --> L
+  C[site-config.ts] --> L
+  R[raw sources scan<br/>PLACEHOLDER_MARKER] --> L
+  E[CAREER_RPG_NOW] --> L
+  L[load-career-state.ts<br/>only Astro-aware] --> B[buildCareerState]
+  B -->|validate: skills, quests, changelog| V{issues?}
+  V -->|yes| F[CareerRuleError<br/>build fails, all issues listed]
+  V -->|no| Q[scoreQuests, buildSkillTree,<br/>computeAttributeXp, levelInfo,<br/>computeStreak, evaluateCompleteness,<br/>pickTopAchievements]
+  Q --> T[CareerState]
+  T --> U[sections + pages]
+```
+
+- `load-career-state.ts` (the only module with `astro:*` / `import.meta.env`): `getCollection` -> inputs, `import.meta.glob(?raw)` scan for the placeholder marker (flags a quest `isSample`, feeds HUD), strict-parses `skillNodes`, reads `CAREER_RPG_NOW`. Memoized per build (all pages share one state); uncached in dev; cache reset on error so a fixed file recovers.
+- `buildCareerState()` is pure: same inputs => same state. Validates first, then scores; all violations aggregate into one `CareerRuleError`.
+- `CAREER_RPG_NOW=YYYY-MM-DD` pins build time to the end of that UTC day (reproduce a past streak/HUD); invalid value throws. Unset => real time.
+
+### Scoring summary
+
+| Piece | Rule (values in `xp-rules.ts`) |
+|-------|-------------------------------|
+| Quest XP | `baseXp[difficulty]` x (1 + metric + obstacle + boss bonuses). 0 XP unless: prose words >= `minBodyWords`, distinct words >= `minUniqueWords`, has evidence, and >=1 URL not yet claimed |
+| Tier | Nth best quest in a tier earns raw x `tierDecay`^N; tier total scaled to `tierCap` |
+| Skill node | Each fresh evidence URL `xpPerUrl`, decayed by `decay`, capped `nodeCap`. Level = thresholds reached by evidence count (own URLs + verified quests, rolled up from children) |
+| Attributes | 4 (`ATTRIBUTE_IDS`): quest XP split evenly across the quest's skills' attributes + node XP; each clamped to `attributeCap` |
+| Level / title | Total XP -> `base*(L-1)^exponent`, max level; title = highest band reached |
+| Streak | Consecutive ISO weeks (UTC) with a changelog entry whose body >= `streak.minBodyWords`; empty current week doesn't break it yet |
+| HUD | 10 pass/fail checks (placeholders, real email, bio length, availability, socials, quest evidence/verified/metrics, leaf-skill evidence, streak alive) |
+| Speedrun | Metrics of verified quests only (boss first, then featured by XP), round-robin, top `speedrun.achievements` |
+
+### Build-failing rules
+
+Unknown/hand-set keys (`xp`, `level`, `repoUrl`); non-https or credentialed evidence URL; not exactly one boss; unknown or duplicate quest skill; skill id not kebab-case, unknown attribute/parent, parent cycle; an evidence URL reused across skills; changelog date > build time + `futureToleranceHours`.
+
+### Anti-gaming
+
+- A URL earns XP once site-wide, via `normalizeEvidenceUrl` (coarse on purpose: false match costs XP, a miss lets a link be farmed). Claim order: boss, then featured/`order` (`sortQuests`), then skill nodes pre-order.
+- Word minimum counts prose only (code, URLs, hidden elements, link definitions excluded) plus a distinct-word minimum.
+- Tier decay + caps and the attribute cap make many small entries worth less than a few real ones.
+- Evidence and metrics are self-attested (no fetch/ownership check); changelog backdating is not verified. See [project-roadmap.md](project-roadmap.md#known-limitations).
 
 ## Root flags (progressive enhancement)
 
@@ -83,6 +136,7 @@ Details:
 ## Routing and base path
 
 - `base: '/portfolio-app'`, `trailingSlash: 'ignore'`.
+- Pages: `/`, `/projects/<slug>/`, `/speedrun/`, `/changelog/`, 404. Header nav has "Speedrun"; hero CTA "60s recruiter view"; footer has "Changelog".
 - Internal links use `withBasePath()`; `ClientRouter` handles soft navigation (view transitions with `transition:name` on project title/cover).
 - Hash links in header nav (`/portfolio-app/#about`) work from any page.
 
@@ -93,8 +147,9 @@ Canonical + Open Graph + Twitter card built from `Astro.site` + pathname; defaul
 ## CI/CD
 
 ```
-PR or push -> verify (npm ci, check, e2e)
+PR or push -> verify (npm ci, check, unit, e2e)
 push to master -> build (withastro/action) -> deploy (deploy-pages) -> Pages
+weekly cron (Mon 03:17 UTC) -> same pipeline on master: rebuild refreshes the build-date streak
 ```
 
 See [deployment-guide.md](deployment-guide.md).
@@ -108,3 +163,6 @@ See [deployment-guide.md](deployment-guide.md).
 | GSAP + `gsap.matchMedia()` | One revert point for reduced-motion + route changes |
 | Failsafe flags | Content can never get stuck hidden |
 | Tests against production build | Catches base-path + bundling bugs |
+| Compute XP at build, evidence-only | No backend; nothing hand-set can inflate the score; strict schemas fail loudly |
+| Pure engine + thin Astro loader | Scoring unit-tested with `node --test` (no Astro); one memoized state per build |
+| Weekly scheduled rebuild | Streak depends on build date; static site would otherwise go stale |

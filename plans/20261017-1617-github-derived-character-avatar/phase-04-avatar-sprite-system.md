@@ -18,6 +18,10 @@
 - `gridToPathData(grid, char)` is size-agnostic → reuse as is.
 
 ## Requirements
+- **Art style (user-approved direction 2026-10-17, see [sticker prototypes](reports/assets/03-sticker-style-prototypes.png), [source](reports/assets/03-sticker-style-prototypes.ts.txt))**: chibi "die-cut sticker" pixel art. Big head (~40% height), dot eyes + blush, 1px near-black outline (8-neighbour, chunky), muted earthy palette with 3-tone ramps (highlight top/left, shade bottom/right), cream sticker ring 2px with rounded corners added by the composer on a padded viewBox (`-2 -2 36 36`), soft CSS drop-shadow. Original art only (reference image = style cue, not traced, not committed). Class reads: Warrior = T-visor great helm + plume, broad pauldrons, red tabard, sword point-down; Mage = bent pointed hat + wide brim, grey beard, robe to floor, crystal staff; Archer = pointed hood, capelet, strap, tall recurve bow. Prototype IoU: w-m .705/.709, w-a .737/.733, m-a .722/.777 (32/16), colors 11-15.
+- Sticker ring replaces the planned portrait plate: cream ring separates the dark outline from the dark theme bg (contrast measured in 06). Optional grid-paper texture behind the hero avatar (CSS gradients, no image).
+- Palette cap raised: <=16 visible colors per avatar (3-tone ramps), sticker key `#` → `--avatar-sticker`.
+- Regions below are pre-sticker; re-derive from v3 prototypes in step 2 (warrior pauldrons span x6-25, so off-hand/shield box moves to y18-29).
 - Canvas 32x32 (fallback 24x32 only if 00 says so). Regions (x cols, y rows):
 
 | Region | Box | Owner |

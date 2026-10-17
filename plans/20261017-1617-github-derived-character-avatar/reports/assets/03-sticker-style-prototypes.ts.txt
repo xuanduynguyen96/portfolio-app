@@ -1,0 +1,124 @@
+// Prototype v3: "sticker" chibi style (user reference). 32x32 art, 3-tone muted ramps, auto outline,
+// sticker ring added at render time on a padded canvas.
+export type Grid = string[][];
+export const N = 32;
+export const blank = (): Grid => Array.from({ length: N }, () => Array(N).fill('.'));
+const inb = (x: number, y: number) => x >= 0 && y >= 0 && x < N && y < N;
+export function rect(g: Grid, x: number, y: number, w: number, h: number, c: string) {
+  for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (inb(i, j)) g[j][i] = c;
+}
+/** Rect with highlight on top/left edge and shade on right/bottom edge. */
+export function shaded(g: Grid, x: number, y: number, w: number, h: number, [hi, mid, lo]: string) {
+  rect(g, x, y, w, h, mid);
+  rect(g, x, y, 1, h, hi); rect(g, x, y, w, 1, hi);
+  rect(g, x + w - 1, y, 1, h, lo); rect(g, x, y + h - 1, w, 1, lo);
+}
+export function px(g: Grid, c: string, pts: [number, number][]) { for (const [x, y] of pts) if (inb(x, y)) g[y][x] = c; }
+/** Rows of chars at (x, y); space = keep. */
+export function rows(g: Grid, x: number, y: number, rs: string[]) {
+  rs.forEach((r, j) => [...r].forEach((c, i) => { if (c !== ' ' && inb(x + i, y + j)) g[y + j][x + i] = c; }));
+}
+/** Exterior outline (8-neighbour = chunky sticker look). */
+export function outline(g: Grid): Grid {
+  const out = g.map((r) => [...r]);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+    if (g[y][x] !== '.') continue;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const c = g[y + dy]?.[x + dx];
+      if (c !== undefined && c !== '.' && c !== 'o') out[y][x] = 'o';
+    }
+  }
+  return out;
+}
+
+function face(g: Grid, eyeY: number) {
+  px(g, 'o', [[13, eyeY], [13, eyeY + 1], [18, eyeY], [18, eyeY + 1]]);
+  px(g, 'p', [[12, eyeY + 2], [19, eyeY + 2]]); // blush
+}
+function legsAndBoots(g: Grid, leg: string) {
+  rect(g, 12, 25, 3, 3, leg); rect(g, 17, 25, 3, 3, leg);
+  shaded(g, 11, 28, 4, 3, 'llL'); shaded(g, 17, 28, 4, 3, 'llL');
+  rect(g, 15, 25, 2, 6, '.'); // leg gap
+}
+
+export function warrior(): Grid {
+  const g = blank();
+  // plume
+  rows(g, 13, 0, [' rr  ', 'rrrR ', ' rRR ']);
+  // great helm, T visor
+  shaded(g, 10, 3, 12, 12, 'kiI'); px(g, '.', [[10, 3], [21, 3]]);
+  rect(g, 12, 8, 8, 1, 'o'); rect(g, 15, 9, 2, 4, 'o');
+  rect(g, 12, 7, 8, 1, 'y'); px(g, 'Y', [[14, 9], [17, 9], [14, 10], [17, 10], [14, 11], [17, 11], [14, 12], [17, 12]]);
+  // broad pauldrons + chest + red tabard
+  shaded(g, 11, 15, 10, 9, 'kiI');
+  shaded(g, 6, 14, 6, 4, 'kiI'); shaded(g, 20, 14, 6, 4, 'kiI');
+  shaded(g, 14, 17, 4, 7, 'rrR');
+  rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[15, 23], [16, 23]]);
+  // arms (gauntlets)
+  rect(g, 9, 18, 2, 3, 'i'); rect(g, 21, 18, 2, 4, 'I'); rect(g, 7, 19, 3, 2, 'I'); rect(g, 4, 19, 3, 2, 'I'); rect(g, 21, 21, 3, 2, 'I');
+  legsAndBoots(g, 'I');
+  // sword held point-down at the side: pommel, grip in fist, guard, 3px blade
+  px(g, 'y', [[5, 17]]); rect(g, 5, 18, 1, 2, 'W');
+  rect(g, 2, 21, 7, 1, 'y'); rect(g, 2, 22, 7, 1, 'Y');
+  rect(g, 4, 23, 1, 7, 'k'); rect(g, 5, 23, 1, 8, 'i'); rect(g, 6, 23, 1, 7, 'I');
+  return outline(g);
+}
+
+export function mage(): Grid {
+  const g = blank();
+  // pointed hat, bent tip, wide brim
+  rows(g, 15, 0, ['    cu', '  cuuU', ' cuuU ']);
+  rect(g, 14, 3, 5, 1, 'u'); rect(g, 13, 4, 6, 2, 'u'); rect(g, 12, 6, 8, 2, 'u');
+  px(g, 'c', [[14, 3], [13, 4], [13, 5], [12, 6], [12, 7]]); px(g, 'U', [[18, 3], [18, 4], [18, 5], [19, 6], [19, 7]]);
+  rect(g, 11, 8, 10, 1, 'y');
+  rect(g, 8, 9, 16, 1, 'U'); rect(g, 9, 9, 14, 1, 'u');
+  // face under brim + beard
+  rect(g, 10, 10, 12, 5, 's'); rect(g, 10, 10, 12, 1, 'S');
+  rect(g, 10, 10, 1, 5, 'e'); rect(g, 21, 10, 1, 5, 'E');
+  face(g, 11);
+  rows(g, 11, 13, [' eeeeeeee ', 'eeeeeeeeeE', 'eeeeeeeeEE', ' eeeeeeeE ', '  eeeeeE  ', '   eeeE   ', '    eE    ']);
+  px(g, 'E', [[15, 13], [16, 13]]);
+  // robe flaring to the floor
+  shaded(g, 11, 15, 10, 8, 'cuU'); rect(g, 13, 15, 6, 4, 'e'); rect(g, 14, 19, 4, 1, 'e'); rect(g, 15, 20, 2, 1, 'E');
+  rect(g, 11, 22, 10, 1, 'L'); px(g, 'y', [[15, 22], [16, 22]]);
+  shaded(g, 10, 23, 12, 4, 'cuU'); shaded(g, 9, 27, 14, 3, 'cuU'); rect(g, 9, 29, 14, 1, 'U');
+  rect(g, 11, 30, 3, 1, 'L'); rect(g, 18, 30, 3, 1, 'L');
+  // sleeves + hands
+  rect(g, 9, 16, 2, 5, 'u'); rect(g, 21, 16, 2, 5, 'U'); rect(g, 8, 20, 3, 2, 's'); rect(g, 21, 20, 2, 2, 's');
+  // staff + crystal
+  rect(g, 5, 6, 1, 25, 'w'); rect(g, 6, 6, 1, 25, 'W');
+  rows(g, 3, 0, ['  aa  ', ' axaa ', ' aaaA ', '  aA  ', ' y  y ', '  yy  ']);
+  rect(g, 6, 20, 3, 2, 's');
+  return outline(g);
+}
+
+export function archer(): Grid {
+  const g = blank();
+  // hood with point, framing the face
+  rows(g, 14, 0, [' f ', 'ffg']);
+  rect(g, 12, 2, 8, 1, 'g'); rect(g, 11, 3, 10, 1, 'g'); rect(g, 10, 4, 12, 11, 'g');
+  px(g, 'f', [[12, 2], [11, 3], [10, 4], [10, 5], [10, 6], [11, 4], [12, 3]]);
+  rect(g, 21, 5, 1, 10, 'G'); rect(g, 20, 4, 1, 1, 'G');
+  // face opening: hair fringe in shadow, skin
+  rect(g, 12, 6, 8, 8, 's'); rect(g, 12, 6, 8, 2, 'h'); rect(g, 12, 6, 8, 1, 'H'); px(g, 'h', [[12, 8], [19, 8]]);
+  rect(g, 19, 9, 1, 5, 'S');
+  face(g, 9);
+  // capelet + tunic + strap
+  shaded(g, 9, 14, 14, 4, 'fgG'); px(g, '.', [[9, 17], [22, 17]]);
+  shaded(g, 11, 18, 10, 6, 'fgG');
+  px(g, 'L', [[12, 18], [13, 19], [14, 20], [15, 21], [16, 22], [17, 22]]);
+  rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[15, 23], [16, 23]]);
+  // arms with bracers
+  rect(g, 9, 18, 2, 2, 'g'); rect(g, 21, 18, 2, 2, 'G'); rect(g, 9, 20, 2, 2, 'l'); rect(g, 21, 20, 2, 2, 'L');
+  rect(g, 8, 22, 3, 2, 's'); rect(g, 21, 22, 2, 2, 's');
+  legsAndBoots(g, 'H');
+  // recurve bow + string
+  rows(g, 1, 1, [
+    '     w', '    wW', '   wW ', '  wW  ', ' wW   ', ' wW   ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ',
+    'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', ' wW   ', ' wW   ', '  wW  ', '   wW ', '    wW',
+    '     w',
+  ]);
+  for (let y = 2; y < 25; y++) if (g[y][6] === '.') g[y][6] = 'e';
+  rect(g, 5, 13, 4, 2, 's'); rect(g, 5, 13, 1, 2, 'W');
+  return outline(g);
+}

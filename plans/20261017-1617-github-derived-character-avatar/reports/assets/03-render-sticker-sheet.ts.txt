@@ -1,0 +1,65 @@
+// Sticker sheet: 2px rounded die-cut ring on padded 36x36 canvas, grid-paper + dungeon backgrounds, IoU.
+import { writeFileSync } from 'node:fs';
+import { N, archer, mage, warrior, type Grid } from './sticker-prototypes.ts';
+
+const C: Record<string, string> = {
+  o: '#2a1f1d', s: '#e9b58f', S: '#c78c6c', p: '#e08f7a', h: '#7a5232', H: '#53371f',
+  k: '#c9ccd1', i: '#9a9ea6', I: '#676b74', y: '#d9a441', Y: '#9c6e24',
+  r: '#b5473a', R: '#7a2c26', c: '#7d9db3', u: '#557a91', U: '#3b5868', e: '#cfc8ba', E: '#9e978a',
+  f: '#8fa865', g: '#6b8447', G: '#4a5e31', l: '#8f5f3a', L: '#5f3d24', w: '#946238', W: '#64401f',
+  a: '#86d6e3', A: '#3f98ad', x: '#ffffff', '#': '#fbf7ee',
+};
+const PAD = 2, M = N + 2 * PAD;
+function sticker(g: Grid): Grid {
+  const out: Grid = Array.from({ length: M }, () => Array(M).fill('.'));
+  g.forEach((r, y) => r.forEach((c, x) => { out[y + PAD][x + PAD] = c; }));
+  const ring = out.map((r) => [...r]);
+  for (let y = 0; y < M; y++) for (let x = 0; x < M; x++) {
+    if (out[y][x] !== '.') continue;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+      if (dx * dx + dy * dy > 5) continue; // rounded corners
+      if (out[y + dy]?.[x + dx] && out[y + dy][x + dx] !== '.') ring[y][x] = '#';
+    }
+  }
+  return ring;
+}
+function svg(g: Grid, size: number, sil = false) {
+  const n = g.length;
+  let d = '';
+  for (let y = 0; y < n; y++) for (let x = 0; x < n;) {
+    const c = g[y][x]; let w = 1;
+    while (x + w < n && g[y][x + w] === c) w++;
+    if (c !== '.') d += `<path d="M${x} ${y}h${w}v1h-${w}z" fill="${sil ? (c === '#' ? '#ddd' : '#000') : C[c] ?? 'magenta'}"/>`;
+    x += w;
+  }
+  return `<svg viewBox="0 0 ${n} ${n}" width="${size}" height="${size}" shape-rendering="crispEdges" style="filter:drop-shadow(0 ${size / 40}px ${size / 40}px rgb(0 0 0/.25))">${d}</svg>`;
+}
+const looks: Record<string, Grid> = { warrior: warrior(), mage: mage(), archer: archer() };
+const names = Object.keys(looks);
+const mask = (g: Grid) => g.map((r) => r.map((c) => c !== '.'));
+const pool = (m: boolean[][]) => Array.from({ length: N / 2 }, (_, y) => Array.from({ length: N / 2 }, (_, x) =>
+  m[2 * y][2 * x] || m[2 * y + 1][2 * x] || m[2 * y][2 * x + 1] || m[2 * y + 1][2 * x + 1]));
+const iou = (a: boolean[][], b: boolean[][]) => {
+  let i = 0, u = 0;
+  a.forEach((r, y) => r.forEach((v, x) => { if (v && b[y][x]) i++; if (v || b[y][x]) u++; }));
+  return i / u;
+};
+const lines: string[] = [];
+for (const k of names) {
+  const f = looks[k].flat();
+  lines.push(`${k}: coverage ${(100 * f.filter((c) => c !== '.').length / f.length).toFixed(1)}%, colors ${new Set(f.filter((c) => c !== '.')).size}`);
+}
+for (let a = 0; a < 3; a++) for (let b = a + 1; b < 3; b++) {
+  const A = mask(looks[names[a]]), B = mask(looks[names[b]]);
+  lines.push(`IoU ${names[a]}-${names[b]}: 32=${iou(A, B).toFixed(3)} 16=${iou(pool(A), pool(B)).toFixed(3)}`);
+}
+console.log(lines.join('\n'));
+for (const k of names) console.log(`\n${k}\n` + looks[k].map((r) => r.join('')).join('\n'));
+
+const paper = 'background:#ece6da;background-image:linear-gradient(#d6cfc1 1px,transparent 1px),linear-gradient(90deg,#d6cfc1 1px,transparent 1px);background-size:48px 48px';
+const band = (bg: string, sizes: number[]) => `<div style="${bg};padding:20px;display:flex;gap:28px;align-items:end;flex-wrap:wrap">${
+  names.map((k) => sizes.map((s) => svg(sticker(looks[k]), s)).join('')).join('')}</div>`;
+writeFileSync(new URL('./sticker-sheet.html', import.meta.url), `<!doctype html><body style="margin:0">
+${band(paper, [256])}${band('background:#14110f', [256])}${band(paper, [128, 64])}${band('background:#14110f', [128, 64])}
+<div style="background:#fff;padding:12px;display:flex;gap:16px">${names.map((k) => svg(sticker(looks[k]), 128, true)).join('')}</div>
+<pre style="margin:0;padding:8px;background:#fff">${lines.join('\n')}</pre></body>`);

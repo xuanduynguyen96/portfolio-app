@@ -54,6 +54,9 @@ All under candidate thresholds (0.75 / 0.80) but warrior-mage margin thin → ph
 - Blind-ID with people: **not done** (agent cannot recruit testers) → moved into user gate below.
 - Canvas decision: **32x32** (detail fits, 4x/6x/8x integer scales).
 
+## Update: art style changed (user reference, 2026-10-17)
+User asked for a chibi die-cut sticker style. Redrawn 3 classes: [sheet](assets/03-sticker-style-prototypes.png). Sticker ring fixes the dark-theme outline problem (no portrait plate needed). After moving the warrior sword point-down (all 3 classes had a tall item on the left), IoU: w-m .705/.709, w-a .737/.733, m-a .722/.777 at 32/16, all under .75/.80. Colors 11-15 per avatar → cap 16. Phase 04 spec updated.
+
 ## Decisions for next phases
 - Token: `GITHUB_TOKEN` only; PAT path stays as documented fallback, not configured.
 - Fetcher: page 25, 5xx retry (25 → 10), yearly windows from `createdAt`, cost ~8 points.

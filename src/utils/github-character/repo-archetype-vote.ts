@@ -5,7 +5,8 @@ import type { ClassSignal } from './character-types.ts';
 import type { SnapshotRepo } from './github-snapshot-types.ts';
 import { repoTokens } from './repo-tokens.ts';
 
-const MONTH_MS = 30.44 * 86_400_000;
+/** Average Gregorian month (365.25 / 12 days). */
+const AVG_MONTH_MS = 30.4375 * 86_400_000;
 
 export type ArchetypeVote = Record<ArchetypeId, number>;
 
@@ -15,11 +16,12 @@ export interface RepoVote {
   signals: ClassSignal[];
 }
 
-const zero = (): ArchetypeVote => ({ backend: 0, data: 0, frontend: 0 });
+/** All-zero vote, derived from ARCHETYPE_IDS so a new archetype can't be forgotten. */
+export const zeroVote = (): ArchetypeVote => Object.fromEntries(ARCHETYPE_IDS.map((id) => [id, 0])) as ArchetypeVote;
 export const round3 = (value: number) => Math.round(value * 1000) / 1000;
 
 export function recencyWeight(pushedWeek: string, asOf: string, rules: ClassRules = classRules): number {
-  const months = Math.max(0, (Date.parse(asOf) - Date.parse(pushedWeek)) / MONTH_MS);
+  const months = Math.max(0, (Date.parse(asOf) - Date.parse(pushedWeek)) / AVG_MONTH_MS);
   return Math.max(rules.recency.floor, 0.5 ** (months / rules.recency.halfLifeMonths));
 }
 
@@ -28,7 +30,7 @@ export function activityWeight(commits: number, rules: ClassRules = classRules):
 }
 
 export function repoArchetypeVote(repo: SnapshotRepo, asOf: string, rules: ClassRules = classRules): RepoVote {
-  const raw = zero();
+  const raw = zeroVote();
   const reasons: Record<ArchetypeId, string[]> = { backend: [], data: [], frontend: [] };
 
   const counted = repo.languages
@@ -44,14 +46,17 @@ export function repoArchetypeVote(repo: SnapshotRepo, asOf: string, rules: Class
     for (const archetype of ARCHETYPE_IDS) {
       const weight = rules.languages[language.name][archetype] ?? 0;
       if (weight === 0) continue;
-      raw[archetype] += share * weight * (rules.languageWeight[language.name] ?? 1);
-      reasons[archetype].push(`${language.name} ${Math.round(share * 100)}% of code`);
+      const weighted = weight * (rules.languageWeight[language.name] ?? 1);
+      raw[archetype] += share * weighted;
+      // Show a language as evidence only where it really points (TypeScript's backend share is leakage).
+      if (weighted >= rules.reasonMinWeight) reasons[archetype].push(`${language.name} ${Math.round(share * 100)}% of code`);
     }
   }
 
   const primary = repo.primaryLanguage ? rules.languages[repo.primaryLanguage] : undefined;
   if (primary && repo.primaryLanguage && !rules.ignoredLanguages.includes(repo.primaryLanguage)) {
-    for (const archetype of ARCHETYPE_IDS) raw[archetype] += rules.primaryLanguageBonus * (primary[archetype] ?? 0);
+    const markup = rules.languageWeight[repo.primaryLanguage] ?? 1;
+    for (const archetype of ARCHETYPE_IDS) raw[archetype] += rules.primaryLanguageBonus * (primary[archetype] ?? 0) * markup;
   }
 
   const tokens = repoTokens(repo);
@@ -62,17 +67,17 @@ export function repoArchetypeVote(repo: SnapshotRepo, asOf: string, rules: Class
   }
 
   const total = ARCHETYPE_IDS.reduce((sum, archetype) => sum + raw[archetype], 0);
-  if (total === 0) return { vote: zero(), signals: [] };
+  if (total === 0) return { vote: zeroVote(), signals: [] };
   const weight = (1 / Math.max(1, total)) * recencyWeight(repo.pushedWeek, asOf, rules) * activityWeight(repo.commits, rules)
     * (repo.isArchived ? rules.archivedFactor : 1);
 
-  const vote = zero();
+  const vote = zeroVote();
   const signals: ClassSignal[] = [];
   for (const archetype of ARCHETYPE_IDS) {
     vote[archetype] = raw[archetype] * weight;
     const points = round3(vote[archetype]);
     if (points > 0) {
-      const reason = reasons[archetype].length > 0 ? reasons[archetype].join(', ') : `primary language ${repo.primaryLanguage}`;
+      const reason = reasons[archetype].length > 0 ? reasons[archetype].join(', ') : `partly ${repo.primaryLanguage ?? 'mixed code'}`;
       signals.push({ repo: repo.name, archetype, points, reason });
     }
   }

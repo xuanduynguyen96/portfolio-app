@@ -27,8 +27,16 @@ export interface ClassRules {
   /** Weight 1 + min(max, log10(1 + owner commits) * scale). */
   activity: { scale: number; max: number };
   archivedFactor: number;
-  /** Secondary archetype (job motif) needs both: share of the primary score and an absolute score. */
-  secondary: { minRatio: number; minScore: number };
+  /**
+   * Secondary archetype (job motif) needs a share of the primary score, an absolute score, and to be
+   * the top archetype of at least `minTopRepos` repos (so language leakage alone, e.g. TypeScript's
+   * backend share, can't make a TS-only profile hybrid).
+   */
+  secondary: { minRatio: number; minScore: number; minTopRepos: number };
+  /** A language shows as "why" evidence for an archetype only when it weighs at least this much there. */
+  reasonMinWeight: number;
+  /** "Why" signals kept per profile. */
+  signals: { primary: number; secondary: number };
   /** Below either: no class yet (Adventurer). */
   fallback: { minTotal: number; minRepos: number };
 }
@@ -74,17 +82,21 @@ export const classRules: ClassRules = {
     { match: 'database', archetype: 'backend', points: 0.5 },
     { match: 'mvc', archetype: 'backend', points: 0.5 },
     { match: 'data', archetype: 'data', points: 0.5 },
-    { match: 'notebook', archetype: 'data', points: 0.5 },
     { match: 'notebooks', archetype: 'data', points: 0.5 },
     { match: 'statistics', archetype: 'data', points: 0.5 },
-    { match: 'learning', archetype: 'data', points: 0.5 },
     { match: 'ml', archetype: 'data', points: 0.5 },
+    { match: 'ai', archetype: 'data', points: 0.5 },
+    { match: 'pandas', archetype: 'data', points: 0.5 },
+    { match: 'tensorflow', archetype: 'data', points: 0.5 },
+    { match: 'pytorch', archetype: 'data', points: 0.5 },
     { match: 'analysis', archetype: 'data', points: 0.5 },
   ],
   // 48 months (spike, reports/02): public repos are sparse; 24 made whichever repo was pushed last decide.
   recency: { halfLifeMonths: 48, floor: 0.25 },
   activity: { scale: 0.25, max: 0.5 },
   archivedFactor: 0.5,
-  secondary: { minRatio: 0.35, minScore: 0.5 },
+  secondary: { minRatio: 0.35, minScore: 0.5, minTopRepos: 1 },
+  reasonMinWeight: 0.5,
+  signals: { primary: 5, secondary: 2 },
   fallback: { minTotal: 1, minRepos: 2 },
 };

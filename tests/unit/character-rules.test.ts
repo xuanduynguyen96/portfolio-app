@@ -26,6 +26,11 @@ describe('character rules', () => {
     }
   });
 
+  it('every languageWeight key is a known language; reason threshold is a real weight', () => {
+    for (const language of Object.keys(classRules.languageWeight)) assert.ok(classRules.languages[language], language);
+    assert.ok(classRules.reasonMinWeight > 0 && classRules.reasonMinWeight <= 1);
+  });
+
   it('keywords are lowercase single words and unique', () => {
     const matches = classRules.keywords.map((k) => k.match);
     assert.equal(new Set(matches).size, matches.length);

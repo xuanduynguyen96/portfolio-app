@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { gearRules } from '../../src/data/gear-rules.ts';
+
+const docs = gearRules.find((r) => r.slot === 'amulet')?.docs ?? assert.fail('amulet docs rule');
 import { computeGearTiers, docsSignalCount, tierFor } from '../../src/utils/github-character/gear-tiers.ts';
 import { repo, snapshot } from './github-snapshot-fixtures.ts';
 
@@ -50,9 +52,29 @@ describe('gear tiers', () => {
 
   it('amulet needs 3 docs signals in one repo', () => {
     const documented = repo({ name: 'doc', rootEntries: ['README.md', 'docs'], license: 'MIT' });
-    assert.equal(docsSignalCount(documented), 3);
-    assert.equal(docsSignalCount(repo({ name: 'bare', rootEntries: ['README.md'] })), 1);
+    assert.equal(docsSignalCount(documented, docs), 3);
+    assert.equal(docsSignalCount(repo({ name: 'bare', rootEntries: ['README.md'] }), docs), 1);
     assert.deepEqual(computeGearTiers(snapshot([documented])).find((g) => g.slot === 'amulet')?.repos, ['doc']);
+  });
+
+  it('no false positives: non-yaml workflow files, "latest", subject-matter words', () => {
+    const s = snapshot([
+      repo({ name: 'notes', workflowFiles: ['README.md', '.gitkeep'] }),
+      repo({ name: 'rel', workflowFiles: ['latest-notes.yml', 'contest.yaml'] }),
+      repo({ name: 'security-camera-app', description: 'security testing toolkit', rootEntries: [] }),
+    ]);
+    const bySlot = Object.fromEntries(computeGearTiers(s).map((g) => [g.slot, g.repos]));
+    assert.deepEqual(bySlot.armor, []);
+    assert.deepEqual(bySlot.shield, []);
+    assert.deepEqual(bySlot.boots, ['rel'], 'yaml workflows count as automation, non-yaml files do not');
+  });
+
+  it('test workflows count for the shield', () => {
+    const names = ['test.yml', 'ci-tests.yaml', 'e2e.yml', 'unit_test.yml'];
+    for (const name of names) {
+      const s = snapshot([repo({ name: 'x', rootEntries: [], workflowFiles: [name] })]);
+      assert.deepEqual(computeGearTiers(s).find((g) => g.slot === 'shield')?.repos, ['x'], name);
+    }
   });
 
   it('results follow rule order with legend labels', () => {

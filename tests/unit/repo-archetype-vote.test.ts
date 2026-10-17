@@ -53,6 +53,24 @@ describe('repoArchetypeVote', () => {
     assert.equal(activityWeight(10 ** 9), 1 + classRules.activity.max);
   });
 
+  it('primary language adds a bonus, discounted for markup like its bytes', () => {
+    const plain = repo({ name: 'p', languages: [{ name: 'Go', bytes: 10 * KIB }], commits: 0, pushedWeek: AS_OF });
+    assert.ok(Math.abs(vote(plain).backend - 1) < 1e-9, '1 + 0.3 bonus is capped back to 1');
+    const mixed = repo({ name: 'm', primaryLanguage: 'Go', commits: 0, pushedWeek: AS_OF,
+      languages: [{ name: 'Go', bytes: 5 * KIB }, { name: 'Swift', bytes: 5 * KIB }] });
+    const v = vote(mixed);
+    assert.ok(Math.abs(v.backend - 0.8 / 1.3) < 1e-9 && Math.abs(v.frontend - 0.5 / 1.3) < 1e-9, 'bonus tips the split');
+    const html = repo({ name: 'h', primaryLanguage: 'HTML', commits: 0, pushedWeek: AS_OF, languages: [{ name: 'HTML', bytes: 9 * KIB }] });
+    assert.ok(Math.abs(vote(html).frontend - (0.5 + 0.3 * 0.5)) < 1e-9);
+  });
+
+  it('a language is "why" evidence only where it really points', () => {
+    const ts = lang('site', 'TypeScript', 50);
+    const signals = repoArchetypeVote(ts, AS_OF).signals;
+    assert.match(signals.find((s) => s.archetype === 'frontend')?.reason ?? '', /TypeScript/);
+    assert.doesNotMatch(signals.find((s) => s.archetype === 'backend')?.reason ?? '', /TypeScript \d+%/);
+  });
+
   it('minor languages under the share threshold are ignored', () => {
     const r = repo({ name: 'site', primaryLanguage: null, languages: [{ name: 'TypeScript', bytes: 95 * KIB }, { name: 'Go', bytes: 5 * KIB }] });
     const signals = repoArchetypeVote(r, AS_OF).signals;

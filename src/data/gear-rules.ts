@@ -1,5 +1,7 @@
 // Gear rules: repo hygiene signals -> 4 avatar slots, tier 0-3 by how many public repos show the
-// signal (each repo counts once per slot). Patterns match file names in the snapshot.
+// signal (each repo counts once per slot). Patterns match file names in the snapshot: root entries,
+// `.github/` entries and `.github/workflows/` files. Hygiene, not subject matter: no topic keywords
+// for armor/shield. Known blind spot: tests living below the root (Maven `src/test`, Go `_test.go`).
 
 export const GEAR_SLOT_IDS = ['armor', 'shield', 'boots', 'amulet'] as const;
 export type GearSlotId = (typeof GEAR_SLOT_IDS)[number];
@@ -17,7 +19,11 @@ export interface GearSlotRule {
   workflowFiles: readonly RegExp[];
   /** Whole words in name, description, topics. */
   keywords: readonly string[];
+  /** Documentation slot: counts docs signals instead (see gear-tiers.ts). */
+  docs?: { minSignals: number; readme: RegExp; docsDir: RegExp };
 }
+
+const WORKFLOW = /\.ya?ml$/i;
 
 export const gearRules: readonly GearSlotRule[] = [
   {
@@ -27,8 +33,8 @@ export const gearRules: readonly GearSlotRule[] = [
     thresholds: [1, 2, 4],
     rootFiles: [/^security\.md$/i],
     githubFiles: [/^security\.md$/i, /^dependabot\.ya?ml$/i],
-    workflowFiles: [/codeql|security|scorecard|dependency-review/i],
-    keywords: ['security'],
+    workflowFiles: [/(codeql|security|scorecard|dependency-review).*\.ya?ml$/i],
+    keywords: [],
   },
   {
     slot: 'shield',
@@ -37,18 +43,21 @@ export const gearRules: readonly GearSlotRule[] = [
     thresholds: [1, 3, 5],
     rootFiles: [/^(tests?|__tests__|spec|e2e)$/i, /\.tests?$/i, /^(jest|vitest|playwright|cypress)\.config\./i, /^pytest\.ini$/i],
     githubFiles: [],
-    workflowFiles: [/test/i],
-    keywords: ['testing'],
+    workflowFiles: [/(^|[-_.])(tests?|e2e|spec)(?=[-_.])[^/]*\.ya?ml$/i],
+    keywords: [],
   },
   {
     slot: 'boots',
     axis: 'Automation',
     label: 'Boots',
     thresholds: [1, 3, 5],
-    rootFiles: [/^dockerfile$/i, /^(docker-)?compose\.ya?ml$/i, /^jenkinsfile$/i, /^\.gitlab-ci\.yml$/i],
+    rootFiles: [
+      /^dockerfile$/i, /^(docker-)?compose\.ya?ml$/i, /^jenkinsfile$/i, /^\.gitlab-ci\.yml$/i, /^\.travis\.yml$/i,
+      /^\.circleci$/i, /^azure-pipelines\.ya?ml$/i, /^bitbucket-pipelines\.yml$/i,
+    ],
     githubFiles: [],
-    workflowFiles: [/./],
-    keywords: ['docker', 'jenkins', 'devops', 'kubernetes', 'ci'],
+    workflowFiles: [WORKFLOW],
+    keywords: ['docker', 'jenkins', 'kubernetes'],
   },
   {
     slot: 'amulet',
@@ -59,9 +68,6 @@ export const gearRules: readonly GearSlotRule[] = [
     githubFiles: [],
     workflowFiles: [],
     keywords: [],
+    docs: { minSignals: 3, readme: /^readme(\.|$)/i, docsDir: /^docs?$/i },
   },
 ];
-
-/** Amulet: a repo counts when it shows at least this many documentation signals (see gear-tiers.ts). */
-export const DOCS_SIGNALS_MIN = 3;
-export const MAX_GEAR_TIER = 3;

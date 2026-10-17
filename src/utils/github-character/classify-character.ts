@@ -5,10 +5,7 @@ import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS } from '../../data/character-job-
 import type { CharacterProfile, ClassSignal } from './character-types.ts';
 import { computeGearTiers } from './gear-tiers.ts';
 import type { GithubSnapshot } from './github-snapshot-types.ts';
-import { repoArchetypeVote, round3, type ArchetypeVote } from './repo-archetype-vote.ts';
-
-const PRIMARY_SIGNALS = 5;
-const SECONDARY_SIGNALS = 2;
+import { repoArchetypeVote, round3, zeroVote, type ArchetypeVote } from './repo-archetype-vote.ts';
 
 const bySignal = (a: ClassSignal, b: ClassSignal) => b.points - a.points || (a.repo < b.repo ? -1 : a.repo > b.repo ? 1 : 0);
 
@@ -18,8 +15,9 @@ function rankArchetypes(scores: ArchetypeVote, topCounts: ArchetypeVote): Archet
 }
 
 export function classifyCharacter(snapshot: GithubSnapshot, rules: ClassRules = classRules): CharacterProfile {
-  const scores: ArchetypeVote = { backend: 0, data: 0, frontend: 0 };
-  const topCounts: ArchetypeVote = { backend: 0, data: 0, frontend: 0 };
+  const scores = zeroVote();
+  const topCounts = zeroVote();
+  const none = zeroVote();
   const signals: ClassSignal[] = [];
   let votingRepos = 0;
 
@@ -28,8 +26,8 @@ export function classifyCharacter(snapshot: GithubSnapshot, rules: ClassRules = 
     if (repoSignals.length === 0) continue;
     votingRepos++;
     for (const archetype of ARCHETYPE_IDS) scores[archetype] += vote[archetype];
-    const top = [...ARCHETYPE_IDS].sort((a, b) => vote[b] - vote[a] || ARCHETYPE_IDS.indexOf(a) - ARCHETYPE_IDS.indexOf(b))[0];
-    topCounts[top]++;
+    const rounded = Object.fromEntries(ARCHETYPE_IDS.map((id) => [id, round3(vote[id])])) as ArchetypeVote;
+    topCounts[rankArchetypes(rounded, none)[0]]++;
     signals.push(...repoSignals);
   }
   for (const archetype of ARCHETYPE_IDS) scores[archetype] = round3(scores[archetype]);
@@ -39,14 +37,14 @@ export function classifyCharacter(snapshot: GithubSnapshot, rules: ClassRules = 
   if (total < rules.fallback.minTotal || votingRepos < rules.fallback.minRepos) {
     return {
       classId: 'adventurer', className: CLASS_NAMES.adventurer, jobId: null, jobName: null, motif: null,
-      scores, primary: null, secondary: null, signals: signals.sort(bySignal).slice(0, PRIMARY_SIGNALS), gear,
+      scores, primary: null, secondary: null, signals: signals.sort(bySignal).slice(0, rules.signals.primary), gear,
     };
   }
 
   const [primary, runnerUp] = rankArchetypes(scores, topCounts);
-  const secondary = scores[runnerUp] >= rules.secondary.minRatio * scores[primary] && scores[runnerUp] >= rules.secondary.minScore
-    ? runnerUp
-    : null;
+  const { minRatio, minScore, minTopRepos } = rules.secondary;
+  const isSecondary = scores[runnerUp] >= minRatio * scores[primary] && scores[runnerUp] >= minScore && topCounts[runnerUp] >= minTopRepos;
+  const secondary = isSecondary ? runnerUp : null;
   const motif = secondary ?? primary;
   const classId = CLASS_BY_ARCHETYPE[primary];
   const job = JOBS[classId][motif];
@@ -62,7 +60,7 @@ export function classifyCharacter(snapshot: GithubSnapshot, rules: ClassRules = 
     scores,
     primary,
     secondary,
-    signals: [...ranked(primary, PRIMARY_SIGNALS), ...(secondary ? ranked(secondary, SECONDARY_SIGNALS) : [])],
+    signals: [...ranked(primary, rules.signals.primary), ...(secondary ? ranked(secondary, rules.signals.secondary) : [])],
     gear,
   };
 }

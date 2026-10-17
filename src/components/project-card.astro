@@ -2,18 +2,24 @@
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import TagList from './tag-list.astro';
+import QuestTierBadge from './career-rpg/quest-tier-badge.astro';
 import { withBasePath } from '../utils/with-base-path';
+import { getEvidenceLink } from '../utils/career-rpg/evidence-links';
 
 interface Props {
   project: CollectionEntry<'projects'>;
+  /** XP this quest earned at build time (0 when unverified). */
+  questXp: number;
 }
 
-const { project } = Astro.props;
-const { title, summary, tags, cover, coverAlt, repoUrl, demoUrl } = project.data;
+const { project, questXp } = Astro.props;
+const { title, summary, tags, cover, coverAlt, evidence, difficulty, isBoss } = project.data;
+const repoUrl = getEvidenceLink(evidence, 'repo');
+const demoUrl = getEvidenceLink(evidence, 'demo');
 const detailHref = withBasePath(`/projects/${project.id}/`);
 ---
 
-<article class="glass project-card" data-spotlight data-reveal>
+<article class="glass project-card" data-spotlight data-reveal data-boss={isBoss ? '' : undefined}>
   {
     cover && (
       <Image
@@ -28,6 +34,10 @@ const detailHref = withBasePath(`/projects/${project.id}/`);
     )
   }
   <div class="project-body">
+    <p class="quest-meta">
+      <QuestTierBadge difficulty={difficulty} isBoss={isBoss} />
+      <span class="quest-xp mono">{questXp > 0 ? `+${Math.round(questXp)} XP` : 'Unverified'}</span>
+    </p>
     <h3 transition:name={`project-title-${project.id}`}>
       <a href={detailHref}>{title}</a>
     </h3>
@@ -60,6 +70,11 @@ const detailHref = withBasePath(`/projects/${project.id}/`);
     overflow: hidden;
   }
 
+  .project-card[data-boss] {
+    border-color: var(--color-accent-magenta);
+    box-shadow: var(--shadow-card), var(--shadow-glow-magenta);
+  }
+
   .project-cover {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -71,6 +86,18 @@ const detailHref = withBasePath(`/projects/${project.id}/`);
     display: grid;
     gap: var(--space-4);
     padding: var(--space-5);
+  }
+
+  .quest-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .quest-xp {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
   }
 
   h3 a {

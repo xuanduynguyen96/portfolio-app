@@ -1,0 +1,107 @@
+---
+import SectionHeading from '../section-heading.astro';
+import GlassCard from '../glass-card.astro';
+import XpProgressBar from '../career-rpg/xp-progress-bar.astro';
+import StreakBadge from '../career-rpg/streak-badge.astro';
+import CompletenessHud from '../career-rpg/completeness-hud.astro';
+import { loadCareerState } from '../../utils/career-rpg/load-career-state';
+
+const { level, attributes, streak, completeness } = await loadCareerState();
+const { nextLevelXp, currentLevelXp, totalXp } = level;
+const fmt = (xp: number) => xp.toLocaleString('en');
+---
+
+<section id="character" class="section" aria-labelledby="character-title">
+  <div class="container">
+    <SectionHeading index={2} label="Character" title="Character sheet" id="character-title" />
+    <div class="character-grid">
+      <GlassCard class="identity" data-reveal>
+        <p class="eyebrow">Level {level.level}</p>
+        <h3 class="char-title">{level.title}</h3>
+        <p class="char-xp mono">{fmt(totalXp)} XP</p>
+        <XpProgressBar
+          id="xp-next-level"
+          label={nextLevelXp === null ? 'Max level reached' : `Progress to level ${level.level + 1}`}
+          value={nextLevelXp === null ? 1 : totalXp - currentLevelXp}
+          max={nextLevelXp === null ? 1 : nextLevelXp - currentLevelXp}
+          valueText={nextLevelXp === null ? `${fmt(totalXp)} XP` : `${fmt(totalXp)} / ${fmt(nextLevelXp)} XP`}
+        />
+        <StreakBadge streak={streak} />
+      </GlassCard>
+
+      <GlassCard class="attributes" data-reveal>
+        <h3 class="card-title">Attributes</h3>
+        <ul class="attribute-list" role="list" aria-label="Attributes">
+          {
+            attributes.map((attribute) => (
+              <li>
+                <XpProgressBar
+                  id={`attr-${attribute.id}`}
+                  label={attribute.label}
+                  value={attribute.xp}
+                  max={attribute.cap}
+                  valueText={`${fmt(attribute.xp)} / ${fmt(attribute.cap)} XP`}
+                />
+              </li>
+            ))
+          }
+        </ul>
+      </GlassCard>
+
+      <CompletenessHud completeness={completeness} />
+    </div>
+    <p class="character-note">
+      XP is computed when the site is built, from evidence only: case studies that meet a word minimum, links no other
+      entry already claimed, and caps with diminishing returns. No number here is typed in by hand.
+    </p>
+  </div>
+</section>
+
+<style>
+  .character-grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (min-width: 56rem) {
+    .character-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .character-grid > :global(.hud) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .identity,
+  .attributes {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+  }
+
+  .char-title {
+    font-size: var(--text-h2);
+    letter-spacing: -0.02em;
+  }
+
+  .char-xp {
+    color: var(--color-text-muted);
+  }
+
+  .card-title {
+    font-size: var(--text-lg);
+  }
+
+  .attribute-list {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .character-note {
+    max-width: 44rem;
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+</style>

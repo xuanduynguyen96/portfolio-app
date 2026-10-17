@@ -1,9 +1,16 @@
 // Single source of truth for personal info + SEO defaults.
 // TODO(content): replace placeholder values with real details.
+import type { AvailabilityStatus } from './xp-rules';
 
 export interface SocialLink {
   label: string;
   href: string;
+}
+
+export interface Availability {
+  status: AvailabilityStatus;
+  /** Shown in the hero eyebrow and on /speedrun/. */
+  note: string;
 }
 
 export interface SiteConfig {
@@ -14,6 +21,7 @@ export interface SiteConfig {
   location: string;
   email: string;
   socials: SocialLink[];
+  availability: Availability;
   seo: {
     title: string;
     description: string;
@@ -31,6 +39,7 @@ export const siteConfig: SiteConfig = {
   location: 'Remote',
   email: 'hello@example.com',
   socials: [{ label: 'GitHub', href: 'https://github.com/xuanduynguyen96' }],
+  availability: { status: 'open', note: 'Available for new projects' },
   seo: {
     title: 'Xuan Duy Nguyen | Software Engineer',
     description:

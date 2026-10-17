@@ -1,19 +1,27 @@
 ---
 import SectionHeading from '../section-heading.astro';
 import GlassCard from '../glass-card.astro';
-import TagList from '../tag-list.astro';
-import { skillGroups } from '../../data/skills-data';
+import SkillTreeNode from '../career-rpg/skill-tree-node.astro';
+import { loadCareerState } from '../../utils/career-rpg/load-career-state';
+import { xpRules } from '../../data/xp-rules';
+
+const { skillTree, quests } = await loadCareerState();
+const questTitles = Object.fromEntries(quests.map((quest) => [quest.id, quest.title]));
+const [first, second, third] = xpRules.skillEvidence.levelThresholds;
 ---
 
 <section id="skills" class="section" aria-labelledby="skills-title">
   <div class="container">
-    <SectionHeading index={2} label="Skills" title="Tools of the trade" id="skills-title" />
-    <ul class="skills-grid" role="list">
+    <SectionHeading index={3} label="Skills" title="Skill tree" id="skills-title" />
+    <p class="skills-legend">
+      Skills level up only through evidence: linked work and verified projects. Level 1 unlocks at {first} piece of
+      evidence, level 2 at {second}, level 3 at {third}. Branches also count their sub-skills' evidence.
+    </p>
+    <ul class="skill-tree-roots" role="list" aria-label="Skill tree">
       {
-        skillGroups.map((group) => (
-          <GlassCard as="li" data-reveal>
-            <h3 class="skill-label mono">{group.label}</h3>
-            <TagList tags={group.items} label={group.label} />
+        skillTree.map((root) => (
+          <GlassCard as="li" class="skill-root" data-reveal>
+            <SkillTreeNode node={root} questTitles={questTitles} isRoot />
           </GlassCard>
         ))
       }
@@ -22,17 +30,20 @@ import { skillGroups } from '../../data/skills-data';
 </section>
 
 <style>
-  .skills-grid {
+  .skills-legend {
+    max-width: 44rem;
+    margin-bottom: var(--space-6);
+    color: var(--color-text-muted);
+  }
+
+  .skill-tree-roots {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    align-items: start;
     gap: var(--space-5);
   }
 
-  .skill-label {
-    margin-bottom: var(--space-4);
-    font-size: var(--text-base);
-    color: var(--color-accent-cyan);
-    letter-spacing: var(--tracking-mono);
-    text-transform: uppercase;
+  .skill-root {
+    padding: var(--space-5);
   }
 </style>

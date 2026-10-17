@@ -5,6 +5,9 @@ import { expectAllRevealsVisible } from './test-helpers';
 const PAGES = [
   { name: 'home', path: './', hasReveals: true },
   { name: 'project detail', path: './projects/neon-dashboard/', hasReveals: false },
+  { name: 'unverified project detail', path: './projects/cli-toolkit/', hasReveals: false },
+  { name: 'speedrun', path: './speedrun/', hasReveals: true },
+  { name: 'changelog', path: './changelog/', hasReveals: false },
   { name: '404', path: './missing-page', hasReveals: false },
 ];
 
@@ -14,6 +17,8 @@ for (const { name, path, hasReveals } of PAGES) {
     // Audit the final, fully revealed state (contrast checks need opacity 1).
     if (hasReveals) await expectAllRevealsVisible(page);
     await expect(page.locator('h1')).toHaveCSS('opacity', '1');
+    // Audit disclosure content too (HUD missing list, skill evidence).
+    await page.evaluate(() => document.querySelectorAll('details').forEach((details) => (details.open = true)));
 
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice']).analyze();
     const blocking = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');

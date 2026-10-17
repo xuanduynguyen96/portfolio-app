@@ -1,0 +1,117 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/base-layout.astro';
+import GlassCard from '../components/glass-card.astro';
+import StreakBadge from '../components/career-rpg/streak-badge.astro';
+import { siteConfig } from '../data/site-config';
+import { loadCareerState } from '../utils/career-rpg/load-career-state';
+import { formatEntryDate } from '../utils/format-date-range';
+import { withBasePath } from '../utils/with-base-path';
+
+const { streak } = await loadCareerState();
+const entries = (await getCollection('changelog')).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime() || b.id.localeCompare(a.id),
+);
+const rendered = await Promise.all(entries.map(async (entry) => ({ entry, ...(await render(entry)) })));
+---
+
+<BaseLayout
+  title={`Changelog | ${siteConfig.name}`}
+  description={`Dated build log of ${siteConfig.name}: what shipped, week by week.`}
+>
+  <article class="changelog container" aria-labelledby="changelog-title">
+    <a class="back-link mono" href={withBasePath('/')}>← Home</a>
+    <header class="changelog-header">
+      <p class="eyebrow">Consistency streak</p>
+      <h1 id="changelog-title">Changelog</h1>
+      <p class="changelog-lead">
+        A dated log of what shipped. Every ISO week (Monday to Sunday, UTC) with an entry extends the streak. It is
+        computed when the site is built and refreshed by a weekly scheduled build.
+      </p>
+      <StreakBadge streak={streak} />
+    </header>
+    {
+      rendered.length === 0 ? (
+        <p class="changelog-empty">No entries yet.</p>
+      ) : (
+        <ol class="entries" role="list">
+          {rendered.map(({ entry, Content }) => (
+            <li>
+              <GlassCard as="article" class="entry" aria-labelledby={`entry-${entry.id}`} spotlight={false}>
+                <time class="entry-date mono" datetime={entry.data.date.toISOString().slice(0, 10)}>
+                  {formatEntryDate(entry.data.date)}
+                </time>
+                <h2 id={`entry-${entry.id}`}>{entry.data.summary}</h2>
+                <div class="entry-body">
+                  <Content />
+                </div>
+              </GlassCard>
+            </li>
+          ))}
+        </ol>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .changelog {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-7) var(--space-section);
+  }
+
+  .back-link {
+    width: fit-content;
+    font-size: var(--text-sm);
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .changelog-header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  h1 {
+    font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
+    letter-spacing: -0.03em;
+  }
+
+  .changelog-lead,
+  .changelog-empty {
+    max-width: 44rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .entries {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 48rem;
+  }
+
+  .entry {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .entry-date {
+    color: var(--color-accent-cyan);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+  }
+
+  h2 {
+    font-size: var(--text-h3);
+  }
+
+  .entry-body {
+    display: grid;
+    gap: var(--space-3);
+    color: var(--color-text-muted);
+  }
+</style>

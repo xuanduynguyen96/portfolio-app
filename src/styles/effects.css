@@ -98,3 +98,23 @@ body::after {
   text-transform: uppercase;
   color: var(--color-accent-cyan);
 }
+
+/* Availability dot (hero eyebrow, /speedrun/). Status is always also shown as text. */
+.status-dot {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-accent-cyan);
+  box-shadow: var(--shadow-glow-cyan);
+}
+
+.status-dot[data-status='limited'] {
+  background: var(--color-accent-magenta);
+  box-shadow: var(--shadow-glow-magenta);
+}
+
+.status-dot[data-status='closed'] {
+  background: var(--color-text-muted);
+  box-shadow: none;
+}

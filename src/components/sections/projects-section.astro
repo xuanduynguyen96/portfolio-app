@@ -3,15 +3,18 @@ import { getCollection } from 'astro:content';
 import SectionHeading from '../section-heading.astro';
 import ProjectCard from '../project-card.astro';
 import { sortProjects } from '../../utils/sort-projects';
+import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 
 const projects = sortProjects(await getCollection('projects'));
+const { quests } = await loadCareerState();
+const questXp = new Map(quests.map((quest) => [quest.id, quest.xp]));
 ---
 
 <section id="projects" class="section" aria-labelledby="projects-title">
   <div class="container">
-    <SectionHeading index={3} label="Projects" title="Selected work" id="projects-title" />
+    <SectionHeading index={4} label="Projects" title="Selected work" id="projects-title" />
     <div class="projects-grid">
-      {projects.map((project) => <ProjectCard project={project} />)}
+      {projects.map((project) => <ProjectCard project={project} questXp={questXp.get(project.id) ?? 0} />)}
     </div>
   </div>
 </section>
@@ -21,5 +24,12 @@ const projects = sortProjects(await getCollection('projects'));
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
     gap: var(--space-5);
+  }
+
+  /* Boss battle spans two columns once two fit. */
+  @media (min-width: 56rem) {
+    .projects-grid > :global([data-boss]) {
+      grid-column: span 2;
+    }
   }
 </style>

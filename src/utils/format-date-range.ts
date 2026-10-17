@@ -9,3 +9,10 @@ function formatYearMonth(value: string): string {
 export function formatDateRange(start: string, end: string | null): string {
   return `${formatYearMonth(start)} — ${end ? formatYearMonth(end) : 'Present'}`;
 }
+
+const entryFormatter = new Intl.DateTimeFormat('en', { dateStyle: 'medium', timeZone: 'UTC' });
+
+/** "Oct 17, 2026" in UTC, so output never depends on the build machine's time zone. */
+export function formatEntryDate(date: Date): string {
+  return entryFormatter.format(date);
+}

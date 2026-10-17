@@ -1,6 +1,6 @@
 # Plan: Career RPG gamification layer (additive)
 
-Created: 2026-10-17 · Status: **Planned, awaiting user approval** · Scout: [reports/01-codebase-scout-report.md](reports/01-codebase-scout-report.md) · Prior plan: [../20261017-0254-astro-portfolio-implementation/plan.md](../20261017-0254-astro-portfolio-implementation/plan.md)
+Created: 2026-10-17 · Status: **In progress (implementing via /code)** · Scout: [reports/01-codebase-scout-report.md](reports/01-codebase-scout-report.md) · Prior plan: [../20261017-0254-astro-portfolio-implementation/plan.md](../20261017-0254-astro-portfolio-implementation/plan.md)
 
 ## Goal
 Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Quests + Boss Battle, Skill Tree, Recruiter Speedrun `/speedrun/`, Consistency Streak (changelog), HUD completeness. Additive: reuse `glass-card`, `section-heading`, tag/token styles. No backend, no reskin.
@@ -21,8 +21,8 @@ Gamified "Career RPG" layer on own static portfolio: Character Sheet, Project Qu
 
 | # | Phase | Priority | Effort | Status | Progress |
 |---|---|---|---|---|---|
-| 01 | [Rules config, pure scoring utils, unit runner](phase-01-rules-config-scoring-utils-unit-tests.md) | P0 | M | Planned | 0% |
-| 02 | [Content schema extensions + placeholder content](phase-02-content-schema-extensions.md) | P0 | M | Planned | 0% |
+| 01 | [Rules config, pure scoring utils, unit runner](phase-01-rules-config-scoring-utils-unit-tests.md) | P0 | M | Done | 100% |
+| 02 | [Content schema extensions + placeholder content](phase-02-content-schema-extensions.md) | P0 | M | Done | 100% |
 | 03 | [Quests & Boss Battle UI](phase-03-quests-and-boss-battle-ui.md) | P0 | M | Planned | 0% |
 | 04 | [Character Sheet + HUD completeness](phase-04-character-sheet-and-hud.md) | P0 | M | Planned | 0% |
 | 05 | [Skill Tree](phase-05-skill-tree.md) | P1 | M | Planned | 0% |

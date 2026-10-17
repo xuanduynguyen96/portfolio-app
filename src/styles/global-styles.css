@@ -62,7 +62,8 @@ a {
   text-underline-offset: 0.2em;
 }
 
-ul[role='list'] {
+ul[role='list'],
+ol[role='list'] {
   list-style: none;
   padding: 0;
 }

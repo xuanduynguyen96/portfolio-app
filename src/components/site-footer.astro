@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from '../data/site-config';
+import { withBasePath } from '../utils/with-base-path';
 
 const year = new Date().getFullYear();
 ---
@@ -7,7 +8,9 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container footer-inner">
     <p>© {year} {siteConfig.name}</p>
-    <p class="mono footer-meta">Built with Astro + GSAP · Hosted on GitHub Pages</p>
+    <p class="mono footer-meta">
+      <a href={withBasePath('/changelog/')}>Changelog</a> · Built with Astro + GSAP · Hosted on GitHub Pages
+    </p>
   </div>
 </footer>
 

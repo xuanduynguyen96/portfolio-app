@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:unit": "node --test --disable-warning=ExperimentalWarning \"tests/unit/**/*.test.ts\"",
     "test:e2e": "playwright test"
   },
   "engines": {

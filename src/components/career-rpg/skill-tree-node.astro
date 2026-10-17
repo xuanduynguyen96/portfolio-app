@@ -1,0 +1,163 @@
+---
+import { xpRules } from '../../data/xp-rules';
+import type { SkillTreeNode } from '../../utils/career-rpg/career-types';
+import { withBasePath } from '../../utils/with-base-path';
+
+interface Props {
+  node: SkillTreeNode;
+  /** Quest id -> title, for "Proven in" links. */
+  questTitles: Record<string, string>;
+  /** Roots render their label as a heading. */
+  isRoot?: boolean;
+}
+
+const { node, questTitles, isRoot = false } = Astro.props;
+const maxLevel = xpRules.skillEvidence.levelThresholds.length;
+const pips = Array.from({ length: maxLevel }, (_, index) => index < node.level);
+const Label = isRoot ? 'h3' : 'span';
+const shortUrl = (url: string) => {
+  const { hostname, pathname } = new URL(url);
+  return `${hostname}${pathname.replace(/\/$/, '')}`;
+};
+---
+
+<div class:list={['skill-node', { 'skill-node--root': isRoot, 'skill-node--locked': node.level === 0 }]}>
+  <Label class="skill-node-label">
+    {node.label}<span class="visually-hidden">, level {node.level} of {maxLevel}{node.level === 0 && ' (locked)'}</span>
+  </Label>
+  <span class="skill-pips" aria-hidden="true">
+    {pips.map((on) => <span class:list={['pip', { 'pip--on': on }]} />)}
+  </span>
+</div>
+{
+  node.questIds.length > 0 && (
+    <p class="skill-quests">
+      Proven in{' '}
+      {node.questIds.map((id, index) => (
+        <>
+          {index > 0 && ', '}
+          <a href={withBasePath(`/projects/${id}/`)}>{questTitles[id] ?? id}</a>
+        </>
+      ))}
+    </p>
+  )
+}
+{
+  node.evidence.length > 0 && (
+    <details class="skill-evidence">
+      <summary class="mono">Evidence ({node.evidence.length})</summary>
+      <ul role="list">
+        {node.evidence.map((url) => (
+          <li>
+            <a href={url} target="_blank" rel="noopener noreferrer">
+              {shortUrl(url)}
+              <span class="visually-hidden"> (opens in new tab)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </details>
+  )
+}
+{
+  node.children.length > 0 && (
+    <ul class="skill-branch" role="list" aria-label={`${node.label} sub-skills`}>
+      {node.children.map((child) => (
+        <li>
+          <Astro.self node={child} questTitles={questTitles} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .skill-node {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .skill-node-label {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+  }
+
+  .skill-node--root .skill-node-label {
+    color: var(--color-accent-cyan);
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .skill-node--locked .skill-node-label {
+    color: var(--color-text-muted);
+  }
+
+  .skill-pips {
+    display: inline-flex;
+    gap: var(--space-1);
+  }
+
+  .pip {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1px solid var(--color-text-muted);
+    border-radius: 50%;
+  }
+
+  .pip--on {
+    border-color: var(--color-accent-cyan);
+    background: var(--color-accent-cyan);
+    box-shadow: var(--shadow-glow-cyan);
+  }
+
+  .skill-quests,
+  .skill-evidence {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+
+  .skill-evidence summary {
+    width: fit-content;
+    padding-block: var(--space-3);
+    color: var(--color-accent-cyan);
+    cursor: pointer;
+  }
+
+  .skill-evidence ul {
+    display: grid;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+  }
+
+  .skill-evidence a {
+    overflow-wrap: anywhere;
+  }
+
+  /* Tree connectors: decorative borders only, the nested lists carry the structure. */
+  .skill-branch {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    margin-left: var(--space-1);
+    border-left: 1px solid var(--color-border-glow);
+  }
+
+  .skill-branch > li {
+    position: relative;
+    padding-left: var(--space-5);
+  }
+
+  .skill-branch > li::before {
+    content: '';
+    position: absolute;
+    top: 0.8em;
+    left: 0;
+    inline-size: var(--space-4);
+    border-top: 1px solid var(--color-border-glow);
+  }
+</style>

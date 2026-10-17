@@ -1,0 +1,63 @@
+/* Design tokens: single source of truth for the futuristic dark theme. */
+:root {
+  color-scheme: dark;
+
+  /* Color */
+  --color-bg: #05070d;
+  --color-bg-elevated: #0b1020;
+  --color-surface-glass: rgb(255 255 255 / 0.04);
+  --color-surface-glass-hover: rgb(255 255 255 / 0.07);
+  --color-border: rgb(159 179 200 / 0.16);
+  --color-border-glow: rgb(0 255 240 / 0.22);
+  --color-accent-cyan: #00fff0;
+  --color-accent-magenta: #ff2bd6;
+  --color-text: #e6fbff;
+  --color-text-muted: #9fb3c8;
+  --color-text-on-accent: #05070d;
+
+  /* Typography */
+  --font-display: 'Space Grotesk Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --text-hero: clamp(2.5rem, 6vw + 1rem, 5.5rem);
+  --text-h2: clamp(1.875rem, 3vw + 1rem, 3rem);
+  --text-h3: clamp(1.25rem, 1vw + 1rem, 1.5rem);
+  --text-lg: clamp(1.0625rem, 0.5vw + 1rem, 1.25rem);
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+  --leading-tight: 1.1;
+  --leading-body: 1.65;
+  --tracking-mono: 0.08em;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-section: clamp(4rem, 10vw, 8rem);
+  --gutter: clamp(1rem, 4vw, 2rem);
+  --container-max: 72rem;
+
+  /* Shape + depth */
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+  --radius-card: 16px;
+  --shadow-glow-cyan: 0 0 24px rgb(0 255 240 / 0.35);
+  --shadow-glow-magenta: 0 0 24px rgb(255 43 214 / 0.35);
+  --shadow-card: 0 10px 40px rgb(0 0 0 / 0.45);
+
+  /* Layers */
+  --z-bg: -1;
+  --z-header: 50;
+  --z-skip-link: 100;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 250ms;
+  --duration-slow: 400ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}

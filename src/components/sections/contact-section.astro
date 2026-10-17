@@ -1,0 +1,53 @@
+---
+import SectionHeading from '../section-heading.astro';
+import GlassCard from '../glass-card.astro';
+import NeonButton from '../neon-button.astro';
+import { siteConfig } from '../../data/site-config';
+---
+
+<section id="contact" class="section" aria-labelledby="contact-title">
+  <div class="container">
+    <SectionHeading index={5} label="Contact" title="Let's build something" id="contact-title" />
+    <GlassCard class="contact-card" data-reveal>
+      <p class="contact-lead">
+        Have a project, role or idea in mind? My inbox is open. I usually reply within a couple of days.
+      </p>
+      <div class="contact-actions">
+        <NeonButton href={`mailto:${siteConfig.email}`}>Email me</NeonButton>
+        {
+          siteConfig.socials.map((social) => (
+            <NeonButton href={social.href} variant="ghost" external aria-label={`${social.label} (opens in new tab)`}>
+              {social.label} ↗
+            </NeonButton>
+          ))
+        }
+      </div>
+      <p class="contact-email mono">{siteConfig.email}</p>
+    </GlassCard>
+  </div>
+</section>
+
+<style>
+  .contact-card {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 44rem;
+  }
+
+  .contact-lead {
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+  }
+
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .contact-email {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+  }
+</style>

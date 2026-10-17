@@ -1,0 +1,73 @@
+---
+import NeonButton from '../neon-button.astro';
+import { siteConfig } from '../../data/site-config';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero-inner">
+    <p class="eyebrow" data-hero>
+      <span class="status-dot" aria-hidden="true"></span>Available for new projects
+    </p>
+    <h1 id="hero-title" class="hero-title glow-cyan" data-hero data-hero-title>{siteConfig.name}</h1>
+    <p class="hero-role neon-text" data-hero>{siteConfig.role}</p>
+    <p class="hero-tagline" data-hero>{siteConfig.tagline}</p>
+    <div class="hero-ctas" data-hero>
+      <NeonButton href="#projects">View projects</NeonButton>
+      <NeonButton href="#contact" variant="ghost">Get in touch</NeonButton>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    align-items: center;
+    min-height: calc(100svh - 4rem);
+    padding-block: var(--space-8);
+  }
+
+  .hero-inner {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-accent-cyan);
+    box-shadow: var(--shadow-glow-cyan);
+  }
+
+  .hero-title {
+    font-size: var(--text-hero);
+    letter-spacing: -0.04em;
+    max-width: 14ch;
+  }
+
+  .hero-role {
+    font-family: var(--font-mono);
+    font-size: var(--text-h3);
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .hero-tagline {
+    max-width: 40rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+  }
+</style>

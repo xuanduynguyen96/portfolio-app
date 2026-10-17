@@ -1,0 +1,26 @@
+---
+interface Props {
+  /** Section number shown in the mono eyebrow, e.g. 1 -> "// 01" */
+  index: number;
+  label: string;
+  title: string;
+  /** id for the h2, referenced by the section's aria-labelledby */
+  id: string;
+}
+
+const { index, label, title, id } = Astro.props;
+const number = String(index).padStart(2, '0');
+---
+
+<div class="section-heading" data-reveal>
+  <p class="eyebrow"><span aria-hidden="true">// {number} </span>{label}</p>
+  <h2 id={id}>{title}</h2>
+</div>
+
+<style>
+  .section-heading {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+</style>

@@ -1,0 +1,26 @@
+{
+  "skill_name": "tech-lead-thinking",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "research-first-routing",
+      "prompt": "We're evaluating whether to migrate our monolithic Go backend to microservices. The main concern is whether we'd actually gain performance and reliability improvements, or if we'd just add operational complexity. We have 3-4 services worth of functionality to split. Should we do it?",
+      "expected_output": "Decision report that routes to research first (to gather evidence on perf/reliability/ops complexity of microservices), then brainstorms the trade-offs given that evidence. Report should have research summary, brainstorm summary, and clear recommendation on whether migration is worth it.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "eval_name": "brainstorm-first-routing",
+      "prompt": "I need to design authentication for our Shift Scheduler API. We could use JWT tokens, OAuth 2.0, or session-based auth with cookies. We need to support web browsers and mobile clients. What's the best approach for our constraints?",
+      "expected_output": "Decision report that routes to brainstorm first (to evaluate architectural trade-offs), then optionally researches implementation details of top choice. Report should have brainstorm summary showing pros/cons of each approach, research findings on implementation, and clear recommendation.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "eval_name": "parallel-routing",
+      "prompt": "We're choosing a message queue for async job processing. We're considering RabbitMQ, Apache Kafka, or AWS SQS. Each has different trade-offs on throughput, latency, ops burden, and cost. We need high throughput (~10k msgs/sec) but also want to minimize ops overhead. What should we pick?",
+      "expected_output": "Decision report that routes research and brainstorm in parallel (researching each queue's perf/ops characteristics while brainstorming architectural fit). Report should have detailed research on each option, brainstorm analysis of trade-offs vs. constraints, and clear recommendation.",
+      "files": []
+    }
+  ]
+}

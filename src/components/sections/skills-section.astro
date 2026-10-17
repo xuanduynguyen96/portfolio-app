@@ -1,0 +1,38 @@
+---
+import SectionHeading from '../section-heading.astro';
+import GlassCard from '../glass-card.astro';
+import TagList from '../tag-list.astro';
+import { skillGroups } from '../../data/skills-data';
+---
+
+<section id="skills" class="section" aria-labelledby="skills-title">
+  <div class="container">
+    <SectionHeading index={2} label="Skills" title="Tools of the trade" id="skills-title" />
+    <ul class="skills-grid" role="list">
+      {
+        skillGroups.map((group) => (
+          <GlassCard as="li" data-reveal>
+            <h3 class="skill-label mono">{group.label}</h3>
+            <TagList tags={group.items} label={group.label} />
+          </GlassCard>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-5);
+  }
+
+  .skill-label {
+    margin-bottom: var(--space-4);
+    font-size: var(--text-base);
+    color: var(--color-accent-cyan);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

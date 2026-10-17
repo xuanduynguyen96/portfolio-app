@@ -55,12 +55,12 @@ export function warrior(): Grid {
   shaded(g, 14, 17, 4, 7, 'rrR');
   rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[15, 23], [16, 23]]);
   // arms (gauntlets)
-  rect(g, 9, 18, 2, 3, 'i'); rect(g, 21, 18, 2, 4, 'I'); rect(g, 7, 19, 3, 2, 'I'); rect(g, 4, 19, 3, 2, 'I'); rect(g, 21, 21, 3, 2, 'I');
+  rect(g, 9, 18, 2, 3, 'i'); rect(g, 8, 21, 3, 2, 'I'); rect(g, 21, 18, 2, 2, 'I');
   legsAndBoots(g, 'I');
-  // sword held point-down at the side: pommel, grip in fist, guard, 3px blade
-  px(g, 'y', [[5, 17]]); rect(g, 5, 18, 1, 2, 'W');
-  rect(g, 2, 21, 7, 1, 'y'); rect(g, 2, 22, 7, 1, 'Y');
-  rect(g, 4, 23, 1, 7, 'k'); rect(g, 5, 23, 1, 8, 'i'); rect(g, 6, 23, 1, 7, 'I');
+  // sword point-down in the right fist, close to the body: fist, guard, 3px blade
+  shaded(g, 22, 18, 4, 3, 'iiI');
+  rect(g, 21, 21, 7, 1, 'y'); rect(g, 21, 22, 7, 1, 'Y');
+  rect(g, 23, 23, 1, 7, 'k'); rect(g, 24, 23, 1, 8, 'i'); rect(g, 25, 23, 1, 7, 'I');
   return outline(g);
 }
 
@@ -84,11 +84,11 @@ export function mage(): Grid {
   shaded(g, 10, 23, 12, 4, 'cuU'); shaded(g, 9, 27, 14, 3, 'cuU'); rect(g, 9, 29, 14, 1, 'U');
   rect(g, 11, 30, 3, 1, 'L'); rect(g, 18, 30, 3, 1, 'L');
   // sleeves + hands
-  rect(g, 9, 16, 2, 5, 'u'); rect(g, 21, 16, 2, 5, 'U'); rect(g, 8, 20, 3, 2, 's'); rect(g, 21, 20, 2, 2, 's');
-  // staff + crystal
-  rect(g, 5, 6, 1, 25, 'w'); rect(g, 6, 6, 1, 25, 'W');
-  rows(g, 3, 0, ['  aa  ', ' axaa ', ' aaaA ', '  aA  ', ' y  y ', '  yy  ']);
-  rect(g, 6, 20, 3, 2, 's');
+  rect(g, 9, 16, 2, 5, 'u'); rect(g, 21, 16, 2, 4, 'U'); rect(g, 9, 21, 2, 2, 's');
+  // staff + crystal held in the right hand
+  rect(g, 25, 6, 1, 25, 'w'); rect(g, 26, 6, 1, 25, 'W');
+  rows(g, 23, 0, ['  aa  ', ' axaa ', ' aaaA ', '  aA  ', ' y  y ', '  yy  ']);
+  rect(g, 22, 19, 4, 2, 's'); rect(g, 22, 19, 4, 1, 'S');
   return outline(g);
 }
 
@@ -109,16 +109,16 @@ export function archer(): Grid {
   px(g, 'L', [[12, 18], [13, 19], [14, 20], [15, 21], [16, 22], [17, 22]]);
   rect(g, 11, 23, 10, 1, 'L'); px(g, 'y', [[15, 23], [16, 23]]);
   // arms with bracers
-  rect(g, 9, 18, 2, 2, 'g'); rect(g, 21, 18, 2, 2, 'G'); rect(g, 9, 20, 2, 2, 'l'); rect(g, 21, 20, 2, 2, 'L');
-  rect(g, 8, 22, 3, 2, 's'); rect(g, 21, 22, 2, 2, 's');
+  rect(g, 9, 18, 2, 2, 'g'); rect(g, 9, 20, 2, 2, 'l'); rect(g, 9, 22, 2, 2, 's');
   legsAndBoots(g, 'H');
-  // recurve bow + string
-  rows(g, 1, 1, [
-    '     w', '    wW', '   wW ', '  wW  ', ' wW   ', ' wW   ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ',
-    'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', 'wW    ', ' wW   ', ' wW   ', '  wW  ', '   wW ', '    wW',
-    '     w',
+  // recurve bow held out on the right (arc bulges outward), string inside
+  rows(g, 25, 3, [
+    'w     ', 'Ww    ', ' Ww   ', '  Ww  ', '   Ww ', '   Ww ', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww',
+    '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '    Ww', '   Ww ', '   Ww ', '  Ww  ', ' Ww   ', 'Ww    ',
+    'w     ',
   ]);
-  for (let y = 2; y < 25; y++) if (g[y][6] === '.') g[y][6] = 'e';
-  rect(g, 5, 13, 4, 2, 's'); rect(g, 5, 13, 1, 2, 'W');
+  for (let y = 4; y < 27; y++) if (g[y][25] === '.') g[y][25] = 'e';
+  // extended right arm gripping the bow
+  rect(g, 21, 15, 4, 2, 'g'); rect(g, 21, 16, 4, 1, 'G'); rect(g, 25, 15, 2, 2, 'l'); rect(g, 27, 15, 2, 2, 's');
   return outline(g);
 }

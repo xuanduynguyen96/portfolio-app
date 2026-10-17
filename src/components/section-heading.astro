@@ -1,6 +1,8 @@
 ---
+import { toRomanNumeral } from '../utils/to-roman-numeral';
+
 interface Props {
-  /** Section number shown in the mono eyebrow, e.g. 1 -> "// 01" */
+  /** Section number shown as a chapter in the eyebrow, e.g. 1 -> "Ch. I · " (hidden from screen readers) */
   index: number;
   label: string;
   title: string;
@@ -9,11 +11,11 @@ interface Props {
 }
 
 const { index, label, title, id } = Astro.props;
-const number = String(index).padStart(2, '0');
+const chapter = toRomanNumeral(index);
 ---
 
 <div class="section-heading" data-reveal>
-  <p class="eyebrow"><span aria-hidden="true">// {number} </span>{label}</p>
+  <p class="eyebrow"><span aria-hidden="true">Ch. {chapter} · </span>{label}</p>
   <h2 id={id}>{title}</h2>
 </div>
 

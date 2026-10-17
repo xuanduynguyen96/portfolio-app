@@ -1,0 +1,50 @@
+---
+import PixelIcon from './pixel-icon.astro';
+// Click + aria-pressed handled by theme-head-script.astro (delegated, survives swaps).
+// Hidden without JS (no html[data-theme]): CSS then follows the system scheme.
+---
+
+<button class="theme-toggle pixel-frame" type="button" aria-pressed="false" data-theme-toggle>
+  <span class="visually-hidden">Dark theme</span>
+  <span class="theme-icon theme-icon--moon"><PixelIcon name="moon" size={24} /></span>
+  <span class="theme-icon theme-icon--sun"><PixelIcon name="sun" size={24} /></span>
+</button>
+
+<style>
+  .theme-toggle {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    margin: var(--pixel-thin);
+    background: var(--color-surface);
+    border: 0;
+    color: var(--color-accent-primary);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    --frame-color: var(--color-frame-hover);
+  }
+
+  .theme-icon {
+    grid-area: 1 / 1;
+  }
+
+  /* Shows the current theme: moon in the dungeon, sun on parchment. */
+  :global(:root[data-theme='dark']) .theme-icon--sun,
+  :global(:root[data-theme='light']) .theme-icon--moon {
+    display: none;
+  }
+
+  /* No JS, or no light-dark() support (tokens fall back to dark only): nothing to toggle. */
+  :global(:root:not([data-theme])) .theme-toggle {
+    display: none;
+  }
+
+  @supports not (color: light-dark(#000, #fff)) {
+    .theme-toggle {
+      display: none;
+    }
+  }
+</style>

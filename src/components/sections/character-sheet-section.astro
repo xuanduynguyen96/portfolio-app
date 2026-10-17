@@ -4,6 +4,8 @@ import GlassCard from '../glass-card.astro';
 import XpProgressBar from '../career-rpg/xp-progress-bar.astro';
 import StreakBadge from '../career-rpg/streak-badge.astro';
 import CompletenessHud from '../career-rpg/completeness-hud.astro';
+import PixelIcon from '../pixel-icon.astro';
+import { attributeIcons } from '../../data/pixel-icon-map';
 import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 
 const { level, attributes, streak, completeness } = await loadCareerState();
@@ -16,9 +18,17 @@ const fmt = (xp: number) => xp.toLocaleString('en');
     <SectionHeading index={2} label="Character" title="Character sheet" id="character-title" />
     <div class="character-grid">
       <GlassCard class="identity" data-reveal>
-        <p class="eyebrow">Level {level.level}</p>
-        <h3 class="char-title">{level.title}</h3>
-        <p class="char-xp mono">{fmt(totalXp)} XP</p>
+        <div class="identity-head">
+          <span class="crest pixel-frame"><PixelIcon name="level" size={48} /></span>
+          <div class="identity-name">
+            <p class="eyebrow">Level {level.level}</p>
+            <h3 class="char-title">{level.title}</h3>
+          </div>
+        </div>
+        <p class="char-xp-row">
+          <PixelIcon name="xp" />
+          <span class="char-xp hud-text">{fmt(totalXp)} XP</span>
+        </p>
         <XpProgressBar
           id="xp-next-level"
           label={nextLevelXp === null ? 'Max level reached' : `Progress to level ${level.level + 1}`}
@@ -41,6 +51,7 @@ const fmt = (xp: number) => xp.toLocaleString('en');
                   value={attribute.xp}
                   max={attribute.cap}
                   valueText={`${fmt(attribute.xp)} / ${fmt(attribute.cap)} XP`}
+                  icon={attributeIcons[attribute.id]}
                 />
               </li>
             ))
@@ -80,9 +91,44 @@ const fmt = (xp: number) => xp.toLocaleString('en');
     gap: var(--space-4);
   }
 
+  /* Rank crest: framed slot, like a character portrait */
+  .identity-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .crest {
+    --frame-color: var(--color-border-accent);
+    --frame-drop: transparent;
+    display: grid;
+    flex: none;
+    place-items: center;
+    margin: var(--pixel-thin);
+    padding: var(--space-2);
+    background: var(--color-bg);
+    color: var(--color-accent-primary);
+  }
+
+  .identity-name {
+    display: grid;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+
   .char-title {
+    font-family: var(--font-heading);
     font-size: var(--text-h2);
-    letter-spacing: -0.02em;
+    font-weight: 400;
+    font-synthesis: none;
+    letter-spacing: 0.01em;
+  }
+
+  .char-xp-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-accent-primary);
   }
 
   .char-xp {

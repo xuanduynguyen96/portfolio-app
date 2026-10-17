@@ -23,16 +23,16 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
   <div class="speedrun container">
     <header class="speedrun-header">
       <div class="speedrun-topline">
-        <p class="eyebrow"><span aria-hidden="true">// </span>Recruiter speedrun</p>
-        <span class="speedrun-clock mono" data-speedrun-countdown data-seconds={seconds} aria-hidden="true">
+        <p class="eyebrow">Recruiter speedrun</p>
+        <span class="speedrun-clock hud-text" data-speedrun-countdown data-seconds={seconds} aria-hidden="true">
           {startClock}
         </span>
       </div>
       <h1 class="speedrun-title">{siteConfig.name}</h1>
-      <p class="speedrun-identity mono">
+      <p class="speedrun-identity hud-text">
         {siteConfig.role} · Level {level.level} {level.title}
       </p>
-      <div class="availability mono">
+      <div class="availability hud-text">
         <p class="availability-status">
           <span class="status-dot" data-status={status} aria-hidden="true"></span><strong>{statusLabel}</strong>
         </p>
@@ -41,10 +41,10 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
     </header>
 
     <section class="speedrun-block" aria-labelledby="achievements-title">
-      <h2 id="achievements-title">Top achievements</h2>
+      <h2 id="achievements-title" class="h2-compact">Top achievements</h2>
       {
         hasSample && (
-          <p class="sample-note mono">
+          <p class="sample-note hud-text">
             <strong>Sample data:</strong> metrics marked “Sample” come from placeholder projects and are not real
             results yet.
           </p>
@@ -64,7 +64,7 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
     </section>
 
     <section class="speedrun-block" aria-labelledby="next-step-title">
-      <h2 id="next-step-title">Next step</h2>
+      <h2 id="next-step-title" class="h2-compact">Next step</h2>
       <div class="speedrun-ctas">
         <NeonButton href={`mailto:${siteConfig.email}`}>Email me</NeonButton>
         {
@@ -106,17 +106,16 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
 
   .speedrun-clock {
     padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--color-border-glow);
+    border: 1px solid var(--color-border-accent);
     border-radius: var(--radius-pill);
-    color: var(--color-accent-cyan);
+    color: var(--color-accent-primary);
     font-size: var(--text-sm);
     font-variant-numeric: tabular-nums;
-    letter-spacing: var(--tracking-mono);
+    letter-spacing: var(--tracking-hud);
   }
 
   .speedrun-title {
     font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
-    letter-spacing: -0.03em;
   }
 
   .speedrun-identity {
@@ -144,10 +143,6 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
     gap: var(--space-5);
   }
 
-  h2 {
-    font-size: var(--text-h3);
-  }
-
   .achievements {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
@@ -162,7 +157,7 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
   .sample-note {
     max-width: 44rem;
     padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-accent-magenta);
+    border: 1px solid var(--color-accent-secondary);
     border-radius: var(--radius-sm);
     color: var(--color-text);
     font-size: var(--text-sm);

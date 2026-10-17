@@ -9,7 +9,7 @@ import { withBasePath } from '../../utils/with-base-path';
     <p class="eyebrow" data-hero>
       <span class="status-dot" data-status={siteConfig.availability.status} aria-hidden="true"></span>{siteConfig.availability.note}
     </p>
-    <h1 id="hero-title" class="hero-title glow-cyan" data-hero data-hero-title>{siteConfig.name}</h1>
+    <h1 id="hero-title" class="hero-title glow-primary" data-hero data-hero-title>{siteConfig.name}</h1>
     <p class="hero-role neon-text" data-hero>{siteConfig.role}</p>
     <p class="hero-tagline" data-hero>{siteConfig.tagline}</p>
     <div class="hero-ctas" data-hero>
@@ -41,12 +41,11 @@ import { withBasePath } from '../../utils/with-base-path';
 
   .hero-title {
     font-size: var(--text-hero);
-    letter-spacing: -0.04em;
     max-width: 14ch;
   }
 
   .hero-role {
-    font-family: var(--font-mono);
+    font-family: var(--font-hud);
     font-size: var(--text-h3);
     font-weight: 600;
     width: fit-content;

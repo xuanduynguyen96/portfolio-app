@@ -12,57 +12,66 @@ const { href, variant = 'primary', external = false, class: className, ...rest }
 const externalAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 ---
 
-<a href={href} class:list={['neon-button', `neon-button--${variant}`, className]} {...externalAttrs} {...rest}>
+<a
+  href={href}
+  class:list={['neon-button', 'pixel-frame', `neon-button--${variant}`, className]}
+  data-caret={variant === 'primary' ? '' : undefined}
+  {...externalAttrs}
+  {...rest}
+>
   <slot />
 </a>
 
 <style>
+  /* Game-menu button: pixel frame (effects.css) + drop shadow that "presses" on :active. */
   .neon-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
     min-height: 2.75rem;
+    margin: var(--pixel-thin);
     padding: var(--space-2) var(--space-5);
-    border-radius: var(--radius-pill);
-    font-family: var(--font-mono);
+    font-family: var(--font-hud);
     font-size: var(--text-sm);
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--tracking-hud);
     text-decoration: none;
     transition:
-      transform var(--duration-base) var(--ease-out-expo),
-      box-shadow var(--duration-base) var(--ease-out-expo),
+      transform var(--duration-fast) steps(2, end),
       background-color var(--duration-base) var(--ease-out-expo);
   }
 
+  .neon-button[data-caret] {
+    --caret-offset: var(--space-2);
+  }
+
   .neon-button:hover {
-    transform: translateY(-2px);
+    transform: translateY(calc(-1 * var(--pixel-thin)));
   }
 
   .neon-button:active {
-    transform: translateY(0);
+    --frame-drop: transparent;
+    transform: translateY(var(--pixel-thin));
   }
 
   .neon-button--primary {
-    background: var(--color-accent-cyan);
+    --frame-color: var(--color-frame);
+    background: var(--color-accent-primary);
     color: var(--color-text-on-accent);
-    border: 1px solid var(--color-accent-cyan);
   }
 
   .neon-button--primary:hover {
-    box-shadow: var(--shadow-glow-cyan);
+    --frame-color: var(--color-accent-secondary);
   }
 
   .neon-button--ghost {
-    background: transparent;
+    background: var(--color-surface);
     color: var(--color-text);
-    border: 1px solid var(--color-border-glow);
   }
 
   .neon-button--ghost:hover {
-    background: var(--color-surface-glass-hover);
-    box-shadow: var(--shadow-glow-magenta);
-    border-color: var(--color-accent-magenta);
+    --frame-color: var(--color-frame-hover);
+    background: var(--color-surface-hover);
   }
 </style>

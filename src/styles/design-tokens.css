@@ -1,33 +1,45 @@
-/* Design tokens: single source of truth for the futuristic dark theme. */
+/*
+  Design tokens: single source of truth for the RPG theme.
+  Colors are light-dark(parchment, dungeon) pairs resolved by color-scheme:
+  system preference by default, forced by [data-theme] (set only by JS, see theme-head-script.astro).
+  Keep --color-bg in sync with BG in theme-head-script.astro and the theme-color metas.
+*/
 :root {
-  color-scheme: dark;
+  color-scheme: light dark;
 
   /* Color */
-  --color-bg: #05070d;
-  --color-bg-elevated: #0b1020;
-  --color-surface-glass: rgb(255 255 255 / 0.04);
-  --color-surface-glass-hover: rgb(255 255 255 / 0.07);
-  --color-border: rgb(159 179 200 / 0.16);
-  --color-border-glow: rgb(0 255 240 / 0.22);
-  --color-accent-cyan: #00fff0;
-  --color-accent-magenta: #ff2bd6;
-  --color-text: #e6fbff;
-  --color-text-muted: #9fb3c8;
-  --color-text-on-accent: #05070d;
+  --color-bg: light-dark(#f4ecd8, #14110f);
+  --color-surface: light-dark(#fbf6e9, #1f1a17);
+  --color-surface-hover: light-dark(#fffaf0, #26201c);
+  --color-border: light-dark(#8c7a5b, #4a3f35);
+  --color-border-strong: light-dark(#6b5a3e, #7a6a58);
+  --color-border-accent: light-dark(rgb(122 90 18 / 0.5), rgb(217 164 65 / 0.45));
+  --color-accent-primary: light-dark(#7a5a12, #d9a441);
+  --color-accent-secondary: light-dark(#8b1e2d, #e5635a);
+  --color-accent-arcane: light-dark(#4b3a8c, #9c8cf0);
+  --color-text: light-dark(#2b1f14, #eae0cc);
+  --color-text-muted: light-dark(#5c4d3a, #a89c88);
+  --color-text-on-accent: light-dark(#fbf6e9, #14110f);
+  --color-focus: light-dark(#8b1e2d, #d9a441);
+  --color-header-bg: light-dark(rgb(244 236 216 / 0.88), rgb(20 17 15 / 0.82));
+  --color-glow-primary: light-dark(rgb(122 90 18 / 0.18), rgb(217 164 65 / 0.3));
+  --color-glow-secondary: light-dark(rgb(139 30 45 / 0.16), rgb(229 99 90 / 0.3));
 
   /* Typography */
-  --font-display: 'Space Grotesk Variable', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+  --font-display: 'Space Grotesk Variable', system-ui, sans-serif; /* body, h3+ */
+  --font-heading: 'MedievalSharp', 'Iowan Old Style', Georgia, serif; /* h1, h2 only (>=32px) */
+  --font-hud: 'Pixelify Sans Variable', ui-monospace, monospace; /* labels, never <14px */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; /* code */
   --text-hero: clamp(2.5rem, 6vw + 1rem, 5.5rem);
-  --text-h2: clamp(1.875rem, 3vw + 1rem, 3rem);
+  --text-h2: clamp(2rem, 3vw + 1rem, 3rem);
   --text-h3: clamp(1.25rem, 1vw + 1rem, 1.5rem);
   --text-lg: clamp(1.0625rem, 0.5vw + 1rem, 1.25rem);
   --text-base: 1rem;
   --text-sm: 0.875rem;
-  --text-xs: 0.75rem;
+  --text-hud: 0.875rem;
   --leading-tight: 1.1;
   --leading-body: 1.65;
-  --tracking-mono: 0.08em;
+  --tracking-hud: 0.04em;
 
   /* Spacing */
   --space-1: 0.25rem;
@@ -42,14 +54,20 @@
   --gutter: clamp(1rem, 4vw, 2rem);
   --container-max: 72rem;
 
-  /* Shape + depth */
-  --radius-sm: 6px;
-  --radius-pill: 999px;
-  --radius-card: 16px;
-  --bar-height: 0.5rem;
-  --shadow-glow-cyan: 0 0 24px rgb(0 255 240 / 0.35);
-  --shadow-glow-magenta: 0 0 24px rgb(255 43 214 / 0.35);
-  --shadow-card: 0 10px 40px rgb(0 0 0 / 0.45);
+  /* Shape + depth: square pixel corners everywhere (frames are notched via box-shadow, effects.css) */
+  --radius-sm: 0;
+  --radius-pill: 0;
+  --pixel: 4px;
+  --pixel-thin: 2px;
+  --color-frame: var(--color-border-strong);
+  --color-frame-hover: var(--color-accent-primary);
+  --color-frame-drop: light-dark(rgb(43 31 20 / 0.18), rgb(0 0 0 / 0.5));
+  --color-texture: light-dark(rgb(43 31 20 / 0.05), rgb(234 224 204 / 0.035));
+  --bar-height: calc(2 * var(--pixel)); /* XP bar track */
+  --seg: calc(3 * var(--pixel)); /* XP bar segment length (gap = --pixel-thin) */
+  --pip-size: calc(2 * var(--pixel)); /* skill level gem: 4x4 art px at 2px */
+  --shadow-glow-primary: 0 0 24px var(--color-glow-primary);
+  --shadow-glow-secondary: 0 0 24px var(--color-glow-secondary);
 
   /* Layers */
   --z-bg: -1;
@@ -61,4 +79,42 @@
   --duration-base: 250ms;
   --duration-slow: 400ms;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Pre-2024 browsers without light-dark(): dungeon (dark) only. */
+@supports not (color: light-dark(#000, #fff)) {
+  :root {
+    color-scheme: dark;
+    --color-bg: #14110f;
+    --color-surface: #1f1a17;
+    --color-surface-hover: #26201c;
+    --color-border: #4a3f35;
+    --color-border-strong: #7a6a58;
+    --color-border-accent: rgb(217 164 65 / 0.45);
+    --color-accent-primary: #d9a441;
+    --color-accent-secondary: #e5635a;
+    --color-accent-arcane: #9c8cf0;
+    --color-text: #eae0cc;
+    --color-text-muted: #a89c88;
+    --color-text-on-accent: #14110f;
+    --color-focus: #d9a441;
+    --color-header-bg: rgb(20 17 15 / 0.82);
+    --color-glow-primary: rgb(217 164 65 / 0.3);
+    --color-glow-secondary: rgb(229 99 90 / 0.3);
+    --color-frame-drop: rgb(0 0 0 / 0.5);
+    --color-texture: rgb(234 224 204 / 0.035);
+  }
+
+  /* Dark-only here: a forced light theme can't recolor, so keep native UI dark too (toggle hidden in theme-toggle.astro). */
+  :root[data-theme] {
+    color-scheme: dark;
+  }
 }

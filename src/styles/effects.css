@@ -1,50 +1,69 @@
-/* Decorative effects: background grid + scanlines, glass surfaces, neon text, spotlight. */
+/* Decorative effects: dither + vignette background, pixel-framed panels, title gradient, spotlight. */
 
-/* Background grid (fades toward edges) */
+/* Background dither (4px checker, fades toward edges) */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: var(--z-bg);
   pointer-events: none;
-  background-image:
-    linear-gradient(rgb(0 255 240 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(0 255 240 / 0.05) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 30%, transparent 100%);
+  background: repeating-conic-gradient(var(--color-texture) 0 25%, transparent 0 50%) 0 0 / var(--pixel)
+    var(--pixel);
+  mask-image: radial-gradient(ellipse 90% 80% at 50% 30%, #000 20%, transparent 100%);
 }
 
-/* Scanlines + ambient glow blobs */
+/* Torch-lit vignette */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
   z-index: var(--z-bg);
   pointer-events: none;
-  background:
-    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.025) 0 1px, transparent 1px 3px),
-    radial-gradient(40rem 30rem at 85% -5%, rgb(255 43 214 / 0.12), transparent 70%),
-    radial-gradient(40rem 30rem at 5% 20%, rgb(0 255 240 / 0.1), transparent 70%);
+  background: radial-gradient(ellipse at 50% 0%, transparent 45%, var(--color-frame-drop) 100%);
 }
 
-/* Glass surface */
+/*
+  Pixel frame: 4 offset box-shadows draw a border with notched square corners, plus a drop
+  shadow below (no images, no clip-path, so focus outlines are never clipped). It sits
+  outside the box: keep >= --pixel gap between framed siblings.
+  .glass = panel (thick frame); .pixel-frame = controls/chips (thin frame).
+*/
+.glass,
+.pixel-frame {
+  --frame-width: var(--pixel);
+  --frame-color: var(--color-frame);
+  --frame-drop: var(--color-frame-drop);
+  box-shadow:
+    0 calc(-1 * var(--frame-width)) 0 0 var(--frame-color),
+    0 var(--frame-width) 0 0 var(--frame-color),
+    calc(-1 * var(--frame-width)) 0 0 0 var(--frame-color),
+    var(--frame-width) 0 0 0 var(--frame-color),
+    0 calc(2 * var(--frame-width)) 0 0 var(--frame-drop);
+}
+
+.pixel-frame {
+  --frame-width: var(--pixel-thin);
+}
+
+/* Forced colors (Windows High Contrast) drop box-shadow: draw the frame as a real border. */
+@media (forced-colors: active) {
+  .glass,
+  .pixel-frame {
+    border: var(--frame-width) solid CanvasText !important; /* beats scoped `border: 0` on buttons */
+  }
+}
+
+/* Focus ring clears the outer frame. */
+:is(.glass, .pixel-frame):focus-visible {
+  outline-offset: calc(var(--frame-width) + 2px);
+}
+
+/* Panel surface (name kept from the v1 glass theme; API unchanged) */
 .glass {
   position: relative;
-  background: var(--color-surface-glass);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition:
-    border-color var(--duration-base) var(--ease-out-expo),
-    background-color var(--duration-base) var(--ease-out-expo);
-}
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .glass {
-    background: var(--color-bg-elevated);
-  }
+  isolation: isolate; /* spotlight ::before (z-index -1) tints the surface, never the text */
+  background: var(--color-surface);
+  transition: background-color var(--duration-base) var(--ease-out-expo);
 }
 
 /* Pointer spotlight: --spot-x/--spot-y set by card-spotlight.ts */
@@ -52,70 +71,103 @@ body::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: inherit;
+  z-index: -1;
   pointer-events: none;
   opacity: 0;
   background: radial-gradient(
     22rem circle at var(--spot-x, 50%) var(--spot-y, 50%),
-    rgb(0 255 240 / 0.1),
+    var(--color-glow-primary),
     transparent 60%
   );
   transition: opacity var(--duration-slow) var(--ease-out-expo);
 }
 
 .glass[data-spotlight]:hover {
-  border-color: var(--color-border-glow);
-  background-color: var(--color-surface-glass-hover);
+  --frame-color: var(--color-frame-hover);
+  background-color: var(--color-surface-hover);
 }
 
 .glass[data-spotlight]:hover::before {
   opacity: 1;
 }
 
-/* Gradient neon text: decorative/large display text only. Solid color fallback first. */
+/* Gold-to-crimson title text: large display text (h1) only. Solid color fallback first. */
 .neon-text {
-  color: var(--color-accent-cyan);
+  color: var(--color-accent-primary);
 }
 
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .neon-text {
-    background: linear-gradient(100deg, var(--color-accent-cyan) 10%, var(--color-accent-magenta) 90%);
+    background: linear-gradient(180deg, var(--color-accent-primary) 35%, var(--color-accent-secondary) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
 }
 
-.glow-cyan {
-  text-shadow: 0 0 18px rgb(0 255 240 / 0.45);
+.glow-primary {
+  text-shadow: 0 0 18px var(--color-glow-primary);
 }
 
-/* Mono eyebrow label, e.g. "// 01 about" */
+/* Pixel-font eyebrow label, e.g. "Ch. I · About" */
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-mono);
+  font-family: var(--font-hud);
+  font-size: var(--text-hud);
+  letter-spacing: var(--tracking-hud);
   text-transform: uppercase;
-  color: var(--color-accent-cyan);
+  color: var(--color-accent-primary);
 }
 
-/* Availability dot (hero eyebrow, /speedrun/). Decorative: pair it with visible text
+/* Availability gem (hero eyebrow, /speedrun/). Decorative: pair it with visible text
    (hero: availability note, /speedrun/: status label + note). */
 .status-dot {
   flex-shrink: 0;
   width: 0.5rem;
   height: 0.5rem;
-  border-radius: 50%;
-  background: var(--color-accent-cyan);
-  box-shadow: var(--shadow-glow-cyan);
+  background: var(--color-accent-primary);
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .status-dot[data-status='limited'] {
-  background: var(--color-accent-magenta);
-  box-shadow: var(--shadow-glow-magenta);
+  background: var(--color-accent-secondary);
+  box-shadow: var(--shadow-glow-secondary);
 }
 
 .status-dot[data-status='closed'] {
   background: var(--color-text-muted);
   box-shadow: none;
+}
+
+/* Menu-selection caret (pixel triangle) on hover/focus of [data-caret] links. Decorative
+   (no text content). Blinks only when motion is OK; otherwise it shows static. */
+[data-caret] {
+  position: relative;
+}
+
+[data-caret]::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: var(--caret-offset, calc(-1 * var(--space-4)));
+  inset-block-start: 50%;
+  inline-size: var(--space-2);
+  block-size: var(--space-3);
+  translate: 0 -50%;
+  background: currentColor;
+  opacity: 0;
+  clip-path: polygon(0 0, 50% 0, 50% 17%, 75% 17%, 75% 33%, 100% 33%, 100% 67%, 75% 67%, 75% 83%, 50% 83%, 50% 100%, 0 100%);
+  pointer-events: none;
+}
+
+[data-caret]:is(:hover, :focus-visible)::before {
+  opacity: 1;
+}
+
+html[data-motion='ok'] [data-caret]:is(:hover, :focus-visible)::before {
+  animation: pixel-blink 1s steps(1) infinite;
+}
+
+@keyframes pixel-blink {
+  50% {
+    opacity: 0;
+  }
 }

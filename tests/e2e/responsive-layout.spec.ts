@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { CAREER_PAGES, PROJECT_SLUGS } from './test-helpers';
+import { CAREER_PAGES, INFO_PAGES, PROJECT_SLUGS } from './test-helpers';
 
 async function expectNoHorizontalScroll(page: Page) {
   const { scrollWidth, innerWidth } = await page.evaluate(() => ({
@@ -12,7 +12,7 @@ async function expectNoHorizontalScroll(page: Page) {
 test.describe('mobile 360px', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
-  for (const path of ['./', `./projects/${PROJECT_SLUGS[0]}/`, ...CAREER_PAGES, './missing-page']) {
+  for (const path of ['./', `./projects/${PROJECT_SLUGS[0]}/`, ...CAREER_PAGES, ...INFO_PAGES, './missing-page']) {
     test(`no horizontal scroll on ${path}`, async ({ page }) => {
       await page.goto(path);
       await expectNoHorizontalScroll(page);

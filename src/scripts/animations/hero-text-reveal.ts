@@ -1,4 +1,7 @@
-import { gsap, SplitText } from './gsap-setup';
+import { gsap, PIXEL_STEP, SplitText } from './gsap-setup';
+
+// 8-bit feel: characters snap up in 4 frames instead of gliding.
+const HERO_CHAR_EASE = 'steps(4)';
 
 /**
  * Hero intro: title characters rise out of line masks, then the remaining
@@ -18,8 +21,8 @@ export function heroTextReveal(): void {
       onSplit: (self) =>
         gsap.from(self.chars, {
           yPercent: 110,
-          duration: 0.9,
-          ease: 'expo.out',
+          duration: 0.6,
+          ease: HERO_CHAR_EASE,
           stagger: 0.025,
         }),
     });
@@ -28,7 +31,7 @@ export function heroTextReveal(): void {
   if (others.length > 0) {
     gsap.fromTo(
       others,
-      { opacity: 0, y: 24 },
+      { opacity: 0, y: PIXEL_STEP * 3 },
       { opacity: 1, y: 0, duration: 0.8, ease: 'expo.out', stagger: 0.1, delay: title ? 0.35 : 0 },
     );
   }

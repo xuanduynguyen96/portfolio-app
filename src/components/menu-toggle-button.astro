@@ -1,0 +1,83 @@
+---
+// Mobile nav toggle (bound by scripts/mobile-menu.ts). Shown only below 48rem once
+// html[data-menu-enhanced] is set (base-layout); no JS => hidden, nav always visible.
+---
+
+<button class="menu-toggle pixel-frame" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
+  <span class="visually-hidden">Menu</span>
+  <span class="menu-icon" aria-hidden="true"></span>
+</button>
+
+<style>
+  .menu-toggle {
+    display: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    margin: var(--pixel-thin);
+    background: var(--color-surface);
+    border: 0;
+    cursor: pointer;
+  }
+
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after {
+    display: block;
+    width: 1.125rem;
+    height: 2px;
+    background: var(--color-accent-primary);
+    transition: transform var(--duration-base) var(--ease-out-expo);
+  }
+
+  .menu-icon {
+    position: relative;
+  }
+
+  .menu-icon::before,
+  .menu-icon::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+
+  .menu-icon::before {
+    transform: translateY(-6px);
+  }
+
+  .menu-icon::after {
+    transform: translateY(6px);
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-icon {
+    background: transparent;
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-icon::before {
+    transform: rotate(45deg);
+  }
+
+  .menu-toggle[aria-expanded='true'] .menu-icon::after {
+    transform: rotate(-45deg);
+  }
+
+  /* Forced colors repaint backgrounds: keep the bars visible as button text color. */
+  @media (forced-colors: active) {
+    .menu-icon,
+    .menu-icon::before,
+    .menu-icon::after {
+      forced-color-adjust: none;
+      background: ButtonText;
+    }
+
+    .menu-toggle[aria-expanded='true'] .menu-icon {
+      background: transparent;
+    }
+  }
+
+  @media (max-width: 47.99rem) {
+    :global(html[data-menu-enhanced]) .menu-toggle {
+      display: grid;
+    }
+  }
+</style>

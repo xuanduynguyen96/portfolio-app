@@ -1,0 +1,58 @@
+---
+// Theme (parchment light / dungeon dark): applied before first paint, persisted, kept across
+// ClientRouter swaps. html[data-theme] is only ever set here, so :root:not([data-theme]) = no JS
+// (CSS follows the system scheme, the toggle hides). BG mirrors --color-bg in design-tokens.css.
+---
+
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4ecd8" />
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14110f" />
+<script is:inline>
+  (() => {
+    const KEY = 'rpg-theme';
+    const BG = { light: '#f4ecd8', dark: '#14110f' };
+    const darkQuery = matchMedia('(prefers-color-scheme: dark)');
+    // In-memory choice: keeps the toggle working for this tab when storage throws.
+    let chosen = null;
+    const stored = () => {
+      if (chosen) return chosen;
+      try {
+        const theme = localStorage.getItem(KEY);
+        return theme === 'light' || theme === 'dark' ? theme : null;
+      } catch {
+        return null;
+      }
+    };
+    const effective = () => stored() ?? (darkQuery.matches ? 'dark' : 'light');
+    const apply = () => {
+      const theme = effective();
+      document.documentElement.dataset.theme = theme;
+      document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => (meta.content = BG[theme]));
+      document
+        .querySelectorAll('[data-theme-toggle]')
+        .forEach((button) => button.setAttribute('aria-pressed', String(theme === 'dark')));
+    };
+    apply();
+    if (window.__themeBound) return;
+    window.__themeBound = true;
+    // newDocument gets the attribute before the swap, so there is no frame without it.
+    document.addEventListener('astro:before-swap', (event) => {
+      event.newDocument.documentElement.dataset.theme = effective();
+    });
+    document.addEventListener('astro:after-swap', apply);
+    document.addEventListener('DOMContentLoaded', apply);
+    darkQuery.addEventListener('change', () => {
+      if (!stored()) apply();
+    });
+    // Delegated: works for every swapped-in header without re-binding or the module bundle.
+    document.addEventListener('click', (event) => {
+      if (!(event.target instanceof Element) || !event.target.closest('[data-theme-toggle]')) return;
+      chosen = effective() === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem(KEY, chosen);
+      } catch {
+        // Storage blocked: the choice lasts for this tab only.
+      }
+      apply();
+    });
+  })();
+</script>

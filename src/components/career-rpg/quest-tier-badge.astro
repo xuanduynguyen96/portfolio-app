@@ -1,5 +1,7 @@
 ---
+import PixelIcon from '../pixel-icon.astro';
 import type { QuestDifficulty } from '../../data/xp-rules';
+import { bossIcon, difficultyIcons } from '../../data/pixel-icon-map';
 
 interface Props {
   difficulty: QuestDifficulty;
@@ -9,36 +11,43 @@ interface Props {
 const { difficulty, isBoss } = Astro.props;
 const tierLabel: Record<QuestDifficulty, string> = { side: 'Side quest', main: 'Main quest', raid: 'Raid' };
 const label = isBoss ? `Boss · ${tierLabel[difficulty]}` : tierLabel[difficulty];
+const icon = isBoss ? bossIcon : difficultyIcons[difficulty];
 ---
 
-<span class:list={['quest-badge', 'mono', `quest-badge--${isBoss ? 'boss' : difficulty}`]}>{label}</span>
+{/* Rarity reads as text first; color + icon only reinforce it (side = common, main = gold, raid = arcane, boss = crimson). */}
+<span class:list={['quest-badge', 'pixel-frame', 'hud-text', `quest-badge--${isBoss ? 'boss' : difficulty}`]}><PixelIcon name={icon} /><span>{label}</span></span>
 
 <style>
   .quest-badge {
-    display: inline-block;
+    --frame-color: var(--color-border-strong);
+    --frame-drop: transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     width: fit-content;
-    padding: var(--space-1) var(--space-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-pill);
+    margin: var(--pixel-thin);
+    padding: var(--space-1) var(--space-3) var(--space-1) var(--space-2);
+    background: var(--color-surface);
     color: var(--color-text-muted);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-mono);
+    font-size: var(--text-hud);
+    letter-spacing: var(--tracking-hud);
+    line-height: 1.4;
     text-transform: uppercase;
   }
 
   .quest-badge--main {
-    border-color: var(--color-accent-cyan);
-    color: var(--color-accent-cyan);
+    --frame-color: var(--color-accent-primary);
+    color: var(--color-accent-primary);
   }
 
   .quest-badge--raid {
-    border-color: var(--color-accent-magenta);
-    color: var(--color-accent-magenta);
+    --frame-color: var(--color-accent-arcane);
+    color: var(--color-accent-arcane);
   }
 
   .quest-badge--boss {
-    border-color: var(--color-accent-magenta);
-    background: var(--color-accent-magenta);
+    --frame-color: var(--color-accent-secondary);
+    background: var(--color-accent-secondary);
     color: var(--color-text-on-accent);
     font-weight: 700;
   }

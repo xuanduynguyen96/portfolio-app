@@ -5,6 +5,7 @@ export const SECTION_IDS = ['about', 'character', 'skills', 'projects', 'experie
 export const PROJECT_SLUGS = ['neon-dashboard', 'realtime-chat', 'cli-toolkit'] as const;
 export const BOSS_SLUG = 'neon-dashboard';
 export const CAREER_PAGES = ['./speedrun/', './changelog/'] as const;
+export const INFO_PAGES = ['./credits/'] as const;
 
 /** Collects console errors + uncaught exceptions for the page's lifetime. */
 export function trackPageErrors(page: Page): string[] {

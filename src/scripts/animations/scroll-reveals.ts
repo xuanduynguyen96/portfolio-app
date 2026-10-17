@@ -1,4 +1,4 @@
-import { gsap, ScrollTrigger } from './gsap-setup';
+import { gsap, PIXEL_STEP, ScrollTrigger } from './gsap-setup';
 
 /**
  * Fade-up every [data-reveal] element the first time it scrolls into view.
@@ -11,7 +11,7 @@ export function scrollReveals(): void {
   const targets = gsap.utils.toArray<HTMLElement>('[data-reveal]');
   if (targets.length === 0) return;
 
-  gsap.set(targets, { opacity: 0, y: 32 });
+  gsap.set(targets, { opacity: 0, y: PIXEL_STEP * 4 });
   ScrollTrigger.batch(targets, {
     start: 'top 90%',
     once: true,

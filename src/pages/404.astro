@@ -5,13 +5,13 @@ import { siteConfig } from '../data/site-config';
 import { withBasePath } from '../utils/with-base-path';
 ---
 
-<BaseLayout title={`404: Signal lost | ${siteConfig.name}`} description="The page you were looking for could not be found."
+<BaseLayout title={`404: Off the map | ${siteConfig.name}`} description="The page you were looking for could not be found."
   noindex
 >
   <section class="not-found container" aria-labelledby="not-found-title">
-    <p class="eyebrow mono">Error 404</p>
-    <h1 id="not-found-title" class="neon-text">Signal lost</h1>
-    <p class="not-found-copy">The page you requested drifted out of range. It may have moved or never existed.</p>
+    <p class="eyebrow">Error 404 · Uncharted</p>
+    <h1 id="not-found-title" class="neon-text">Off the map</h1>
+    <p class="not-found-copy">This path leads nowhere. The page may have moved, or it was never on the map.</p>
     <NeonButton href={withBasePath('/')}>Return to base</NeonButton>
   </section>
 </BaseLayout>
@@ -28,8 +28,6 @@ import { withBasePath } from '../utils/with-base-path';
 
   h1 {
     font-size: var(--text-hero);
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
   }
 
   .not-found-copy {

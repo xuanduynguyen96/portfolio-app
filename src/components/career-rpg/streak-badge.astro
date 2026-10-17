@@ -1,4 +1,5 @@
 ---
+import PixelIcon from '../pixel-icon.astro';
 import type { StreakInfo } from '../../utils/career-rpg/career-types';
 import { formatEntryDate } from '../../utils/format-date-range';
 import { withBasePath } from '../../utils/with-base-path';
@@ -17,40 +18,39 @@ const text =
       : 'No changelog entries yet';
 ---
 
-<a class="streak-badge mono" href={withBasePath('/changelog/')} data-streak={streak.current}>
-  <span class="streak-dot" aria-hidden="true"></span>{text}<span class="visually-hidden"> (view changelog)</span>
+<a class="streak-badge pixel-frame hud-text" href={withBasePath('/changelog/')} data-streak={streak.current}>
+  <span class="streak-flame"><PixelIcon name="streak" /></span>{text}<span class="visually-hidden"> (view changelog)</span>
 </a>
 
 <style>
+  /* Square framed pill, >=44px tall. Flame lit (crimson) while the streak runs, ash-grey when paused. */
   .streak-badge {
+    --frame-color: var(--color-border-strong);
+    --frame-drop: transparent;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
     width: fit-content;
     min-height: 2.75rem;
-    padding-inline: var(--space-4);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-pill);
+    margin: var(--pixel-thin);
+    padding-inline: var(--space-3) var(--space-4);
+    background: var(--color-bg);
     color: var(--color-text);
-    font-size: var(--text-xs);
+    font-size: var(--text-hud);
     letter-spacing: 0.02em;
     text-decoration: none;
-    transition: border-color var(--duration-base) var(--ease-out-expo);
   }
 
   .streak-badge:hover {
-    border-color: var(--color-border-glow);
+    --frame-color: var(--color-frame-hover);
   }
 
-  .streak-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    border-radius: 50%;
-    background: var(--color-text-muted);
+  .streak-flame {
+    display: inline-flex;
+    color: var(--color-text-muted);
   }
 
-  .streak-badge:not([data-streak='0']) .streak-dot {
-    background: var(--color-accent-magenta);
-    box-shadow: var(--shadow-glow-magenta);
+  .streak-badge:not([data-streak='0']) .streak-flame {
+    color: var(--color-accent-secondary);
   }
 </style>

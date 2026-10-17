@@ -18,22 +18,23 @@ flowchart LR
 
 1. `astro build` loads the `projects` and `changelog` collections (`src/content.config.ts`, strict zod: unknown keys fail; summary <=160, `coverAlt` required with `cover`, boss needs metric + obstacle). Invalid content fails the build.
 2. `loadCareerState()` runs cross-entry rules + scoring once per build ([Career RPG pipeline](#career-rpg-pipeline)); a rule violation throws `CareerRuleError` and fails the build.
-3. `src/pages/index.astro` renders seven sections; `src/pages/projects/[slug].astro` emits one page per entry (`getStaticPaths`, slug = file name); `speedrun.astro`, `changelog.astro`, `404.astro` emit their pages.
+3. `src/pages/index.astro` renders seven sections; `src/pages/projects/[slug].astro` emits one page per entry (`getStaticPaths`, slug = file name); `speedrun.astro`, `changelog.astro`, `credits.astro`, `404.astro` emit their pages.
 4. `astro:assets` optimizes cover images; Fontsource CSS/woff2 bundled (no external requests).
 5. Output in `dist/` under base `/portfolio-app`.
 
 ## Page / component tree
 
 ```
-BaseLayout (head SEO + root-flag script + ClientRouter)
+BaseLayout (head SEO + ThemeHeadScript + root-flag script + ClientRouter)
 ├── SkipToContentLink
-├── SiteHeader (logo initials, nav, menu toggle)  -> scripts/mobile-menu.ts
+├── SiteHeader (logo initials, nav, HeaderControls = ThemeToggle + MenuToggleButton)  -> scripts/mobile-menu.ts
 ├── <main id="main">
 │   ├── index: Hero > About > CharacterSheet > Skills(tree) > Projects(ProjectCard*) > Experience > Contact
 │   ├── projects/[slug]: back link, header, TagList, cover, BossBattlePanel (quest log), markdown prose
 │   ├── speedrun: availability, AchievementCard*, contact CTAs, decorative countdown
 │   ├── changelog: StreakBadge, entries newest first
-│   └── 404: "Signal lost" + NeonButton home
+│   ├── credits: fonts, icons (PixelIconGallery), libraries + licenses
+│   └── 404: "Off the map" + NeonButton home
 ├── SiteFooter
 └── scripts/animations/init-animations.ts
 ```
@@ -94,14 +95,37 @@ Inline `<head>` script sets flags on `<html>` before first paint:
 
 | Flag | Set by | Meaning | Removed when |
 |------|--------|---------|--------------|
+| `data-theme="light\|dark"` | `theme-head-script.astro` (sole writer), always when JS runs | Forces `color-scheme`; absent = no JS, CSS follows system and toggle hides | never (re-set on swap) |
 | `data-motion="ok"` | head script, only if `prefers-reduced-motion: no-preference` | CSS pre-hides `[data-reveal]`, `[data-hero]` | JS skips/fails, user prefers reduce, or failsafe fires |
 | `data-menu-enhanced` | head script | Mobile nav collapses behind toggle | Failsafe fires |
 | `data-motion-ready` | `init-animations.ts` | Animations took over | never (checked by failsafe) |
 | `data-menu-ready` | `mobile-menu.ts` | Menu JS bound | never (checked by failsafe) |
 
+`data-theme` is a root flag too but is not part of the failsafe: it is cosmetic and never hides content.
+
 Failsafe: 3s after setting flags, head script deletes `data-motion` unless `data-motion-ready` exists, and `data-menu-enhanced` unless `data-menu-ready` exists. So a failed/slow bundle never leaves content hidden or nav collapsed with no toggle. JS disabled entirely: head script never runs, no flags, so content and nav are always visible.
 
 `ClientRouter` swaps replace `<html>` attributes, so the head script re-runs `setRootFlags` on `astro:after-swap`.
+
+## Theme lifecycle
+
+Colors are `light-dark()` tokens ([design-guidelines.md](design-guidelines.md#theme-and-color)); the only runtime piece is `theme-head-script.astro`.
+
+```mermaid
+sequenceDiagram
+  participant Head as theme head script
+  participant Router as ClientRouter
+  participant Btn as [data-theme-toggle]
+  Head->>Head: head parse: theme = stored (rpg-theme) or system; set html[data-theme] + theme-color metas
+  Router->>Head: astro:before-swap -> copy data-theme to newDocument root
+  Router->>Head: astro:after-swap -> re-apply, refresh aria-pressed
+  Btn->>Head: click (delegated) -> flip, persist (try/catch, in-memory fallback), apply
+  Head-->>Head: system scheme change -> follow only while no stored choice
+```
+
+- No JS: no `data-theme`; CSS follows `prefers-color-scheme`, toggle hidden.
+- Storage blocked: choice lasts for the tab.
+- No `light-dark()` support: dark-only fallback tokens, toggle hidden.
 
 ## Animation lifecycle
 
@@ -136,7 +160,7 @@ Details:
 ## Routing and base path
 
 - `base: '/portfolio-app'`, `trailingSlash: 'ignore'`.
-- Pages: `/`, `/projects/<slug>/`, `/speedrun/`, `/changelog/`, 404. Header nav has "Speedrun"; hero CTA "60s recruiter view"; footer has "Changelog".
+- Pages: `/`, `/projects/<slug>/`, `/speedrun/`, `/changelog/`, `/credits/`, 404 ("Off the map", noindex). Header nav has "Speedrun"; hero CTA "60s recruiter view"; footer has "Changelog" and "Credits".
 - Internal links use `withBasePath()`; `ClientRouter` handles soft navigation (view transitions with `transition:name` on project title/cover).
 - Hash links in header nav (`/portfolio-app/#about`) work from any page.
 
@@ -160,6 +184,8 @@ See [deployment-guide.md](deployment-guide.md).
 |----------|-----|
 | Static Astro, no UI framework | Minimal JS, fast LCP, simple hosting |
 | Plain CSS tokens | No extra build deps; one token file shared by all styles |
+| `light-dark()` tokens + head script | Light/dark with no flash and no per-theme CSS; works without JS (system scheme) |
+| Inline SVG pixel icons from TS grids | No downloads or sprite requests, `currentColor` theming, unit-testable |
 | GSAP + `gsap.matchMedia()` | One revert point for reduced-motion + route changes |
 | Failsafe flags | Content can never get stuck hidden |
 | Tests against production build | Catches base-path + bundling bugs |

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { CAREER_PAGES, PROJECT_SLUGS } from './test-helpers';
+import { CAREER_PAGES, INFO_PAGES, PROJECT_SLUGS } from './test-helpers';
 
-const PAGES = ['./', ...PROJECT_SLUGS.map((slug) => `./projects/${slug}/`), ...CAREER_PAGES];
+const PAGES = ['./', ...PROJECT_SLUGS.map((slug) => `./projects/${slug}/`), ...CAREER_PAGES, ...INFO_PAGES];
 
 test('every internal link and asset on every page resolves under the base path', async ({ page, request }) => {
   const checked = new Set<string>();
@@ -37,7 +37,7 @@ test('unknown paths serve the custom 404 page', async ({ page }) => {
   expect(response?.status()).toBe(404);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
   await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
-  await expect(page.getByRole('heading', { level: 1, name: /signal lost/i })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /off the map/i })).toBeVisible();
   await page.getByRole('link', { name: 'Return to base' }).click();
   await expect(page).toHaveURL(/\/portfolio-app\/$/);
 });

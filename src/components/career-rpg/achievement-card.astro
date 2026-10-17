@@ -1,5 +1,6 @@
 ---
 import GlassCard from '../glass-card.astro';
+import PixelIcon from '../pixel-icon.astro';
 import { formatMetricValue } from '../../utils/career-rpg/format-metric';
 import type { Achievement } from '../../utils/career-rpg/career-types';
 import { withBasePath } from '../../utils/with-base-path';
@@ -12,10 +13,13 @@ const { achievement } = Astro.props;
 ---
 
 <GlassCard as="li" class="achievement" data-reveal>
-  {achievement.isSample && <p class="sample-tag mono">Sample</p>}
-  <p class="achievement-value neon-text">{formatMetricValue(achievement)}</p>
+  <div class="achievement-head">
+    <span class="achievement-icon"><PixelIcon name="achievement" size={32} /></span>
+    {achievement.isSample && <p class="sample-tag pixel-frame hud-text">Sample</p>}
+  </div>
+  <p class="achievement-value">{formatMetricValue(achievement)}</p>
   <p class="achievement-label">{achievement.label}</p>
-  <p class="achievement-quest mono">
+  <p class="achievement-quest hud-text">
     <a href={withBasePath(`/projects/${achievement.questId}/`)}>{achievement.questTitle} →</a>
   </p>
 </GlassCard>
@@ -27,8 +31,23 @@ const { achievement } = Astro.props;
     gap: var(--space-2);
   }
 
+  .achievement-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+
+  .achievement-icon {
+    display: inline-flex;
+    color: var(--color-accent-primary);
+  }
+
   .achievement-value {
     width: fit-content;
+    color: var(--color-accent-primary);
+    font-family: var(--font-hud);
     font-size: var(--text-h2);
     font-weight: 700;
     line-height: var(--leading-tight);
@@ -39,14 +58,17 @@ const { achievement } = Astro.props;
     font-size: var(--text-sm);
   }
 
+  /* Crimson chip: "Sample" is text, the color only reinforces it. */
   .sample-tag {
-    width: fit-content;
+    --frame-color: var(--color-accent-secondary);
+    --frame-drop: transparent;
+    margin: var(--pixel-thin);
     padding: 0 var(--space-2);
-    border: 1px solid var(--color-accent-magenta);
-    border-radius: var(--radius-pill);
-    color: var(--color-accent-magenta);
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-mono);
+    background: var(--color-accent-secondary);
+    color: var(--color-text-on-accent);
+    font-size: var(--text-hud);
+    font-weight: 700;
+    letter-spacing: var(--tracking-hud);
     text-transform: uppercase;
   }
 </style>

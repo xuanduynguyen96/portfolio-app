@@ -1,13 +1,13 @@
 # portfolio-app
 
-Futuristic animated developer portfolio. Static Astro site + GSAP motion, deployed to GitHub Pages.
+RPG-themed animated developer portfolio (parchment/dungeon themes, 8x8 pixel icons). Static Astro site + GSAP motion, deployed to GitHub Pages.
 
 - Live (after first deploy): https://xuanduynguyen96.github.io/portfolio-app/
 - Lighthouse (local preview, `/`, project, `/speedrun/`, `/changelog/`): mobile 98-99/100/100/100 (CLS 0), desktop 100/100/100/100
 
 ## Stack
 
-Astro 7.4 (static output) · GSAP 3.15 (ScrollTrigger, SplitText) · plain CSS tokens · Fontsource self-hosted fonts (Space Grotesk, JetBrains Mono) · TypeScript strict · Playwright + axe-core e2e · `node:test` unit tests.
+Astro 7.4 (static output) · GSAP 3.15 (ScrollTrigger, SplitText) · plain CSS tokens · Fontsource self-hosted fonts (MedievalSharp headings, Pixelify Sans HUD labels, Space Grotesk body; code uses system mono) · TypeScript strict · Playwright + axe-core e2e · `node:test` unit tests.
 No UI framework, no Tailwind.
 
 Career RPG layer (v1.1): projects are quests, skills a tree, XP/level/streak are **computed at build time from evidence** (no backend). See [Career RPG](#career-rpg).
@@ -30,8 +30,8 @@ npm run dev        # http://localhost:4321/portfolio-app/
 | `npm run build` | Static build to `dist/` |
 | `npm run preview` | Serve `dist/` locally |
 | `npm run check` | `astro check` (types + templates) |
-| `npm run test:unit` | `node --test` on `tests/unit/*.test.ts` (Career RPG pure modules, 95 tests, no build) |
-| `npm run test:e2e` | Playwright: builds, runs `astro preview`, 56 tests (~37s) |
+| `npm run test:unit` | `node --test` on `tests/unit/*.test.ts` (Career RPG + pixel icon pure modules, 116 tests, no build) |
+| `npm run test:e2e` | Playwright: builds, runs `astro preview`, 86 tests |
 
 First e2e run on a fresh machine: `npx playwright install chromium`.
 
@@ -49,6 +49,9 @@ All current content is placeholder, marked `TODO(content)`. Find it all: `grep -
 | Experience timeline | `src/data/experience-data.ts` |
 | Projects = quests (one `.md` each; fields below) | `src/content/projects/*.md` |
 | Project cover images | `src/assets/projects/*.svg` |
+| Pixel icons: 8x8 grids (add one + a unit test; see [code standards](docs/code-standards.md#pixel-icons)) | `src/data/pixel-icons-career.ts`, `src/data/pixel-icons-hud.ts`, mapping in `src/data/pixel-icon-map.ts` |
+| Credits page (fonts, libraries, licenses; icon gallery is automatic) | `src/data/credits-data.ts` |
+| Theme colors, fonts, frames | `src/styles/design-tokens.css`, [docs/design-guidelines.md](docs/design-guidelines.md) |
 | Favicon | `public/favicon.svg` |
 | Social preview image | `public/og-image.png` |
 
@@ -75,7 +78,7 @@ node -e "require('sharp')('src/assets/og-image-source.svg').png().toFile('public
 
 XP, level, title, attribute bars, skill-node levels, HUD % and streak are **computed, never set**: a hand-written `xp`, `level` or `repoUrl` key fails the build. Rules, anti-gaming policy, pipeline: [docs/system-architecture.md](docs/system-architecture.md#career-rpg-pipeline).
 
-- Routes: `/#character` (level, attributes, HUD, streak), `/#skills` (skill tree), `/#projects` (quests + boss), `/speedrun/` (60s recruiter view), `/changelog/`.
+- Routes: `/credits/` (fonts, icons, libraries + licenses), `/#character` (level, attributes, HUD, streak), `/#skills` (skill tree), `/#projects` (quests + boss), `/speedrun/` (60s recruiter view), `/changelog/`.
 - Evidence rules in short: one URL earns XP once site-wide; case study word minimum; tier decay + caps. Build errors list every violation at once (`CareerRuleError`).
 - `CAREER_RPG_NOW=YYYY-MM-DD` pins the build date (end of that UTC day) to reproduce a past streak/HUD, e.g. `CAREER_RPG_NOW=2026-10-17 npm run build`. Unset = real time.
 - Streak = consecutive ISO weeks (UTC) with a changelog entry; refreshed only on rebuild (weekly scheduled CI build).
@@ -94,6 +97,6 @@ Details, custom domain / user-site notes, troubleshooting: [docs/deployment-guid
 | [docs/code-standards.md](docs/code-standards.md) | Conventions, a11y + motion rules |
 | [docs/codebase-summary.md](docs/codebase-summary.md) | Directory map |
 | [docs/system-architecture.md](docs/system-architecture.md) | Build pipeline, Career RPG scoring, animation lifecycle |
-| [docs/design-guidelines.md](docs/design-guidelines.md) | Tokens, effects, motion policy |
+| [docs/design-guidelines.md](docs/design-guidelines.md) | Themes, tokens, fonts, pixel frames + icons, motion policy |
 | [docs/deployment-guide.md](docs/deployment-guide.md) | Pages + CI/CD |
-| [docs/project-roadmap.md](docs/project-roadmap.md) | v1 + v1.1 status, v2 ideas |
+| [docs/project-roadmap.md](docs/project-roadmap.md) | v1 to v1.2 status, v2 ideas |

@@ -8,15 +8,15 @@ const year = new Date().getFullYear();
 <footer class="site-footer">
   <div class="container footer-inner">
     <p>© {year} {siteConfig.name}</p>
-    <p class="mono footer-meta">
-      <a href={withBasePath('/changelog/')}>Changelog</a> · Built with Astro + GSAP · Hosted on GitHub Pages
+    <p class="hud-text footer-meta">
+      <a href={withBasePath('/changelog/')}>Changelog</a> · <a href={withBasePath('/credits/')}>Credits</a> · Built with Astro + GSAP · Hosted on GitHub Pages
     </p>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--color-border);
+    border-top: var(--pixel-thin) solid var(--color-border-strong);
     padding-block: var(--space-6);
     color: var(--color-text-muted);
     font-size: var(--text-sm);
@@ -30,7 +30,7 @@ const year = new Date().getFullYear();
   }
 
   .footer-meta {
-    font-size: var(--text-xs);
-    letter-spacing: var(--tracking-mono);
+    font-size: var(--text-hud);
+    letter-spacing: var(--tracking-hud);
   }
 </style>

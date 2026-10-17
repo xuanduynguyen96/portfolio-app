@@ -20,7 +20,7 @@ const rendered = await Promise.all(entries.map(async (entry) => ({ entry, ...(aw
   description={`Dated build log of ${siteConfig.name}: what shipped, week by week.`}
 >
   <article class="changelog container" aria-labelledby="changelog-title">
-    <a class="back-link mono" href={withBasePath('/')}>← Home</a>
+    <a class="back-link hud-text" href={withBasePath('/')}>← Home</a>
     <header class="changelog-header">
       <p class="eyebrow">Consistency streak</p>
       <h1 id="changelog-title">Changelog</h1>
@@ -38,10 +38,10 @@ const rendered = await Promise.all(entries.map(async (entry) => ({ entry, ...(aw
           {rendered.map(({ entry, Content }) => (
             <li>
               <GlassCard as="article" class="entry" aria-labelledby={`entry-${entry.id}`} spotlight={false}>
-                <time class="entry-date mono" datetime={entry.data.date.toISOString().slice(0, 10)}>
+                <time class="entry-date hud-text" datetime={entry.data.date.toISOString().slice(0, 10)}>
                   {formatEntryDate(entry.data.date)}
                 </time>
-                <h2 id={`entry-${entry.id}`}>{entry.data.summary}</h2>
+                <h2 id={`entry-${entry.id}`} class="h2-compact">{entry.data.summary}</h2>
                 <div class="entry-body">
                   <Content />
                 </div>
@@ -78,7 +78,6 @@ const rendered = await Promise.all(entries.map(async (entry) => ({ entry, ...(aw
 
   h1 {
     font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
-    letter-spacing: -0.03em;
   }
 
   .changelog-lead,
@@ -100,13 +99,9 @@ const rendered = await Promise.all(entries.map(async (entry) => ({ entry, ...(aw
   }
 
   .entry-date {
-    color: var(--color-accent-cyan);
+    color: var(--color-accent-primary);
     font-size: var(--text-sm);
-    letter-spacing: var(--tracking-mono);
-  }
-
-  h2 {
-    font-size: var(--text-h3);
+    letter-spacing: var(--tracking-hud);
   }
 
   .entry-body {

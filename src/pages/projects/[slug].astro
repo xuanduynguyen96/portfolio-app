@@ -30,7 +30,7 @@ const quest = (await loadCareerState()).quests.find((item) => item.id === projec
 
 <BaseLayout title={`${title} | ${siteConfig.name}`} description={summary}>
   <article class="project-detail container" aria-labelledby="project-title">
-    <a class="back-link mono" href={withBasePath('/#projects')}>← All projects</a>
+    <a class="back-link hud-text" href={withBasePath('/#projects')}>← All projects</a>
     <header class="project-header">
       <p class="eyebrow">Case study</p>
       <h1 id="project-title" transition:name={`project-title-${project.id}`}>{title}</h1>
@@ -85,7 +85,6 @@ const quest = (await loadCareerState()).quests.find((item) => item.id === projec
 
   h1 {
     font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
-    letter-spacing: -0.03em;
   }
 
   .project-summary {
@@ -126,7 +125,7 @@ const quest = (await loadCareerState()).quests.find((item) => item.id === projec
   }
 
   .prose :global(code) {
-    color: var(--color-accent-cyan);
+    color: var(--color-accent-primary);
     font-size: 0.9em;
   }
 </style>

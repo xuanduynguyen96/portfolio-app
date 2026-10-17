@@ -1,11 +1,14 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import '@fontsource-variable/space-grotesk';
-import '@fontsource-variable/jetbrains-mono';
+import '@fontsource/medievalsharp/400.css';
+import '@fontsource-variable/pixelify-sans';
+import medievalSharpLatin from '@fontsource/medievalsharp/files/medievalsharp-latin-400-normal.woff2?url';
 import '../styles/design-tokens.css';
 import '../styles/global-styles.css';
 import '../styles/effects.css';
 import SkipToContentLink from '../components/skip-to-content-link.astro';
+import ThemeHeadScript from '../components/theme-head-script.astro';
 import SiteHeader from '../components/site-header.astro';
 import SiteFooter from '../components/site-footer.astro';
 import { siteConfig } from '../data/site-config';
@@ -37,7 +40,9 @@ const ogImageUrl = new URL(ogImage, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#05070d" />
+    <ThemeHeadScript />
+    <!-- Heading font (h1, LCP candidate): same hashed URL as the Fontsource CSS, so no double download. -->
+    <link rel="preload" href={medievalSharpLatin} as="font" type="font/woff2" crossorigin />
     {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl} />}
     <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
     <meta name="generator" content={Astro.generator} />

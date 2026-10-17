@@ -5,8 +5,11 @@ summary: Opinionated command-line toolkit that scaffolds, lints and ships projec
 tags: [CLI, Node.js, DX]
 cover: ../../assets/projects/cli-toolkit-cover.svg
 coverAlt: Terminal window showing toolkit init and ship commands with success output
-repoUrl: https://github.com/xuanduynguyen96
 order: 3
+difficulty: side
+skills: [nodejs, git]
+evidence:
+  - { type: repo, url: 'https://github.com/xuanduynguyen96' }
 ---
 
 ## Overview

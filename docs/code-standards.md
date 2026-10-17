@@ -64,10 +64,28 @@ See [system-architecture.md](system-architecture.md) for the flag lifecycle.
 
 ## Content collection
 
-Schema in `src/content.config.ts` (zod). Keep `summary` <=160 chars. Prefix new placeholders with `TODO(content)`.
+Schemas in `src/content.config.ts` (zod `strictObject`: unknown keys fail the build). Keep `summary` <=160 chars. Prefix new placeholders with `TODO(content)` (the marker is `PLACEHOLDER_MARKER`; the HUD and "Sample" tags count it).
+
+- Reusable field schemas live in `src/data/career-schemas.ts`: `httpsUrl` (https only, no credentials), `evidenceSchema`, `metricSchema`, `skillNodeSchema`, `skillIdSchema`. Reuse them; don't re-declare URL checks.
+- Never add `xp`, `level`, or other computed fields to content; they are rejected. Links go in `evidence` (`repoUrl`/`demoUrl` are gone; read via `getEvidenceLink`).
+- Enums (attributes, difficulties, evidence types, statuses) and every weight/cap/threshold/title come from `src/data/xp-rules.ts`. Retune there; no magic numbers in scoring code, components or docs.
+- Per-entry rules go in the zod schema; cross-entry rules go in `src/utils/career-rpg/` validators (they aggregate into `CareerRuleError`).
+
+## Career RPG modules (`src/utils/career-rpg/`)
+
+Pure TypeScript, also executed by Node type stripping in `npm run test:unit`. Rules:
+
+1. Relative imports use the `.ts` extension (`from './count-words.ts'`); use `import type` for types.
+2. Erasable syntax only (`erasableSyntaxOnly` in `tsconfig.json`): no `enum`, `namespace`, parameter properties.
+3. No `astro:*` imports and no `import.meta.env`/`import.meta.glob`. The one exception is `load-career-state.ts` (keep it thin, not unit-tested). Pass time in (`now`) and rules in (`rules` defaulting to `xpRules`); never read the clock in scoring (the only default `new Date()` is in `resolve-build-now.ts`).
+4. Return new values, don't mutate inputs (only the shared `seen` URL set is mutated, by design).
+5. Validators return `RuleIssue[]`; only `buildCareerState` throws.
+
+Components in `src/components/career-rpg/` take the computed state as props; they don't score.
 
 ## Testing
 
+- Unit: `tests/unit/*.test.ts` (`node:test` + `node:assert`), runner `npm run test:unit`, Node >=22.18 (type stripping, so `.ts` specifiers and erasable syntax). Inputs via `tests/unit/career-fixtures.ts`. Add/adjust a unit test with every rule or weight change; assert against `xpRules`, not copied numbers where practical.
 - E2E specs in `tests/e2e/*.spec.ts`, shared helpers in `tests/e2e/test-helpers.ts`.
 - Tests run against the production build (`astro preview`) so base-path bugs show.
 - Add a spec when adding: a page, a new root flag, a new nav/link pattern.
@@ -75,4 +93,4 @@ Schema in `src/content.config.ts` (zod). Keep `summary` <=160 chars. Prefix new 
 
 ## Commits
 
-Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`). Run `npm run check` and `npm run test:e2e` before push. Never commit secrets or `.env*`.
+Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`). Run `npm run check`, `npm run test:unit` and `npm run test:e2e` before push. Never commit secrets or `.env*`.

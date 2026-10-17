@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../layouts/base-layout.astro';
+import AchievementCard from '../components/career-rpg/achievement-card.astro';
+import NeonButton from '../components/neon-button.astro';
+import { siteConfig } from '../data/site-config';
+import { xpRules } from '../data/xp-rules';
+import { formatClock } from '../utils/career-rpg/countdown-clock';
+import { loadCareerState } from '../utils/career-rpg/load-career-state';
+import { withBasePath } from '../utils/with-base-path';
+
+const { achievements, level } = await loadCareerState();
+const { status, note } = siteConfig.availability;
+const statusLabel = { open: 'Open to work', limited: 'Limited availability', closed: 'Not available' }[status];
+const seconds = xpRules.speedrun.countdownSeconds;
+const startClock = formatClock(seconds);
+const hasSample = achievements.some((achievement) => achievement.isSample);
+---
+
+<BaseLayout
+  title={`Speedrun | ${siteConfig.name}`}
+  description={`The 60-second version: ${siteConfig.name}'s top achievements, availability and contact.`}
+>
+  <div class="speedrun container">
+    <header class="speedrun-header">
+      <div class="speedrun-topline">
+        <p class="eyebrow"><span aria-hidden="true">// </span>Recruiter speedrun</p>
+        <span class="speedrun-clock mono" data-speedrun-countdown data-seconds={seconds} aria-hidden="true">
+          {startClock}
+        </span>
+      </div>
+      <h1 class="speedrun-title">{siteConfig.name}</h1>
+      <p class="speedrun-identity mono">
+        {siteConfig.role} · Level {level.level} {level.title}
+      </p>
+      <div class="availability mono">
+        <p class="availability-status">
+          <span class="status-dot" data-status={status} aria-hidden="true"></span><strong>{statusLabel}</strong>
+        </p>
+        <p class="availability-note">{note}</p>
+      </div>
+    </header>
+
+    <section class="speedrun-block" aria-labelledby="achievements-title">
+      <h2 id="achievements-title">Top achievements</h2>
+      {
+        hasSample && (
+          <p class="sample-note mono">
+            <strong>Sample data:</strong> metrics marked “Sample” come from placeholder projects and are not real
+            results yet.
+          </p>
+        )
+      }
+      {
+        achievements.length > 0 ? (
+          <ol class="achievements" role="list">
+            {achievements.map((achievement) => (
+              <AchievementCard achievement={achievement} />
+            ))}
+          </ol>
+        ) : (
+          <p class="speedrun-empty">Achievements appear once a project is verified with evidence and metrics.</p>
+        )
+      }
+    </section>
+
+    <section class="speedrun-block" aria-labelledby="next-step-title">
+      <h2 id="next-step-title">Next step</h2>
+      <div class="speedrun-ctas">
+        <NeonButton href={`mailto:${siteConfig.email}`}>Email me</NeonButton>
+        {
+          siteConfig.socials.map((social) => (
+            <NeonButton href={social.href} variant="ghost" external>
+              {social.label} ↗<span class="visually-hidden"> (opens in new tab)</span>
+            </NeonButton>
+          ))
+        }
+        <NeonButton href={withBasePath('/')} variant="ghost">Full portfolio</NeonButton>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../scripts/speedrun-countdown';
+</script>
+
+<style>
+  .speedrun {
+    display: grid;
+    gap: var(--space-7);
+    padding-block: var(--space-7) var(--space-section);
+  }
+
+  .speedrun-header {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .speedrun-topline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .speedrun-clock {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border-glow);
+    border-radius: var(--radius-pill);
+    color: var(--color-accent-cyan);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--tracking-mono);
+  }
+
+  .speedrun-title {
+    font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
+    letter-spacing: -0.03em;
+  }
+
+  .speedrun-identity {
+    color: var(--color-text-muted);
+  }
+
+  .availability {
+    display: grid;
+    gap: var(--space-1);
+    font-size: var(--text-sm);
+  }
+
+  .availability-status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .availability-note {
+    color: var(--color-text-muted);
+  }
+
+  .speedrun-block {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  h2 {
+    font-size: var(--text-h3);
+  }
+
+  .achievements {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-5);
+  }
+
+  .speedrun-empty {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .sample-note {
+    max-width: 44rem;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-accent-magenta);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-size: var(--text-sm);
+  }
+
+  .speedrun-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>

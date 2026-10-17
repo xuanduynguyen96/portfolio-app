@@ -1,0 +1,166 @@
+---
+import GlassCard from '../glass-card.astro';
+import QuestTierBadge from './quest-tier-badge.astro';
+import { xpRules, type EvidenceType } from '../../data/xp-rules';
+import { formatMetricValue } from '../../utils/career-rpg/format-metric';
+import type { ScoredQuest } from '../../utils/career-rpg/career-types';
+
+interface Props {
+  quest: ScoredQuest;
+}
+
+const { quest } = Astro.props;
+const heading = quest.isBoss ? 'Boss Battle' : 'Quest Log';
+const evidenceLabel: Record<EvidenceType, string> = {
+  repo: 'Source code',
+  demo: 'Live demo',
+  figma: 'Design file',
+  article: 'Write-up',
+  other: 'Link',
+};
+const { minBodyWords, minUniqueWords } = xpRules.quest;
+const unverifiedReason = {
+  verified: '',
+  'body-too-short': `case study has ${quest.wordCount} of ${minBodyWords} required words`,
+  'body-too-repetitive': `case study has ${quest.uniqueWordCount} of ${minUniqueWords} required distinct words`,
+  'no-evidence': 'no evidence links',
+  'no-new-evidence': 'every evidence link is already credited to another quest',
+}[quest.status];
+---
+
+<section class="quest-panel" aria-labelledby="quest-panel-title">
+  <GlassCard class:list={['quest-card', { 'quest-card--boss': quest.isBoss }]}>
+    <header class="quest-header">
+      <h2 id="quest-panel-title">{heading}</h2>
+      <QuestTierBadge difficulty={quest.difficulty} isBoss={quest.isBoss} />
+    </header>
+    <p class="quest-xp mono">
+      {quest.verified ? `+${Math.round(quest.xp)} XP earned` : `Unverified: ${unverifiedReason}. 0 XP.`}
+    </p>
+
+    {
+      quest.obstacles.length > 0 && (
+        <div class="quest-block">
+          <h3 class="quest-label mono">Obstacles</h3>
+          <ul class="obstacles" role="list" aria-label="Obstacles">
+            {quest.obstacles.map((obstacle) => <li>{obstacle}</li>)}
+          </ul>
+        </div>
+      )
+    }
+
+    {
+      quest.metrics.length > 0 && (
+        <div class="quest-block">
+          <h3 class="quest-label mono">Results</h3>
+          <dl class="metrics">
+            {quest.metrics.map((metric) => (
+              <div class="metric">
+                <dt>{metric.label}</dt>
+                <dd class="metric-value">{formatMetricValue(metric)}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )
+    }
+
+    {
+      quest.evidence.length > 0 && (
+        <div class="quest-block">
+          <h3 class="quest-label mono">Evidence</h3>
+          <ul class="evidence" role="list" aria-label="Evidence">
+            {quest.evidence.map((item) => (
+              <li>
+                <a href={item.url} target="_blank" rel="noopener noreferrer" class="mono">
+                  {evidenceLabel[item.type]} ↗<span class="visually-hidden"> (opens in new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </GlassCard>
+</section>
+
+<style>
+  .quest-card {
+    display: grid;
+    gap: var(--space-5);
+    max-width: 44rem;
+  }
+
+  .quest-card--boss {
+    border-color: var(--color-accent-magenta);
+    box-shadow: var(--shadow-card), var(--shadow-glow-magenta);
+  }
+
+  .quest-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  h2 {
+    font-size: var(--text-h3);
+  }
+
+  .quest-xp {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .quest-block {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .quest-label {
+    color: var(--color-accent-cyan);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+
+  .obstacles {
+    display: grid;
+    gap: var(--space-2);
+    padding-left: var(--space-5);
+    color: var(--color-text-muted);
+    list-style: square;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  .metric {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-1);
+  }
+
+  dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .metric-value {
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: var(--text-h3);
+    font-weight: 700;
+  }
+
+  .evidence {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    font-size: var(--text-sm);
+  }
+</style>

@@ -7,6 +7,9 @@ import NeonButton from '../../components/neon-button.astro';
 import TagList from '../../components/tag-list.astro';
 import { siteConfig } from '../../data/site-config';
 import { withBasePath } from '../../utils/with-base-path';
+import { getEvidenceLink } from '../../utils/career-rpg/evidence-links';
+import { loadCareerState } from '../../utils/career-rpg/load-career-state';
+import BossBattlePanel from '../../components/career-rpg/boss-battle-panel.astro';
 
 export const getStaticPaths = (async () => {
   const projects = await getCollection('projects');
@@ -18,8 +21,11 @@ interface Props {
 }
 
 const { project } = Astro.props;
-const { title, summary, tags, cover, coverAlt, repoUrl, demoUrl } = project.data;
+const { title, summary, tags, cover, coverAlt, evidence } = project.data;
+const repoUrl = getEvidenceLink(evidence, 'repo');
+const demoUrl = getEvidenceLink(evidence, 'demo');
 const { Content } = await render(project);
+const quest = (await loadCareerState()).quests.find((item) => item.id === project.id);
 ---
 
 <BaseLayout title={`${title} | ${siteConfig.name}`} description={summary}>
@@ -35,6 +41,7 @@ const { Content } = await render(project);
         {demoUrl && <NeonButton href={demoUrl} variant="ghost" external>Live demo ↗</NeonButton>}
       </div>
     </header>
+    {quest && <BossBattlePanel quest={quest} />}
     {
       cover && (
         <Image

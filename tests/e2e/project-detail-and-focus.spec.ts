@@ -8,18 +8,28 @@ const PROJECTS = [
     title: 'Neon Analytics Dashboard',
     tags: ['TypeScript', 'Astro', 'GSAP', 'D3'],
     coverAlt: /dark dashboard layout/i,
+    questHeading: 'Boss Battle',
+    badge: 'Boss · Raid',
+    questStatus: /^\+\d+ XP earned$/,
   },
   {
     slug: 'realtime-chat',
     title: 'Realtime Chat',
     tags: ['Node.js', 'WebSockets', 'TypeScript'],
     coverAlt: /chat bubbles/i,
+    questHeading: 'Quest Log',
+    badge: 'Main quest',
+    // Its only evidence URL is already credited to the boss quest.
+    questStatus: /^Unverified: every evidence link is already credited to another quest\. 0 XP\.$/,
   },
   {
     slug: 'cli-toolkit',
     title: 'Developer CLI Toolkit',
     tags: ['CLI', 'Node.js', 'DX'],
     coverAlt: /terminal window/i,
+    questHeading: 'Quest Log',
+    badge: 'Side quest',
+    questStatus: /^Unverified: case study has \d+ of 150 required words/,
   },
 ];
 
@@ -45,6 +55,15 @@ for (const project of PROJECTS) {
     const cover = page.locator('img.project-cover');
     await expect(cover).toHaveAttribute('alt', project.coverAlt);
     await expect.poll(() => cover.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+
+    // Quest panel: boss vs regular heading, tier badge, XP or unverified reason.
+    const panel = page.getByRole('region', { name: project.questHeading });
+    await expect(panel.getByRole('heading', { level: 2 })).toHaveText(project.questHeading);
+    await expect(panel.locator('.quest-badge')).toHaveText(project.badge);
+    await expect(panel.locator('.quest-xp')).toHaveText(project.questStatus);
+    const evidence = panel.getByRole('list', { name: 'Evidence' }).getByRole('link');
+    await expect(evidence).not.toHaveCount(0);
+    await expect(evidence.first()).toHaveAttribute('rel', 'noopener noreferrer');
 
     // Markdown body rendered.
     await expect(page.locator('.prose').getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible();

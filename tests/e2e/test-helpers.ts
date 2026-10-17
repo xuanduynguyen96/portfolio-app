@@ -1,8 +1,10 @@
 import { expect, type Page } from '@playwright/test';
 
 export const SITE_NAME = 'Xuan Duy Nguyen';
-export const SECTION_IDS = ['about', 'skills', 'projects', 'experience', 'contact'] as const;
+export const SECTION_IDS = ['about', 'character', 'skills', 'projects', 'experience', 'contact'] as const;
 export const PROJECT_SLUGS = ['neon-dashboard', 'realtime-chat', 'cli-toolkit'] as const;
+export const BOSS_SLUG = 'neon-dashboard';
+export const CAREER_PAGES = ['./speedrun/', './changelog/'] as const;
 
 /** Collects console errors + uncaught exceptions for the page's lifetime. */
 export function trackPageErrors(page: Page): string[] {

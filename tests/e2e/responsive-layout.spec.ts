@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { PROJECT_SLUGS } from './test-helpers';
+import { CAREER_PAGES, PROJECT_SLUGS } from './test-helpers';
 
 async function expectNoHorizontalScroll(page: Page) {
   const { scrollWidth, innerWidth } = await page.evaluate(() => ({
@@ -12,7 +12,7 @@ async function expectNoHorizontalScroll(page: Page) {
 test.describe('mobile 360px', () => {
   test.use({ viewport: { width: 360, height: 740 } });
 
-  for (const path of ['./', `./projects/${PROJECT_SLUGS[0]}/`, './missing-page']) {
+  for (const path of ['./', `./projects/${PROJECT_SLUGS[0]}/`, ...CAREER_PAGES, './missing-page']) {
     test(`no horizontal scroll on ${path}`, async ({ page }) => {
       await page.goto(path);
       await expectNoHorizontalScroll(page);
@@ -63,7 +63,7 @@ test.describe('desktop 1280px', () => {
   test('nav is inline and the menu toggle is hidden', async ({ page }) => {
     await page.goto('./');
     await expect(page.getByRole('button', { name: 'Menu' })).toBeHidden();
-    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link')).toHaveCount(5);
+    await expect(page.getByRole('navigation', { name: 'Primary' }).getByRole('link')).toHaveCount(6);
     await expectNoHorizontalScroll(page);
   });
 

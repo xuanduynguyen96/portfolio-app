@@ -1,0 +1,72 @@
+---
+interface Props {
+  /** Unique per page; `${id}-label` names the bar via aria-labelledby (works in every AT/tool, unlike <label> on <progress>). */
+  id: string;
+  label: string;
+  value: number;
+  max: number;
+  /** Human-readable value, e.g. "450 / 520 XP". */
+  valueText: string;
+}
+
+const { id, label, value, max, valueText } = Astro.props;
+const safeMax = max > 0 ? max : 1;
+const safeValue = Math.min(safeMax, Math.max(0, value));
+---
+
+<div class="xp-bar">
+  <div class="xp-bar-row">
+    <span id={`${id}-label`} class="xp-bar-label mono">{label}</span>
+    <span class="xp-bar-value mono" aria-hidden="true">{valueText}</span>
+  </div>
+  <progress id={id} max={safeMax} value={safeValue} aria-labelledby={`${id}-label`} aria-valuetext={valueText}>{valueText}</progress>
+</div>
+
+<style>
+  .xp-bar {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .xp-bar-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    letter-spacing: 0.02em;
+  }
+
+  .xp-bar-label {
+    color: var(--color-text);
+  }
+
+  .xp-bar-value {
+    color: var(--color-text-muted);
+  }
+
+  progress {
+    appearance: none;
+    inline-size: 100%;
+    block-size: var(--bar-height);
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-glass-hover);
+    overflow: hidden;
+  }
+
+  progress::-webkit-progress-bar {
+    background: var(--color-surface-glass-hover);
+    border-radius: inherit;
+  }
+
+  progress::-webkit-progress-value {
+    background: linear-gradient(90deg, var(--color-accent-cyan), var(--color-accent-magenta));
+    border-radius: inherit;
+  }
+
+  progress::-moz-progress-bar {
+    background: linear-gradient(90deg, var(--color-accent-cyan), var(--color-accent-magenta));
+    border-radius: inherit;
+  }
+</style>

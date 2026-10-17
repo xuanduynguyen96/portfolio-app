@@ -1,0 +1,52 @@
+---
+import GlassCard from '../glass-card.astro';
+import { formatMetricValue } from '../../utils/career-rpg/format-metric';
+import type { Achievement } from '../../utils/career-rpg/career-types';
+import { withBasePath } from '../../utils/with-base-path';
+
+interface Props {
+  achievement: Achievement;
+}
+
+const { achievement } = Astro.props;
+---
+
+<GlassCard as="li" class="achievement" data-reveal>
+  {achievement.isSample && <p class="sample-tag mono">Sample</p>}
+  <p class="achievement-value neon-text">{formatMetricValue(achievement)}</p>
+  <p class="achievement-label">{achievement.label}</p>
+  <p class="achievement-quest mono">
+    <a href={withBasePath(`/projects/${achievement.questId}/`)}>{achievement.questTitle} →</a>
+  </p>
+</GlassCard>
+
+<style>
+  .achievement {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2);
+  }
+
+  .achievement-value {
+    width: fit-content;
+    font-size: var(--text-h2);
+    font-weight: 700;
+    line-height: var(--leading-tight);
+  }
+
+  .achievement-quest {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .sample-tag {
+    width: fit-content;
+    padding: 0 var(--space-2);
+    border: 1px solid var(--color-accent-magenta);
+    border-radius: var(--radius-pill);
+    color: var(--color-accent-magenta);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-mono);
+    text-transform: uppercase;
+  }
+</style>

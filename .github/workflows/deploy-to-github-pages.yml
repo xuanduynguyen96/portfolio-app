@@ -1,5 +1,6 @@
-# Verify (type check + build + e2e) on every PR and push to master.
+# Verify (type check + unit + build + e2e) on every PR and push to master.
 # Build + deploy to GitHub Pages only on master (requires Settings → Pages → Source: GitHub Actions).
+# Weekly scheduled run rebuilds master so the build-date-based Consistency Streak stays current.
 name: Deploy to GitHub Pages
 
 on:
@@ -7,6 +8,8 @@ on:
     branches: [master]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * 1' # Mondays 03:17 UTC (GitHub pauses schedules after 60 days without repo activity)
 
 permissions:
   contents: read
@@ -35,6 +38,9 @@ jobs:
 
       - name: Type check
         run: npm run check
+
+      - name: Unit tests
+        run: npm run test:unit
 
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium

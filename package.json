@@ -9,10 +9,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "test:unit": "node --test --disable-warning=ExperimentalWarning \"tests/unit/**/*.test.ts\"",
     "test:e2e": "playwright test"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=22.18"
   },
   "dependencies": {
     "@fontsource-variable/jetbrains-mono": "^5.3.0",

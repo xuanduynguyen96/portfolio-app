@@ -1,0 +1,56 @@
+---
+import type { StreakInfo } from '../../utils/career-rpg/career-types';
+import { formatEntryDate } from '../../utils/format-date-range';
+import { withBasePath } from '../../utils/with-base-path';
+
+interface Props {
+  streak: StreakInfo;
+}
+
+const { streak } = Astro.props;
+const weeks = (count: number) => `${count}-week`;
+const text =
+  streak.current > 0
+    ? `${weeks(streak.current)} streak · best ${streak.longest}`
+    : streak.lastEntryDate
+      ? `Streak paused · last entry ${formatEntryDate(streak.lastEntryDate)}`
+      : 'No changelog entries yet';
+---
+
+<a class="streak-badge mono" href={withBasePath('/changelog/')} data-streak={streak.current}>
+  <span class="streak-dot" aria-hidden="true"></span>{text}<span class="visually-hidden"> (view changelog)</span>
+</a>
+
+<style>
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: fit-content;
+    min-height: 2.75rem;
+    padding-inline: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-size: var(--text-xs);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    transition: border-color var(--duration-base) var(--ease-out-expo);
+  }
+
+  .streak-badge:hover {
+    border-color: var(--color-border-glow);
+  }
+
+  .streak-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+  }
+
+  .streak-badge:not([data-streak='0']) .streak-dot {
+    background: var(--color-accent-magenta);
+    box-shadow: var(--shadow-glow-magenta);
+  }
+</style>

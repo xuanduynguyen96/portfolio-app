@@ -2,10 +2,10 @@ import { expect, test, type Page } from '@playwright/test';
 import { SITE_NAME } from './test-helpers';
 
 /** Every animatable element must be visible with no inline transform, without any scrolling. */
-async function expectStaticContentVisible(page: Page) {
+async function expectStaticContentVisible(page: Page, minTargets = 11) {
   const targets = page.locator('[data-reveal], [data-hero]');
   const count = await targets.count();
-  expect(count).toBeGreaterThan(10);
+  expect(count).toBeGreaterThanOrEqual(minTargets);
   for (let index = 0; index < count; index += 1) {
     const target = targets.nth(index);
     await expect(target).toHaveCSS('opacity', '1');
@@ -35,6 +35,16 @@ test.describe('motion fallbacks', () => {
     await page.goto('./');
     await expect(page.locator('html')).not.toHaveAttribute('data-motion', /.*/);
     await expectStaticContentVisible(page);
+    await context.close();
+  });
+
+  test('without JavaScript the speedrun page is complete and its clock is static', async ({ browser }) => {
+    const context = await browser.newContext({ javaScriptEnabled: false });
+    const page = await context.newPage();
+    await page.goto('./speedrun/');
+    await expectStaticContentVisible(page, 3);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(SITE_NAME);
+    await expect(page.locator('[data-speedrun-countdown]')).toHaveText('01:00');
     await context.close();
   });
 

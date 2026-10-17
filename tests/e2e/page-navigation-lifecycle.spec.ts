@@ -1,7 +1,9 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import { SITE_NAME, expectAllRevealsVisible, expectHeroVisible, trackPageErrors } from './test-helpers';
 
 const PROJECT_TITLE = 'Neon Analytics Dashboard';
+// Skill tree "Proven in" links share the title, so target the project card link.
+const projectLink = (page: Page) => page.locator('#projects').getByRole('link', { name: PROJECT_TITLE, exact: true });
 
 test('animations re-initialise cleanly across ClientRouter navigations', async ({ page }) => {
   const errors = trackPageErrors(page);
@@ -12,7 +14,7 @@ test('animations re-initialise cleanly across ClientRouter navigations', async (
   const isSameDocument = () => page.evaluate(() => '__softNavMarker' in window);
 
   for (let round = 1; round <= 3; round += 1) {
-    await page.getByRole('link', { name: PROJECT_TITLE, exact: true }).click();
+    await projectLink(page).click();
     await expect(page).toHaveURL(/\/projects\/neon-dashboard\/$/);
     await expect(page.getByRole('heading', { level: 1, name: PROJECT_TITLE })).toBeVisible();
     expect(await isSameDocument()).toBe(true);
@@ -34,7 +36,7 @@ test('animations re-initialise cleanly across ClientRouter navigations', async (
 test('browser back/forward keeps content visible', async ({ page }) => {
   await page.goto('./');
   await expectHeroVisible(page);
-  await page.getByRole('link', { name: PROJECT_TITLE, exact: true }).click();
+  await projectLink(page).click();
   await expect(page.getByRole('heading', { level: 1, name: PROJECT_TITLE })).toBeVisible();
 
   await page.goBack();

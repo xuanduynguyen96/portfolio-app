@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { PROJECT_SLUGS } from './test-helpers';
+import { CAREER_PAGES, PROJECT_SLUGS } from './test-helpers';
 
-const PAGES = ['./', ...PROJECT_SLUGS.map((slug) => `./projects/${slug}/`)];
+const PAGES = ['./', ...PROJECT_SLUGS.map((slug) => `./projects/${slug}/`), ...CAREER_PAGES];
 
 test('every internal link and asset on every page resolves under the base path', async ({ page, request }) => {
   const checked = new Set<string>();

@@ -54,7 +54,23 @@ Contrast rules:
 | `GlassCard` | `.glass` + padding; `as` = div/article/li; `spotlight` default on |
 | `TagList` / `TagChip` | Pill chips, mono xs, muted |
 | `SectionHeading` | Eyebrow + h2, `data-reveal` |
-| `ProjectCard` | Glass card, cover, tags, links; `data-spotlight data-reveal` |
+| `ProjectCard` | Glass card, cover, tags, links; `data-spotlight data-reveal`; tier badge + `+N XP` / `Unverified`; boss card has `data-boss` |
+
+### Career RPG components (`src/components/career-rpg/`)
+
+Reuse existing tokens only; no new colors.
+
+| Component | Style / a11y notes |
+|-----------|--------------------|
+| `QuestTierBadge` | Mono xs uppercase pill. Variants: side = muted border; main = cyan outline; raid = magenta outline; boss = filled magenta + `--color-text-on-accent`, bold ("Boss · Raid") |
+| Boss card / `BossBattlePanel` | Magenta border + `--shadow-glow-magenta` (one glow). Card spans 2 grid columns at >=56rem, single column below. Heading "Boss Battle" vs "Quest Log"; unverified quests state the reason + "0 XP" in text |
+| `XpProgressBar` | Native `<progress>` (gradient cyan -> magenta fill, `--bar-height`), named via `aria-labelledby`, `aria-valuetext` carries "450 / 520 XP"; visible value text is `aria-hidden` to avoid double reading. Static: no fill animation |
+| `CompletenessHud` | Glass card; missing items in native `<details>` (works without JS, keyboard-operable); summary >=44px |
+| `StreakBadge` | Pill link to `/changelog/`, mono; text states streak, paused, or empty (never color alone); >=44px |
+| `SkillTreeNode` | Recursive nested `<ul role="list">`; branch = left cyan border line + short horizontal tick per child. Level pips are decorative (`aria-hidden`, filled cyan + glow when earned); real level is visually-hidden text ("level 2 of 3", "(locked)"). Locked = muted label. Evidence in `<details>` |
+| `AchievementCard` | Big mono value + quest name; "Sample" magenta pill when the metric comes from a placeholder project |
+
+Availability dot (`.status-dot`, in `effects.css`): cyan = open, magenta = limited, muted = closed via `data-status`. Decorative; always next to visible text.
 
 ## Motion principles
 
@@ -63,12 +79,14 @@ Contrast rules:
 - Hero: title chars rise from line masks, then eyebrow/role/tagline/CTAs fade up.
 - Sections/cards: fade-up once on enter (`top 90%`), batched.
 - Page transitions: Astro `ClientRouter`; shared `transition:name` on project title/cover.
+- Career RPG: progress bars and pips are static (no fill/level-up animation). Only motion is the `/speedrun/` countdown.
 
 ### Reduced-motion policy
 
 - `prefers-reduced-motion: reduce` => `data-motion` never set, nothing pre-hidden, GSAP never runs. Global CSS also clamps animation/transition durations.
 - Switching to reduce mid-session removes the flag and reveals everything.
 - Never convey information by motion alone.
+- `/speedrun/` countdown (`speedrun-countdown.ts`): decorative, `aria-hidden`, server-rendered with its start value; runs only without reduced motion, static with no JS or reduce. Never gates content; `data-state` = `running` | `done` ("GG").
 - Failure policy: content visible beats animation. See [system-architecture.md](system-architecture.md#root-flags-progressive-enhancement).
 
 ## Accessibility visuals
@@ -77,6 +95,8 @@ Contrast rules:
 - Skip link slides in on focus (top-left, cyan).
 - Touch targets >=44px.
 - Decorative glyphs/dots `aria-hidden`.
+- Lists with `role="list"` (`ul`/`ol`) get the bullet/padding reset in `global-styles.css`; the role keeps list semantics despite `list-style: none`.
+- Game state is never color-only: level, XP, locked, unverified, sample are always text.
 
 ## Images
 

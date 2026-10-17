@@ -1,0 +1,64 @@
+---
+import SectionHeading from '../section-heading.astro';
+import GlassCard from '../glass-card.astro';
+import { siteConfig } from '../../data/site-config';
+
+const facts = [
+  { label: 'Role', value: siteConfig.role },
+  { label: 'Based', value: siteConfig.location },
+  { label: 'Focus', value: 'Web performance, motion, accessibility' },
+];
+---
+
+<section id="about" class="section" aria-labelledby="about-title">
+  <div class="container">
+    <SectionHeading index={1} label="About" title="Engineer with an eye for motion" id="about-title" />
+    <div class="about-grid">
+      <div class="about-bio">
+        {siteConfig.bio.map((paragraph) => <p data-reveal>{paragraph}</p>)}
+      </div>
+      <GlassCard class="about-facts" data-reveal>
+        <dl>
+          {
+            facts.map((fact) => (
+              <div class="fact">
+                <dt class="eyebrow">{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </GlassCard>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-grid {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 56rem) {
+    .about-grid {
+      grid-template-columns: 3fr 2fr;
+      align-items: start;
+    }
+  }
+
+  .about-bio {
+    display: grid;
+    gap: var(--space-5);
+    font-size: var(--text-lg);
+    color: var(--color-text-muted);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  dd {
+    margin-top: var(--space-1);
+  }
+</style>

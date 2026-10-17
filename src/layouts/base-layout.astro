@@ -1,0 +1,90 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import '@fontsource-variable/space-grotesk';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/design-tokens.css';
+import '../styles/global-styles.css';
+import '../styles/effects.css';
+import SkipToContentLink from '../components/skip-to-content-link.astro';
+import SiteHeader from '../components/site-header.astro';
+import SiteFooter from '../components/site-footer.astro';
+import { siteConfig } from '../data/site-config';
+import { withBasePath } from '../utils/with-base-path';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  /** Exclude from search engines (e.g. 404 page); also omits the canonical link. */
+  noindex?: boolean;
+}
+
+const {
+  title = siteConfig.seo.title,
+  description = siteConfig.seo.description,
+  ogImage = withBasePath('/og-image.png'),
+  noindex = false,
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#05070d" />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonicalUrl} />}
+    <link rel="icon" type="image/svg+xml" href={withBasePath('/favicon.svg')} />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!--
+      Root flags, set before first paint (and again after each ClientRouter swap, which resets <html> attributes):
+      - data-motion="ok": CSS pre-hides [data-reveal]/[data-hero] (only if no reduced-motion preference).
+      - data-menu-enhanced: mobile nav collapses behind the toggle (avoids a layout shift on load).
+      Failsafe: if the JS modules haven't marked themselves ready within 3s (bundle failed to load),
+      drop the flags so content stays visible and the nav stays usable.
+    -->
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const setRootFlags = () => {
+          root.dataset.menuEnhanced = '';
+          if (matchMedia('(prefers-reduced-motion: no-preference)').matches) root.dataset.motion = 'ok';
+          setTimeout(() => {
+            if (!('menuReady' in root.dataset)) delete root.dataset.menuEnhanced;
+            if (!('motionReady' in root.dataset)) delete root.dataset.motion;
+          }, 3000);
+        };
+        setRootFlags();
+        document.addEventListener('astro:after-swap', setRootFlags);
+      })();
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <SkipToContentLink />
+    <SiteHeader />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <SiteFooter />
+    <script>
+      import '../scripts/animations/init-animations';
+    </script>
+  </body>
+</html>

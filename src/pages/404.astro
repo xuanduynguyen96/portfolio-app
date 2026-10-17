@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/base-layout.astro';
+import NeonButton from '../components/neon-button.astro';
+import { siteConfig } from '../data/site-config';
+import { withBasePath } from '../utils/with-base-path';
+---
+
+<BaseLayout title={`404: Signal lost | ${siteConfig.name}`} description="The page you were looking for could not be found."
+  noindex
+>
+  <section class="not-found container" aria-labelledby="not-found-title">
+    <p class="eyebrow mono">Error 404</p>
+    <h1 id="not-found-title" class="neon-text">Signal lost</h1>
+    <p class="not-found-copy">The page you requested drifted out of range. It may have moved or never existed.</p>
+    <NeonButton href={withBasePath('/')}>Return to base</NeonButton>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    justify-items: start;
+    align-content: center;
+    gap: var(--space-5);
+    min-height: calc(100svh - 10rem);
+    padding-block: var(--space-8);
+  }
+
+  h1 {
+    font-size: var(--text-hero);
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+
+  .not-found-copy {
+    max-width: 36rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+  }
+</style>

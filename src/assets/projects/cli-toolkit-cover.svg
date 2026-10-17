@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <rect width="1200" height="675" fill="#05070d"/>
+  <rect x="120" y="80" width="960" height="515" rx="18" fill="#0b1020" stroke="#00fff0" stroke-opacity=".35"/>
+  <path d="M120 140H1080" stroke="#00fff0" stroke-opacity=".2"/>
+  <g><circle cx="160" cy="110" r="9" fill="#ff2bd6"/><circle cx="192" cy="110" r="9" fill="#9fb3c8" fill-opacity=".5"/><circle cx="224" cy="110" r="9" fill="#00fff0"/></g>
+  <g font-family="monospace" font-size="34">
+    <text x="170" y="220" fill="#00fff0">$ toolkit init --fast</text>
+    <text x="170" y="280" fill="#9fb3c8">✓ scaffolded 14 files in 0.42s</text>
+    <text x="170" y="340" fill="#9fb3c8">✓ linted, formatted, typed</text>
+    <text x="170" y="400" fill="#ff2bd6">$ toolkit ship</text>
+    <text x="170" y="460" fill="#9fb3c8">→ deployed to edge</text>
+  </g>
+  <rect x="170" y="490" width="22" height="40" fill="#00fff0"/>
+</svg>

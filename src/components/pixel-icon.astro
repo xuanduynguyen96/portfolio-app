@@ -1,0 +1,50 @@
+---
+// 8x8 pixel icon as inline SVG. Colors follow `currentColor` (ink) + reduced-opacity shade.
+// Decorative by default (aria-hidden); pass `label` to expose it as an image.
+import { pixelIcons, type PixelIconName, type PixelIconSize } from '../data/pixel-icons';
+import { gridHasChar, gridToPathData } from '../utils/pixel-icon-path';
+
+interface Props {
+  name: PixelIconName;
+  /** Rendered px; only integer multiples of the 8px grid stay crisp. */
+  size?: PixelIconSize;
+  /** Accessible name; omit for decorative icons next to visible text. */
+  label?: string;
+  class?: string;
+}
+
+const { name, size = 16, label, class: className } = Astro.props;
+const grid = pixelIcons[name];
+const inkPath = gridToPathData(grid, '#');
+const shadePath = gridHasChar(grid, '+') ? gridToPathData(grid, '+') : '';
+---
+
+<svg
+  class:list={['pixel-icon', className]}
+  viewBox="0 0 8 8"
+  width={size}
+  height={size}
+  fill="currentColor"
+  shape-rendering="crispEdges"
+  focusable="false"
+  data-icon={name}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+>
+  <path d={inkPath}></path>
+  {shadePath && <path class="pixel-icon-shade" d={shadePath}></path>}
+</svg>
+
+<style>
+  .pixel-icon {
+    flex: none;
+    fill: currentColor;
+    shape-rendering: crispEdges;
+    vertical-align: middle;
+  }
+
+  .pixel-icon-shade {
+    opacity: var(--pixel-icon-shade-opacity, 0.55);
+  }
+</style>

@@ -6,7 +6,7 @@
 - Docs: `docs/deployment-guide.md`, `.github/workflows/deploy-to-github-pages.yml`
 
 ## Overview
-- Date: 2026-10-17 · Priority: P0 · Effort: M (4h) · Implementation: Not started · Review: Not started
+- Date: 2026-10-17 · Priority: P0 · Effort: M (4h) · Implementation: Done · Review: user gate pending
 - Throwaway spike. Prove the data path works with GITHUB_TOKEN, measure cost, dry-run classifier on owner + 3 public profiles, prototype 3 class silhouettes. Output: `reports/02-spike-results-report.md`. No production code merged.
 
 ## Key Insights
@@ -67,13 +67,13 @@ Modify / Delete: none on feature branch
 9. **Gate:** user reviews owner class result + prototypes before 02 locks rules and 04 authors all grids.
 
 ## Todo List
-- [ ] probe script + spike workflows on `spike/github-graphql`
-- [ ] V1-V9 recorded (GITHUB_TOKEN; PAT only if needed)
-- [ ] dry-run owner + 3 profiles, 2 param sets
-- [ ] 3 silhouette prototypes + IoU (32 and 16)
-- [ ] mini blind-ID (3 people)
-- [ ] `reports/02-spike-results-report.md`
-- [ ] spike branch deleted; user gate passed
+- [x] probe script + spike workflows on `spike/github-graphql`
+- [x] V1-V9 recorded (GITHUB_TOKEN; PAT only if needed)
+- [x] dry-run owner + 3 profiles, 2 param sets
+- [x] 3 silhouette prototypes + IoU (32 and 16)
+- [ ] mini blind-ID (3 people): moved to user gate
+- [x] `reports/02-spike-results-report.md`
+- [ ] spike branch deleted (local done; remote delete blocked by session proxy, owner deletes `spike/github-graphql` in GitHub UI); user gate passed
 
 ## Success Criteria
 - Every V-claim marked verified/refuted with evidence; working token path known

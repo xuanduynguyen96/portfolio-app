@@ -1,0 +1,98 @@
+// Phase 00 dry-run of the phase-02 classifier on raw probe JSON. One shared param set for all profiles.
+import { readFileSync } from 'node:fs';
+
+type A = 'backend' | 'data' | 'frontend';
+const IDS: A[] = ['backend', 'data', 'frontend'];
+const LANG: Record<string, Partial<Record<A, number>>> = {
+  'C#': { backend: 1 }, Java: { backend: 1 }, Go: { backend: 1 }, Rust: { backend: 1 }, Ruby: { backend: 1 },
+  PHP: { backend: 1 }, Elixir: { backend: 1 }, Erlang: { backend: 1 }, Scala: { backend: 0.7, data: 0.3 },
+  C: { backend: 1 }, 'C++': { backend: 1 }, Zig: { backend: 1 }, 'F#': { backend: 1 }, Haskell: { backend: 1 },
+  Clojure: { backend: 1 }, Groovy: { backend: 1 }, 'Visual Basic .NET': { backend: 1 },
+  Kotlin: { frontend: 0.6, backend: 0.4 }, Python: { data: 0.6, backend: 0.4 }, 'Jupyter Notebook': { data: 1 },
+  R: { data: 1 }, Julia: { data: 1 }, MATLAB: { data: 1 }, Fortran: { data: 1 }, SQL: { data: 0.5, backend: 0.5 },
+  TypeScript: { frontend: 0.7, backend: 0.3 }, JavaScript: { frontend: 0.8, backend: 0.2 },
+  HTML: { frontend: 1 }, CSS: { frontend: 1 }, SCSS: { frontend: 1 }, Less: { frontend: 1 }, Vue: { frontend: 1 },
+  Svelte: { frontend: 1 }, Astro: { frontend: 1 }, Swift: { frontend: 1 }, Dart: { frontend: 1 }, 'Objective-C': { frontend: 1 },
+};
+const LANG_WEIGHT: Record<string, number> = { HTML: 0.5, CSS: 0.5, SCSS: 0.5, Less: 0.5 };
+const KEYWORDS: [string, A, number][] = [
+  ['xamarin', 'frontend', 1], ['mobile', 'frontend', 0.5], ['android', 'frontend', 0.5], ['ios', 'frontend', 0.5],
+  ['react', 'frontend', 0.5], ['vue', 'frontend', 0.5], ['website', 'frontend', 0.5], ['portfolio', 'frontend', 0.5],
+  ['resume', 'frontend', 0.5], ['ui', 'frontend', 0.5],
+  ['aspnet', 'backend', 1], ['asp', 'backend', 0.5], ['api', 'backend', 0.5], ['server', 'backend', 0.5],
+  ['spring', 'backend', 0.5], ['backend', 'backend', 0.5], ['database', 'backend', 0.5], ['mvc', 'backend', 0.5],
+  ['data', 'data', 0.5], ['notebook', 'data', 0.5], ['notebooks', 'data', 0.5], ['statistics', 'data', 0.5],
+  ['learning', 'data', 0.5], ['ml', 'data', 0.5], ['astronomy', 'data', 0.5], ['analysis', 'data', 0.5],
+];
+const P = { minShare: 0.1, primaryBonus: 0.3, notebookKib: 200, archived: 0.5, actScale: 0.25, actMax: 0.5,
+  secondaryRatio: 0.35, secondaryMin: 0.5, minTotal: 1, minRepos: 2, floor: 0.25 };
+
+const tokens = (r: any) => new Set(
+  [r.name.replace(/([a-z])([A-Z])/g, '$1 $2'), r.description ?? '', ...r.repositoryTopics.nodes.map((t: any) => t.topic.name)]
+    .join(' ').toLowerCase().split(/[^a-z0-9#+]+/).filter(Boolean));
+
+function vote(r: any, asOf: Date, halfLife: number, dropLangs: string[]) {
+  const raw: Record<A, number> = { backend: 0, data: 0, frontend: 0 };
+  const why: string[] = [];
+  const edges = (r.languages?.edges ?? []).filter((e: any) => LANG[e.node.name] && !dropLangs.includes(e.node.name))
+    .map((e: any) => ({ n: e.node.name, kib: e.node.name === 'Jupyter Notebook' ? Math.min(e.size / 1024, P.notebookKib) : e.size / 1024 }));
+  const total = edges.reduce((s: number, e: any) => s + e.kib, 0);
+  for (const e of edges) {
+    const share = e.kib / total;
+    if (share < P.minShare) continue;
+    for (const a of IDS) raw[a] += share * (LANG[e.n][a] ?? 0) * (LANG_WEIGHT[e.n] ?? 1);
+    why.push(`${e.n} ${Math.round(share * 100)}%`);
+  }
+  const pl = r.primaryLanguage?.name;
+  if (pl && LANG[pl]) for (const a of IDS) raw[a] += P.primaryBonus * (LANG[pl][a] ?? 0);
+  const tk = tokens(r);
+  for (const [k, a, pts] of KEYWORDS) if (tk.has(k)) { raw[a] += pts; why.push(`kw ${k}`); }
+  const sum = IDS.reduce((s, a) => s + raw[a], 0);
+  const age = (asOf.getTime() - new Date(r.pushedAt).getTime()) / (30.44 * 864e5);
+  const rec = Math.max(P.floor, 0.5 ** (Math.max(0, age) / halfLife));
+  const commits = r.defaultBranchRef?.target?.history?.totalCount ?? 0;
+  const act = 1 + Math.min(P.actMax, Math.log10(1 + commits) * P.actScale);
+  const w = (sum > 0 ? 1 / Math.max(1, sum) : 0) * rec * act * (r.isArchived ? P.archived : 1);
+  const v = Object.fromEntries(IDS.map((a) => [a, raw[a] * w])) as Record<A, number>;
+  return { v, why: why.join(', '), rec, act };
+}
+
+const JOBS: Record<string, Record<A, string>> = {
+  Warrior: { backend: 'Knight', data: 'Spellblade', frontend: 'Vanguard' },
+  Mage: { backend: 'Battlemage', data: 'Sorcerer', frontend: 'Druid' },
+  Archer: { backend: 'Warden', data: 'Arcane Archer', frontend: 'Ranger' },
+};
+const CLASS: Record<A, string> = { backend: 'Warrior', data: 'Mage', frontend: 'Archer' };
+
+export function classify(file: string, halfLife: number, dropLangs: string[] = [], verbose = false) {
+  const d = JSON.parse(readFileSync(file, 'utf8'));
+  const repos = d.profile.json.data.user.repositories.nodes as any[];
+  const now = new Date('2026-10-12T00:00:00Z'); // asOf = ISO-week Monday
+  const scores: Record<A, number> = { backend: 0, data: 0, frontend: 0 };
+  let voting = 0;
+  const rows: string[] = [];
+  for (const r of repos) {
+    const { v, why, rec, act } = vote(r, now, halfLife, r.name === 'portfolio-app' ? dropLangs : []);
+    if (IDS.some((a) => v[a] > 0)) voting++;
+    for (const a of IDS) scores[a] += v[a];
+    if (verbose) rows.push(`  ${r.name.padEnd(28)} b=${v.backend.toFixed(2)} d=${v.data.toFixed(2)} f=${v.frontend.toFixed(2)} rec=${rec.toFixed(2)} act=${act.toFixed(2)} [${why}]`);
+  }
+  for (const a of IDS) scores[a] = Math.round(scores[a] * 1000) / 1000;
+  const total = IDS.reduce((s, a) => s + scores[a], 0);
+  const ranked = [...IDS].sort((x, y) => scores[y] - scores[x]);
+  const [p, s] = ranked;
+  if (total < P.minTotal || voting < P.minRepos) return { label: 'Adventurer', scores, rows };
+  const sec = scores[s] >= P.secondaryRatio * scores[p] && scores[s] >= P.secondaryMin ? s : null;
+  return { label: `${CLASS[p]} · ${JOBS[CLASS[p]][sec ?? p]}`, scores, rows, ratio: (scores[s] / scores[p]).toFixed(2) };
+}
+
+const dir = process.argv[2];
+for (const hl of [24, 48]) {
+  console.log(`\n== half-life ${hl} months ==`);
+  for (const login of ['xuanduynguyen96', 'mitchellh', 'spf13', 'jakevdp', 'sindresorhus']) {
+    const r = classify(`${dir}/${login}.json`, hl, [], false);
+    console.log(`${login.padEnd(16)} ${r.label.padEnd(24)} ${JSON.stringify(r.scores)} s2/s1=${r.ratio}`);
+  }
+  const fixed = classify(`${dir}/xuanduynguyen96.json`, hl, ['Python'], true);
+  console.log(`owner w/o .claude Python: ${fixed.label} ${JSON.stringify(fixed.scores)} s2/s1=${fixed.ratio}\n${fixed.rows.join('\n')}`);
+}

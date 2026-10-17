@@ -1,5 +1,6 @@
 // Single source of truth for personal info + SEO defaults.
 // TODO(content): replace placeholder values with real details.
+import { GITHUB_PROFILE_URL } from './github/github-login';
 import type { AvailabilityStatus } from './xp-rules';
 
 export interface SocialLink {
@@ -38,7 +39,7 @@ export const siteConfig: SiteConfig = {
   ],
   location: 'Remote',
   email: 'hello@example.com',
-  socials: [{ label: 'GitHub', href: 'https://github.com/xuanduynguyen96' }],
+  socials: [{ label: 'GitHub', href: GITHUB_PROFILE_URL }],
   availability: { status: 'open', note: 'Available for new projects' },
   seo: {
     title: 'Xuan Duy Nguyen | Software Engineer',

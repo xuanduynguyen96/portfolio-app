@@ -1,0 +1,106 @@
+# Weekly: refresh the committed GitHub snapshot (the character's only data source), commit it if it
+# changed, then dispatch the Pages deploy. Commits pushed with GITHUB_TOKEN do not trigger `push`
+# workflows, so the deploy is dispatched explicitly; it also rebuilds weekly when nothing changed.
+# Security: the write token never shares a job with third-party npm code. `fetch` runs our own
+# dependency-free script first, then installs deps only to validate; `publish` has no npm at all.
+name: Refresh GitHub snapshot
+
+on:
+  schedule:
+    - cron: '47 2 * * 1' # Mondays 02:47 UTC (GitHub pauses schedules after 60 days without repo activity)
+  workflow_dispatch:
+    inputs:
+      dry_run_no_token:
+        description: 'Run without a token (checks the keep-snapshot fallback)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: refresh-github-snapshot
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      changed: ${{ steps.fetch.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+
+      - name: Fetch snapshot (own code only, before any npm install)
+        id: fetch
+        run: node scripts/fetch-github-snapshot.ts
+        env:
+          GITHUB_TOKEN: ${{ inputs.dry_run_no_token != true && github.token || '' }}
+          GH_SNAPSHOT_PAT: ${{ inputs.dry_run_no_token != true && secrets.GH_SNAPSHOT_PAT || '' }}
+
+      # Upload first: the artifact holds bytes produced by our own code only. Validation below
+      # runs npm code but can only fail this job (publish then skips); it cannot alter the upload.
+      - name: Upload snapshot
+        if: steps.fetch.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-snapshot
+          path: src/data/github/github-snapshot.json
+          retention-days: 1
+
+      - name: Install dependencies (validation only, no secrets in env)
+        if: steps.fetch.outputs.changed == 'true'
+        run: npm ci --ignore-scripts
+
+      - name: Validate snapshot schema
+        if: steps.fetch.outputs.changed == 'true'
+        run: node --test --disable-warning=ExperimentalWarning tests/unit/github-snapshot-schema.test.ts
+
+  publish:
+    needs: fetch
+    if: needs.fetch.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # commit the snapshot
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Download snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: github-snapshot
+          path: src/data/github
+
+      - name: Commit snapshot
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/data/github/github-snapshot.json
+          git diff --cached --quiet && exit 0
+          git commit -m 'chore(data): refresh github snapshot'
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push
+
+  # Weekly rebuild even when nothing changed or validation failed (keeps the build-date streak fresh).
+  dispatch-deploy:
+    needs: [fetch, publish]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write # dispatch the deploy workflow
+    steps:
+      - name: Dispatch deploy
+        run: gh workflow run deploy-to-github-pages.yml --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME"
+        env:
+          GH_TOKEN: ${{ github.token }}

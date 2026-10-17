@@ -10,7 +10,9 @@
     "preview": "astro preview",
     "check": "astro check",
     "test:unit": "node --test --disable-warning=ExperimentalWarning \"tests/unit/**/*.test.ts\"",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "snapshot:fetch": "node scripts/fetch-github-snapshot.ts",
+    "character:explain": "node scripts/explain-character.ts"
   },
   "engines": {
     "node": ">=22.18"

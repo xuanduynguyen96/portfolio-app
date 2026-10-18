@@ -3,14 +3,14 @@
 RPG-themed animated developer portfolio (parchment/dungeon themes, 8x8 pixel icons). Static Astro site + GSAP motion, deployed to GitHub Pages.
 
 - Live (after first deploy): https://xuanduynguyen96.github.io/portfolio-app/
-- Lighthouse (local preview, `/`, project, `/speedrun/`, `/changelog/`): mobile 98-99/100/100/100 (CLS 0), desktop 100/100/100/100
+- Lighthouse (local preview, `/`, boss project, `/speedrun/`, `/credits/`): mobile 99-100 all categories (CLS <= 0.002), desktop 100/100/100/100
 
 ## Stack
 
 Astro 7.4 (static output) · GSAP 3.15 (ScrollTrigger, SplitText) · plain CSS tokens · Fontsource self-hosted fonts (MedievalSharp headings, Pixelify Sans HUD labels, Space Grotesk body; code uses system mono) · TypeScript strict · Playwright + axe-core e2e · `node:test` unit tests.
 No UI framework, no Tailwind.
 
-Career RPG layer (v1.1): projects are quests, skills a tree, XP/level/streak are **computed at build time from evidence** (no backend). See [Career RPG](#career-rpg).
+Career RPG layer (v1.3): the character is **derived from the owner's public GitHub** (committed weekly snapshot, build-time only, no runtime fetch): class, job, gear, quests, skills, XP, streak, plus a layered 32x32 pixel avatar. See [Career RPG](#career-rpg).
 
 ## Quick start
 
@@ -30,43 +30,44 @@ npm run dev        # http://localhost:4321/portfolio-app/
 | `npm run build` | Static build to `dist/` |
 | `npm run preview` | Serve `dist/` locally |
 | `npm run check` | `astro check` (types + templates) |
-| `npm run test:unit` | `node --test` on `tests/unit/*.test.ts` (Career RPG + pixel icon pure modules, 116 tests, no build) |
-| `npm run test:e2e` | Playwright: builds, runs `astro preview`, 86 tests |
+| `npm run test:unit` | `node --test` on `tests/unit/**/*.test.ts` (engine, classifier, snapshot, avatar, pixel icon pure modules; 231 tests, no build) |
+| `npm run test:e2e` | Playwright: builds, runs `astro preview`, 94 tests |
+| `npm run snapshot:fetch` | Refresh `src/data/github/github-snapshot.json` from GitHub GraphQL (needs `GITHUB_TOKEN` or `GH_SNAPSHOT_PAT`; no token = keeps file). Run `npm run test:unit` before committing |
+| `npm run character:explain` | Print class, job, gear and per-repo votes for the committed snapshot (or a path arg) |
+| `node scripts/render-avatar-sheet.ts [out.html] [--png out.png]` | Review sheet of every class x motif x gear tier set, both frames and themes |
 
 First e2e run on a fresh machine: `npx playwright install chromium`.
 
 ## Edit content
 
-All current content is placeholder, marked `TODO(content)`. Find it all: `grep -rn "TODO(content)" src`.
+Derived vs hand-written:
+- **Derived from GitHub (do not edit by hand):** class, job, gear, quests, skill levels, XP, level, streak, HUD GitHub checks. Fix them at the source: GitHub repo description/topics/homepage, or the rules files below.
+- **Hand-written:** name, bio, About, Experience, Contact, availability, optional case studies. Remaining `TODO(content)` markers: `grep -rn "TODO(content)" src`.
 
 | What | File |
 |------|------|
 | Name, role, tagline, bio, location, email, socials, SEO title/description | `src/data/site-config.ts` |
-| Skill tree: flat `skillNodes` `{id, label, attribute, parent?, evidence[]}`; levels derive from `evidence` URLs + verified projects, never set by hand | `src/data/skills-data.ts` |
+| GitHub account the character comes from | `src/data/github/github-login.ts` |
+| GitHub snapshot (normalized, public repos only; written by the refresh workflow, never hand-edited) | `src/data/github/github-snapshot.json` (schema: `github-snapshot-schema.ts`) |
+| Case study for one repo (optional, see below) | `src/content/projects/<repo-slug>.md` |
+| Class rules (language/keyword votes, recency, secondary-job thresholds, Adventurer fallback) | `src/data/character-class-rules.ts` |
+| Class + job names (9 jobs) | `src/data/character-job-rules.ts` |
+| Gear rules (armor=security, shield=testing, boots=automation, amulet=docs; tier thresholds) | `src/data/gear-rules.ts` |
+| Skill tree: flat `skillNodes` `{id, label, attribute, parent?, match?}`; `match` rules pick the public repos that prove a skill, levels derive from them, never set by hand | `src/data/skills-data.ts` |
+| XP weights, caps, level curve, titles, quest difficulty/bonuses, streak/HUD/speedrun thresholds (retune the game here only) | `src/data/xp-rules.ts` |
 | Availability (`status` open/limited/closed + `note`; hero eyebrow, `/speedrun/`) | `src/data/site-config.ts` (`availability`) |
-| XP weights, caps, level curve, titles, streak/HUD/speedrun thresholds (retune the game here only) | `src/data/xp-rules.ts` |
-| Changelog entries (one `.md` each; feed the streak) | `src/content/changelog/*.md` |
 | Experience timeline | `src/data/experience-data.ts` |
-| Projects = quests (one `.md` each; fields below) | `src/content/projects/*.md` |
-| Project cover images | `src/assets/projects/*.svg` |
-| Pixel icons: 8x8 grids (add one + a unit test; see [code standards](docs/code-standards.md#pixel-icons)) | `src/data/pixel-icons-career.ts`, `src/data/pixel-icons-hud.ts`, mapping in `src/data/pixel-icon-map.ts` |
-| Credits page (fonts, libraries, licenses; icon gallery is automatic) | `src/data/credits-data.ts` |
+| Changelog entries (dated build log on `/changelog/`; no longer feeds the streak) | `src/content/changelog/*.md` |
+| Avatar art (class poses, job props, gear tiers, palette) | `src/data/avatar/*`, colors `--avatar-*` in `src/styles/design-tokens.css`; see [code standards](docs/code-standards.md#avatar-sprites) |
+| Pixel icons: 8x8 grids (add one + a unit test; see [code standards](docs/code-standards.md#pixel-icons)) | `src/data/pixel-icons-{career,hud,gear}.ts`, mapping in `src/data/pixel-icon-map.ts` |
+| Credits page (fonts, libraries, licenses; icon + avatar galleries are automatic) | `src/data/credits-data.ts` |
 | Theme colors, fonts, frames | `src/styles/design-tokens.css`, [docs/design-guidelines.md](docs/design-guidelines.md) |
-| Favicon | `public/favicon.svg` |
-| Social preview image | `public/og-image.png` |
+| Favicon / social preview image | `public/favicon.svg`, `public/og-image.png` |
 
 Notes:
 - Logo initials derive from `siteConfig.name`.
 - `email` is `hello@example.com` placeholder; the Contact section uses it for `mailto:`.
-- Project frontmatter schema (`src/content.config.ts`, strict: unknown keys fail the build):
-  - Base: `title`, `summary` (max 160 chars), `tags`, `cover` (optional image path), `coverAlt` (required when `cover` is set), `featured`, `order`.
-  - Quest: `difficulty` (`side|main|raid`, required), `isBoss` (default false), `skills` (1-6 skill ids from `skills-data.ts`), `obstacles` (<=6 strings), `metrics` (<=6 of `{label, value, unit?}`), `evidence` (<=8 of `{type: repo|demo|figma|article|other, url}`, https only).
-  - `repoUrl` / `demoUrl` are **removed** (unknown keys fail). Put them in `evidence` (`type: repo` / `type: demo`); the "View code" / "Live demo" buttons derive from it.
-  - Order: boss first, then featured, then `order`, then title (same for cards).
-  - Boss: exactly one project has `isBoss: true`, with >=1 metric and >=1 obstacle.
-- New project = new `.md` file in `src/content/projects/`; filename becomes the URL slug (`/projects/<slug>/`). Case study body must be >=150 prose words (>=80 distinct) or the quest earns 0 XP.
-- Changelog frontmatter (strict): `date` (ISO, not later than build time + 24h), `summary` (max 160 chars). Body needs >=40 prose words to count for the streak.
-- Regenerate the OG image after editing `src/assets/og-image-source.svg`:
+- Regenerate the OG image after editing `src/assets/og-image-source.svg` (still old palette; not generated from the avatar yet):
 
 ```bash
 node -e "require('sharp')('src/assets/og-image-source.svg').png().toFile('public/og-image.png')"
@@ -74,20 +75,35 @@ node -e "require('sharp')('src/assets/og-image-source.svg').png().toFile('public
 
 (`sharp` ships with Astro.)
 
+### Add a case study (optional override)
+
+Quests are the top public repos from the snapshot (`quest.max` in `xp-rules.ts`, plus any repo with an override). A repo without a file still gets a page, difficulty and XP from repo facts. A file adds your words and earns the case-study bonus.
+
+1. Create `src/content/projects/<repo-slug>.md`. The file name must be the repo slug: lowercase, words split on case/`_`/`.`, joined by `-` (`QrCodeScanner` -> `qr-code-scanner`). A name that matches no snapshot repo fails the build.
+2. Frontmatter (strict; unknown keys fail the build): optional `title`, `summary` (max 160), `tags` (<=6), `cover` + `coverAlt` (alt required with a cover), `featured`, `order`, `isBoss` (at most one repo; default boss = first pinned, else top-ranked), `obstacles` (<=6), `metrics` (<=6 of `{label, value, unit?}`).
+3. **Forbidden keys:** `difficulty`, `skills`, `evidence`, `xp`, `level`, `repoUrl`, `demoUrl`. Difficulty, skills and links come from the repo; XP from rules.
+4. Body: >=150 prose words (>=80 distinct) or no case-study bonus (quest stays "derived"). Boss counts as a case study for the HUD when the body passes.
+5. Prefix drafts with a `TODO(content)` comment: the quest shows a "Sample" tag until removed.
+
+The e2e expectations mirror the engine from the snapshot and override files (`tests/e2e/career-mirror.ts`), so adding a case study needs no test edits.
+
 ## Career RPG
 
-XP, level, title, attribute bars, skill-node levels, HUD % and streak are **computed, never set**: a hand-written `xp`, `level` or `repoUrl` key fails the build. Rules, anti-gaming policy, pipeline: [docs/system-architecture.md](docs/system-architecture.md#career-rpg-pipeline).
+XP, level, title, attribute bars, skill-node levels, HUD % and streak are **computed, never set**: a hand-written `xp`, `level`, `difficulty` or `repoUrl` key fails the build. Pipeline, scoring, anti-gaming: [docs/system-architecture.md](docs/system-architecture.md#github-derived-pipeline).
 
-- Routes: `/credits/` (fonts, icons, libraries + licenses), `/#character` (level, attributes, HUD, streak), `/#skills` (skill tree), `/#projects` (quests + boss), `/speedrun/` (60s recruiter view), `/changelog/`.
-- Evidence rules in short: one URL earns XP once site-wide; case study word minimum; tier decay + caps. Build errors list every violation at once (`CareerRuleError`).
+- **Data:** the weekly workflow `refresh-github-snapshot.yml` reads the owner's public GitHub (GraphQL), keeps public non-fork repos only, commits a normalized snapshot, then dispatches the deploy. The build never calls GitHub. Page copy says "Based on public GitHub activity as of <date>".
+- **Class:** each public repo votes once (languages, keywords, recency, activity). Warrior = backend, Mage = data, Archer = frontend; Adventurer when there is too little signal. **Job** = class x secondary archetype (9 jobs). **Gear** tiers 0-3 from repo hygiene: armor = security, shield = testing, boots = automation, amulet = docs. A "Why" panel lists the ranked repo signals. Debug with `npm run character:explain`.
+- **Tuning rule:** change the rules files generically (a reason that holds for any developer), keep the fixture profiles in `tests/unit/classify-character.test.ts` on their expected classes. Never hardcode the owner.
+- **Avatar:** hand-authored 32x32 sprites composed at build time into one inline SVG (no client JS). Name = "Class · Job", gear in the description; a short two-frame action loop runs only when motion is allowed, then rests.
+- Routes: `/credits/` (fonts, icons, avatar gallery, licenses), `/#character` (portrait, gear legend, why, level, attributes, HUD, streak), `/#skills`, `/#projects` (quests + boss), `/speedrun/` (60s recruiter view with the avatar), `/changelog/`.
 - `CAREER_RPG_NOW=YYYY-MM-DD` pins the build date (end of that UTC day) to reproduce a past streak/HUD, e.g. `CAREER_RPG_NOW=2026-10-17 npm run build`. Unset = real time.
-- Streak = consecutive ISO weeks (UTC) with a changelog entry; refreshed only on rebuild (weekly scheduled CI build).
-- Placeholder projects (file still has the `TODO(content)` marker) show a "Sample" tag / note on `/speedrun/`.
+- Streak = consecutive ISO weeks (UTC) with public GitHub contributions (from the snapshot).
+- Source files with the `TODO(content)` marker count against the HUD; quests from such case studies show a "Sample" tag.
 
 ## Deploy
 
-Push to `master` -> GitHub Actions verifies (check + unit + e2e), builds, deploys. Also rebuilds weekly (Mon 03:17 UTC) to refresh the streak. One-time setup: repo Settings -> Pages -> Source: **GitHub Actions**.
-Details, custom domain / user-site notes, troubleshooting: [docs/deployment-guide.md](docs/deployment-guide.md).
+Push to `master` -> GitHub Actions verifies (check + unit + e2e), builds, deploys. Weekly (Mon 02:47 UTC) `refresh-github-snapshot.yml` refreshes the GitHub snapshot, commits it if changed (as `github-actions[bot]`) and dispatches the deploy, so the build-date streak stays fresh. Manual refresh: Actions -> "Refresh GitHub snapshot" -> Run workflow (on `master`). One-time setup: Settings -> Pages -> Source: **GitHub Actions**; if `master` is protected, let the bot push (see the guide).
+Details, branch protection, optional PAT, schedule pause, custom domain, troubleshooting: [docs/deployment-guide.md](docs/deployment-guide.md).
 
 ## Docs
 
@@ -96,7 +112,7 @@ Details, custom domain / user-site notes, troubleshooting: [docs/deployment-guid
 | [docs/project-overview-pdr.md](docs/project-overview-pdr.md) | Goals, scope, requirements |
 | [docs/code-standards.md](docs/code-standards.md) | Conventions, a11y + motion rules |
 | [docs/codebase-summary.md](docs/codebase-summary.md) | Directory map |
-| [docs/system-architecture.md](docs/system-architecture.md) | Build pipeline, Career RPG scoring, animation lifecycle |
-| [docs/design-guidelines.md](docs/design-guidelines.md) | Themes, tokens, fonts, pixel frames + icons, motion policy |
-| [docs/deployment-guide.md](docs/deployment-guide.md) | Pages + CI/CD |
-| [docs/project-roadmap.md](docs/project-roadmap.md) | v1 to v1.2 status, v2 ideas |
+| [docs/system-architecture.md](docs/system-architecture.md) | Build pipeline, GitHub-derived pipeline, scoring, refresh + deploy, animation lifecycle |
+| [docs/design-guidelines.md](docs/design-guidelines.md) | Themes, tokens, fonts, pixel frames + icons, avatar, motion policy |
+| [docs/deployment-guide.md](docs/deployment-guide.md) | Pages, CI/CD, snapshot refresh ops |
+| [docs/project-roadmap.md](docs/project-roadmap.md) | v1 to v1.3 status, open items, v2 ideas |

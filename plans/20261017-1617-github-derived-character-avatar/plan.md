@@ -26,9 +26,9 @@ Career RPG data (character sheet, skills, XP, quests, streak) derived from owner
 | 04 | [Avatar sprite system: grids, palette, composer, tests](phase-04-avatar-sprite-system.md) | P0 | L (10h, half drawing) | Done, reviewed ([sheet](reports/assets/05-avatar-sheet.png)) | 100% |
 | 05 | [UI integration: hero, sheet, speedrun, legend, why, projects](phase-05-avatar-and-character-ui-integration.md) | P0 | L (7h) | Done, reviewed ([hero](reports/assets/05-hero-desktop.png)) | 100% |
 | 06 | [Verification: tests, perf, a11y, blind-ID](phase-06-verification-tests-perf-a11y-blind-id.md) | P0 | M (4h) | Automated done ([report](reports/04-verification-report.md)); live refresh + blind-ID pending | 80% |
-| 07 | [Docs update](phase-07-docs-update.md) | P1 | S (3h) | In progress | 50% |
+| 07 | [Docs update](phase-07-docs-update.md) | P1 | S (3h) | Done (README + 7 docs + changelog entry) | 100% |
 
-Progress: 6/8 done (00-05); 06 automated checks done; 07 in progress. Decisions taken (user "go ahead" = defaults): Q1 public-only, Q2 half-life 48 → Warrior · Vanguard. Gates: user reviews owner dry-run class (end 00) and avatar prototypes (end 00, end 04).
+Progress: 7/8 done (00-05, 07); 06 automated checks done, live refresh run + human blind-ID pending. Decisions taken (user "go ahead" = defaults): Q1 public-only, Q2 half-life 48 → Warrior · Vanguard. Gates: user reviews owner dry-run class (end 00) and avatar prototypes (end 00, end 04).
 
 ## Dependencies
 ```

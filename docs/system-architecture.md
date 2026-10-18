@@ -2,23 +2,27 @@
 
 ## Overview
 
-Fully static site. No server runtime, no API. Astro renders HTML at build; a small client bundle adds motion (GSAP) and the mobile menu.
+Fully static site. No server runtime, no API, no network at build. Astro renders HTML at build; a small client bundle adds motion (GSAP) and the mobile menu. The character and avatar add no client JS.
 
 ```mermaid
 flowchart LR
-  D[src/data/*.ts] --> P
-  C[src/content/projects + changelog *.md<br/>strict zod schemas] --> R[loadCareerState<br/>Career RPG engine]
-  D --> R
+  S[github-snapshot.json<br/>committed, public-only] --> R[loadCareerState<br/>Career RPG engine]
+  D[src/data/*.ts rules + hand-written copy] --> R
+  C["src/content/projects (case-study overrides) + changelog *.md<br/>strict zod schemas"] --> R
   R --> P
+  D --> P
   P[pages + components<br/>Astro build] --> O[dist/ static HTML, CSS, JS, images]
-  O --> G[GitHub Pages<br/>/portfolio-app/]
+  O --> G["GitHub Pages /portfolio-app/"]
+  W[refresh-github-snapshot.yml<br/>weekly] -->|commit snapshot, dispatch deploy| S
 ```
+
+GitHub data enters only through the committed snapshot; see [GitHub-derived pipeline](#github-derived-pipeline).
 
 ## Build pipeline
 
-1. `astro build` loads the `projects` and `changelog` collections (`src/content.config.ts`, strict zod: unknown keys fail; summary <=160, `coverAlt` required with `cover`, boss needs metric + obstacle). Invalid content fails the build.
+1. `astro build` loads the `projects` (case-study overrides) and `changelog` collections (`src/content.config.ts`, strict zod: unknown keys fail; summary <=160, `coverAlt` required with `cover`) and strict-parses the snapshot (`github-snapshot-schema.ts`). Invalid content fails the build.
 2. `loadCareerState()` runs cross-entry rules + scoring once per build ([Career RPG pipeline](#career-rpg-pipeline)); a rule violation throws `CareerRuleError` and fails the build.
-3. `src/pages/index.astro` renders seven sections; `src/pages/projects/[slug].astro` emits one page per entry (`getStaticPaths`, slug = file name); `speedrun.astro`, `changelog.astro`, `credits.astro`, `404.astro` emit their pages.
+3. `src/pages/index.astro` renders seven sections; `src/pages/projects/[slug].astro` emits one page per quest (`getStaticPaths`, slug = repo slug); `speedrun.astro`, `changelog.astro`, `credits.astro`, `404.astro` emit their pages.
 4. `astro:assets` optimizes cover images; Fontsource CSS/woff2 bundled (no external requests).
 5. Output in `dist/` under base `/portfolio-app`.
 
@@ -29,11 +33,11 @@ BaseLayout (head SEO + ThemeHeadScript + root-flag script + ClientRouter)
 ├── SkipToContentLink
 ├── SiteHeader (logo initials, nav, HeaderControls = ThemeToggle + MenuToggleButton)  -> scripts/mobile-menu.ts
 ├── <main id="main">
-│   ├── index: Hero > About > CharacterSheet > Skills(tree) > Projects(ProjectCard*) > Experience > Contact
-│   ├── projects/[slug]: back link, header, TagList, cover, BossBattlePanel (quest log), markdown prose
-│   ├── speedrun: availability, AchievementCard*, contact CTAs, decorative countdown
+│   ├── index: Hero (CharacterAvatar 256 + CharacterNameplate + GithubDataNote) > About > CharacterSheet (CharacterPortraitPanel: avatar 192, GearLegend, ClassWhyPanel) > Skills(tree) > Projects(ProjectCard*) > Experience > Contact
+│   ├── projects/[slug]: back link, header, TagList, cover, BossBattlePanel (quest log), markdown prose (override body, if any)
+│   ├── speedrun: SpeedrunCharacterHeader (avatar 128), availability, AchievementCard*, contact CTAs, decorative countdown
 │   ├── changelog: StreakBadge, entries newest first
-│   ├── credits: fonts, icons (PixelIconGallery), libraries + licenses
+│   ├── credits: fonts, icons (PixelIconGallery), AvatarGallery (10 looks + gear tier ramp), libraries + licenses
 │   └── 404: "Off the map" + NeonButton home
 ├── SiteFooter
 └── scripts/animations/init-animations.ts
@@ -41,53 +45,121 @@ BaseLayout (head SEO + ThemeHeadScript + root-flag script + ClientRouter)
 
 `base-layout.astro` props: `title`, `description`, `ogImage`, `noindex` (omits canonical, adds `robots noindex`; used by 404).
 
+## GitHub-derived pipeline
+
+Data, classifier and avatar. Numbers live in the rules files (link, don't copy): `src/data/character-class-rules.ts`, `character-job-rules.ts`, `gear-rules.ts`, `skills-data.ts`, `xp-rules.ts`.
+
+```mermaid
+flowchart LR
+  A[GitHub GraphQL<br/>public repos + contribution weeks] --> F[scripts/fetch-github-snapshot.ts<br/>own code, no npm deps]
+  F --> N[normalize-snapshot.ts<br/>public non-fork only, ISO-week dates, sorted]
+  N --> J[github-snapshot.json]
+  J --> L[load-career-state.ts<br/>strict zod parse]
+  L --> K[classify-character<br/>class, job, gear tiers, why signals]
+  L --> Q[repo-quests + repo-skill-matches<br/>quests, skill evidence]
+  L --> T[contribution streak]
+  K --> V[select-avatar-layers<br/>compose 32x32 grid<br/>sticker ring, merged paths]
+  V --> I[character-avatar.astro<br/>inline SVG]
+  K --> U[hero, sheet, speedrun, credits]
+  Q --> U
+  T --> U
+  I --> U
+```
+
+### Modules
+
+| Area | Where | Notes |
+|------|-------|-------|
+| Fetch | `scripts/fetch-github-snapshot.ts`, `scripts/github-snapshot/*` | GraphQL; `GITHUB_TOKEN`, then optional `GH_SNAPSHOT_PAT`; pages of 25 then 10 on non-auth failure; contribution windows of 365 days back to account creation (~8 points per run); >300 repos = refuse. Never fails the job: no token or any error keeps the file, warns, exits 0. Writes only on change; sets `changed` output |
+| Normalize | `src/utils/github-character/normalize-snapshot.ts` | Drops private/fork repos (also from pinned and activity), keeps only https URLs, rounds dates to ISO-week Monday, sorts; `asOf` = ISO-week Monday so unchanged data = identical bytes |
+| Schema | `src/data/github/github-snapshot-schema.ts` | Strict zod; validated in the workflow (separate step) and on every build |
+| Classifier | `src/utils/github-character/{classify-character,repo-archetype-vote,repo-tokens}.ts` | One vote per repo (language shares, primary-language bonus, keywords, recency half-life, owner-commit activity, archived factor). Primary archetype -> class; secondary (ratio + score + top-repo thresholds) -> job motif, else primary (pure). Below the fallback thresholds: Adventurer. Deterministic tie-break order; ranked "why" signals |
+| Gear | `src/utils/github-character/gear-tiers.ts` | Per slot, repos showing the hygiene signal (root/`.github`/workflow file names) -> tier 0-3 by thresholds. Known blind spot: tests below the repo root |
+| Quests | `repo-quests.ts` | Score = class vote + hygiene bonus + pinned bonus; top `quest.max` plus override repos. Difficulty by owner commits or code KiB. Boss = override `isBoss`, else first pinned, else top-ranked |
+| Skills | `repo-skill-matches.ts`, `skills-data.ts` | A repo matches a node by language share, topic, keyword, root file or workflows. Evidence = distinct matching repos (no hand evidence) |
+| Avatar | `src/data/avatar/*`, `src/utils/avatar/*` | See below |
+
+### Avatar render
+
+- Data: hand-authored grids (`src/data/avatar/`): one 2-frame pose per class (4), 2-frame job motif per archetype (3), 4 tiers per gear slot (4). Registry `avatar-sprites.ts`; palette keys -> `--avatar-*` tokens (`avatar-palette.ts`).
+- `select-avatar-layers.ts` places sprites at per-frame pose anchors in slots `base < class < armor < amulet < boots < shield < job < fx` (`LAYER_Z`).
+- `compose-avatar-grid.ts` (pure): last opaque pixel wins, outside pixels clipped. `avatar-sticker-outline.ts` pads, adds outline then sticker ring. `avatarPaths` (+ `gridToMergedPathData` in `pixel-icon-path.ts`) emits one rect-merged `<path>` per palette key.
+- `character-avatar.astro` inlines the SVG (`role=img`, name "Class · Job", desc = gear). Animated variant holds both frames; CSS toggles them, 5 loops x 900ms (~4.5s) then rests on frame A, only under `html[data-motion=ok]` and no reduced motion. `forced-color-adjust: none` on the art.
+- Sizes: art box 128 / 192 / 256 px (4/6/8 px per art pixel) plus 2px sticker margin. Used: hero 256, sheet 192, speedrun 128, `/credits/` gallery 128.
+- Budgets (unit-tested): <= 16 colors + ring; static <= 6 KB raw; animated <= 11 KB raw, <= 2.5 KB gzip.
+
+### Refresh and deploy sequence
+
+```mermaid
+sequenceDiagram
+  participant Cron as Weekly schedule or manual run
+  participant Fetch as job fetch
+  participant Pub as job publish
+  participant Disp as job dispatch-deploy
+  participant Dep as deploy-to-github-pages.yml
+  Cron->>Fetch: run own script (no npm), GITHUB_TOKEN then PAT
+  Fetch->>Fetch: if changed, upload artifact, npm ci --ignore-scripts, run schema test
+  Fetch-->>Pub: changed=true and validation passed
+  Pub->>Pub: download artifact, commit as github-actions bot, pull --rebase, push
+  Pub-->>Disp: done or skipped
+  Disp->>Dep: gh workflow run (always, even if nothing changed or earlier jobs failed)
+  Dep->>Dep: verify, build, deploy - never calls the GitHub API
+```
+
+- Why dispatch: commits pushed with `GITHUB_TOKEN` do not trigger `push` workflows. The dispatch also gives the weekly rebuild (streak/HUD depend on build date), so the deploy workflow has no cron of its own.
+- Trust split: the token-bearing step runs only our dependency-free script. The npm install (`--ignore-scripts`, no secrets in env) and schema test run after the artifact is uploaded; they can only fail the job (publish skips). `publish` has no npm; `contents: write` only there, `actions: write` only in `dispatch-deploy`.
+- `dry_run_no_token` input exercises the keep-snapshot fallback.
+
 ## Career RPG pipeline
 
 Everything gamified is derived at build time; there is no runtime state. Rules and weights live only in `src/data/xp-rules.ts` (link, don't copy numbers into docs).
 
 ```mermaid
 flowchart LR
-  P[projects/*.md] --> L
+  G[github-snapshot.json] --> L
+  P[projects/*.md overrides] --> L
   X[changelog/*.md] --> L
   S[skills-data.ts] --> L
   C[site-config.ts] --> L
   R[raw sources scan<br/>PLACEHOLDER_MARKER] --> L
   E[CAREER_RPG_NOW] --> L
   L[load-career-state.ts<br/>only Astro-aware] --> B[buildCareerState]
-  B -->|validate: skills, quests, changelog| V{issues?}
+  B -->|validate: skills, overrides, changelog| V{issues?}
   V -->|yes| F[CareerRuleError<br/>build fails, all issues listed]
-  V -->|no| Q[scoreQuests, buildSkillTree,<br/>computeAttributeXp, levelInfo,<br/>computeStreak, evaluateCompleteness,<br/>pickTopAchievements]
+  V -->|no| Q[selectQuestRepos, scoreQuests,<br/>buildSkillTree, computeAttributeXp,<br/>levelInfo, computeContributionStreak,<br/>evaluateCompleteness, pickTopAchievements]
   Q --> T[CareerState]
   T --> U[sections + pages]
 ```
 
-- `load-career-state.ts` (the only module with `astro:*` / `import.meta.env`): `getCollection` -> inputs, `import.meta.glob(?raw)` scan for the placeholder marker (flags a quest `isSample`, feeds HUD), strict-parses `skillNodes`, reads `CAREER_RPG_NOW`. Memoized per build (all pages share one state); uncached in dev; cache reset on error so a fixed file recovers.
+- `load-career-state.ts` (the only module with `astro:*` / `import.meta.env`): strict-parses the snapshot and `skillNodes`, `getCollection` -> override + changelog inputs, `import.meta.glob(?raw)` scan for the placeholder marker (flags an override `isSample`, feeds HUD), reads `CAREER_RPG_NOW`. Memoized per build (all pages share one state); uncached in dev; cache reset on error so a fixed file recovers.
 - `buildCareerState()` is pure: same inputs => same state. Validates first, then scores; all violations aggregate into one `CareerRuleError`.
 - `CAREER_RPG_NOW=YYYY-MM-DD` pins build time to the end of that UTC day (reproduce a past streak/HUD); invalid value throws. Unset => real time.
+- e2e expectations are computed by the same pure modules from the snapshot + override files (`tests/e2e/career-mirror.ts`), not hardcoded.
 
 ### Scoring summary
 
 | Piece | Rule (values in `xp-rules.ts`) |
 |-------|-------------------------------|
-| Quest XP | `baseXp[difficulty]` x (1 + metric + obstacle + boss bonuses). 0 XP unless: prose words >= `minBodyWords`, distinct words >= `minUniqueWords`, has evidence, and >=1 URL not yet claimed |
+| Quest XP | `baseXp[difficulty]` x (1 + earned bonuses). Difficulty from owner commits / code KiB. Bonuses from repo facts (description, homepage, tests, CI) and override (case study when body >= `minBodyWords` + `minUniqueWords`, metrics, obstacles), boss. No override = status `derived`, still earns XP |
 | Tier | Nth best quest in a tier earns raw x `tierDecay`^N; tier total scaled to `tierCap` |
-| Skill node | Each fresh evidence URL `xpPerUrl`, decayed by `decay`, capped `nodeCap`. Level = thresholds reached by evidence count (own URLs + verified quests, rolled up from children) |
-| Attributes | 4 (`ATTRIBUTE_IDS`): quest XP split evenly across the quest's skills' attributes + node XP; each clamped to `attributeCap` |
+| Skill node | Each matching public repo `xpPerRepo`, decayed by `decay`, capped `nodeCap`. Level = `levelThresholds` reached by distinct matching repos (own matches + quests, rolled up from children) |
+| Attributes | 4 (`ATTRIBUTE_IDS`): quest XP split evenly across the quest's skills' attributes (none matched: `fallbackAttribute`) + node XP; each clamped to `attributeCap` |
 | Level / title | Total XP -> `base*(L-1)^exponent`, max level; title = highest band reached |
-| Streak | Consecutive ISO weeks (UTC) with a changelog entry whose body >= `streak.minBodyWords`; empty current week doesn't break it yet |
-| HUD | 10 pass/fail checks (placeholders, real email, bio length, availability, socials, quest evidence/verified/metrics, leaf-skill evidence, streak alive) |
-| Speedrun | Metrics of verified quests only (boss first, then featured by XP), round-robin, top `speedrun.achievements` |
+| Streak | Consecutive ISO weeks (UTC) with >= `streak.minWeeklyContributions` GitHub contributions in the snapshot; empty current week doesn't break it yet |
+| HUD | 10 pass/fail checks: no placeholder files, real email, bio length, availability note, socials, snapshot fresh (`maxSnapshotAgeDays`), every quest repo has description, every quest repo has topics, boss has case study, streak alive |
+| Speedrun | Metrics of quests (boss first, then featured by XP), round-robin, top `speedrun.achievements` |
 
 ### Build-failing rules
 
-Unknown/hand-set keys (`xp`, `level`, `repoUrl`); non-https or credentialed evidence URL; not exactly one boss; unknown or duplicate quest skill; skill id not kebab-case, unknown attribute/parent, parent cycle; an evidence URL reused across skills; changelog date > build time + `futureToleranceHours`.
+Unknown/hand-set keys in overrides, skill nodes or snapshot (`xp`, `level`, `difficulty`, `skills`, `evidence`, `repoUrl`); non-https or credentialed URL; schema-invalid snapshot; empty snapshot; override file name matching no snapshot repo; more than one `isBoss` override; two repos sharing a slug; skill id not kebab-case, unknown attribute/parent, parent cycle; changelog date > build time + `futureToleranceHours`.
 
-### Anti-gaming
+### Anti-gaming and honesty
 
-- A URL earns XP once site-wide, via `normalizeEvidenceUrl` (coarse on purpose: false match costs XP, a miss lets a link be farmed). Claim order: boss, then featured/`order` (`sortQuests`), then skill nodes pre-order.
-- Word minimum counts prose only (code, URLs, hidden elements, link definitions excluded) plus a distinct-word minimum.
-- Tier decay + caps and the attribute cap make many small entries worth less than a few real ones.
-- Evidence and metrics are self-attested (no fetch/ownership check); changelog backdating is not verified. See [project-roadmap.md](project-roadmap.md#known-limitations).
+- XP comes from public repo facts and the rules file, not from claims. Class and gear rules are generic and tested on fixture profiles; per-owner hardcodes are not allowed. Each repo votes once and recency-weights, so one big or recently pushed repo can't decide the class alone.
+- Linguist noise (agent tooling, docs) is excluded in the repo via `.gitattributes` (`.claude/**` vendored, `plans/**` and `docs/**` documentation), so the character reflects the site code.
+- Case-study word minimum counts prose only (code, URLs, hidden elements, link definitions excluded) plus a distinct-word minimum.
+- Tier decay + caps and the attribute cap make many small repos worth less than a few real ones.
+- Still self-attested: override text and metrics, changelog dates. Repo facts can be gamed by creating repos (no ownership/quality check beyond public GitHub data). See [project-roadmap.md](project-roadmap.md#known-limitations).
 
 ## Root flags (progressive enhancement)
 
@@ -160,7 +232,7 @@ Details:
 ## Routing and base path
 
 - `base: '/portfolio-app'`, `trailingSlash: 'ignore'`.
-- Pages: `/`, `/projects/<slug>/`, `/speedrun/`, `/changelog/`, `/credits/`, 404 ("Off the map", noindex). Header nav has "Speedrun"; hero CTA "60s recruiter view"; footer has "Changelog" and "Credits".
+- Pages: `/`, `/projects/<repo-slug>/`, `/speedrun/`, `/changelog/`, `/credits/`, 404 ("Off the map", noindex). Header nav has "Speedrun"; hero CTA "60s recruiter view"; footer has "Changelog" and "Credits".
 - Internal links use `withBasePath()`; `ClientRouter` handles soft navigation (view transitions with `transition:name` on project title/cover).
 - Hash links in header nav (`/portfolio-app/#about`) work from any page.
 
@@ -173,7 +245,7 @@ Canonical + Open Graph + Twitter card built from `Astro.site` + pathname; defaul
 ```
 PR or push -> verify (npm ci, check, unit, e2e)
 push to master -> build (withastro/action) -> deploy (deploy-pages) -> Pages
-weekly cron (Mon 03:17 UTC) -> same pipeline on master: rebuild refreshes the build-date streak
+weekly cron (Mon 02:47 UTC) refresh-github-snapshot.yml -> commit snapshot if changed -> dispatch deploy on master
 ```
 
 See [deployment-guide.md](deployment-guide.md).
@@ -191,4 +263,10 @@ See [deployment-guide.md](deployment-guide.md).
 | Tests against production build | Catches base-path + bundling bugs |
 | Compute XP at build, evidence-only | No backend; nothing hand-set can inflate the score; strict schemas fail loudly |
 | Pure engine + thin Astro loader | Scoring unit-tested with `node --test` (no Astro); one memoized state per build |
-| Weekly scheduled rebuild | Streak depends on build date; static site would otherwise go stale |
+| Committed snapshot as the only data input | Offline, deterministic builds and tests; reviewable data diffs; no secret at build time |
+| Refresh in its own workflow, dispatch the deploy | `GITHUB_TOKEN` pushes don't trigger `push` workflows; the dispatch doubles as the weekly rebuild; deploy never touches the GitHub API |
+| Token step runs only our no-dependency script | Write token never shares a job with third-party npm code |
+| Refresh never fails the run | Stale data beats a broken weekly deploy; the HUD flags a stale snapshot |
+| Data-driven, generic classifier + fixtures | Honesty rule: no per-owner hardcode; rule changes must keep other profiles' classes |
+| Hand-authored sprites composed to inline SVG | Zero client JS, no asset requests, token-driven palette (themeable ring), unit-testable layers |
+| CSS-only bounded action loop | Meets WCAG 2.2.2 (stops), honours reduced motion, no JS |

@@ -1,6 +1,6 @@
-# 01 Scout + baseline report (class/job try-on)
+# 01 Scout + baseline report (class/job switcher)
 
-Date 2026-10-18. Measured from repo HEAD (v1.3, `92ac11a`) in a scratch copy (`npm ci`, `astro build`), nothing in the repo changed. Re-run: `node --disable-warning=ExperimentalWarning plans/20261018-0541-class-job-tryon-switcher/reports/assets/measure-variant-sizes.ts`.
+Date 2026-10-18. Measured from repo HEAD (v1.3, `92ac11a`) in a scratch copy (`npm ci`, `astro build`), nothing in the repo changed. Re-run: `node --disable-warning=ExperimentalWarning plans/20261018-0541-class-job-switcher/reports/assets/measure-variant-sizes.ts`.
 
 ## Code facts (verified)
 

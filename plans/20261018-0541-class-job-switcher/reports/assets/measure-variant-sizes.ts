@@ -1,5 +1,5 @@
 // Phase 00 baseline: avatar markup bytes for every try-on look (owner's real gear), per delivery option.
-// Usage: node --disable-warning=ExperimentalWarning plans/20261018-0541-class-job-tryon-switcher/reports/assets/measure-variant-sizes.ts
+// Usage: node --disable-warning=ExperimentalWarning plans/20261018-0541-class-job-switcher/reports/assets/measure-variant-sizes.ts
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { ARCHETYPE_IDS } from '../../../../src/data/character-class-rules.ts';

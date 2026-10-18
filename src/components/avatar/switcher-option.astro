@@ -18,9 +18,9 @@ const { name, value, label, hint, isPick = false } = Astro.props;
   <input type="radio" {name} {value} autocomplete="off" />
   <span class="switcher-marker" aria-hidden="true"></span>
   <span class="switcher-text">
-    <span class="switcher-label">{label}{isPick && <span class="visually-hidden">, GitHub pick</span>}</span>
+    <span class="switcher-label">{label}</span>
     {hint && <span class="switcher-hint">{hint}</span>}
-    {isPick && <span class="switcher-pick-tag hud-text" aria-hidden="true">GitHub pick</span>}
+    {isPick && <span class="switcher-pick-tag hud-text">GitHub pick</span>}
   </span>
 </label>
 

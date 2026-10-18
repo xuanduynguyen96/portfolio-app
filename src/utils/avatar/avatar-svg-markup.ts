@@ -1,4 +1,4 @@
-// Inline SVG markup for the avatar (rendered at build time by character-avatar.astro, zero client JS).
+// Inline SVG markup for the avatar (rendered at build time by character-avatar.astro; the class/job switcher re-composes it in the browser from the same modules).
 // `size` is the 32px art box at an integer scale (4/6/8 px per art pixel); the SVG is 36/32 of it
 // because the sticker ring sits on a 2px padded viewBox. Frame B is only emitted when animated.
 import { AVATAR_FRAMES, type AvatarFrame } from '../../data/avatar/avatar-types.ts';

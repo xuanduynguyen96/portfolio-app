@@ -1,5 +1,6 @@
 ---
-// Layered pixel avatar, composed at build time into one inline SVG (zero client JS).
+// Layered pixel avatar, composed at build time into one inline SVG. Static markup: the optional class/job
+// switcher (`switchable`) swaps only the <title>/<desc>/frame groups, in a lazy script.
 // Animated avatars swap two frames with CSS, only while motion is allowed; otherwise frame A stays.
 import { AVATAR_VIEWBOX, avatarSvgMarkup, type AvatarSize } from '../../utils/avatar/avatar-svg-markup';
 import { AVATAR_SIZE } from '../../utils/avatar/compose-avatar-grid';
@@ -12,17 +13,19 @@ interface Props {
   /** Unique per page: prefixes the <title>/<desc> ids. */
   idPrefix: string;
   animate?: boolean;
+  /** Marks this avatar as a class/job switcher target (data-look-avatar). */
+  switchable?: boolean;
   class?: string;
 }
 
-const { profile, size, idPrefix, animate = false, class: className } = Astro.props;
+const { profile, size, idPrefix, animate = false, switchable = false, class: className } = Astro.props;
 // Markup is built from typed sprite data; every text it carries is XML-escaped in avatarSvgMarkup.
 const svg = avatarSvgMarkup({ profile, size, idPrefix, animate });
 // --avatar-px = CSS px per art pixel (shadow scale); --avatar-viewbox lets callers size by integer scale.
 const style = `--avatar-px:${size / AVATAR_SIZE}px;--avatar-viewbox:${AVATAR_VIEWBOX}`;
 ---
 
-<span class:list={['avatar', className]} style={style} set:html={svg} />
+<span class:list={['avatar', className]} style={style} data-look-avatar={switchable ? '' : undefined} set:html={svg} />
 
 <style>
   .avatar {

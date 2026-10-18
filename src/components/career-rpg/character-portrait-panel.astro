@@ -2,6 +2,7 @@
 // Character sheet portrait: avatar + nameplate, gear legend and "why this class" (text twin of the art).
 import GlassCard from '../glass-card.astro';
 import CharacterAvatar from '../avatar/character-avatar.astro';
+import ClassJobSwitcher from '../avatar/class-job-switcher.astro';
 import CharacterNameplate from './character-nameplate.astro';
 import GearLegend from './gear-legend.astro';
 import ClassWhyPanel from './class-why-panel.astro';
@@ -17,10 +18,11 @@ const { character, snapshotAsOf, githubUrl } = Astro.props.state;
 
 <GlassCard class="portrait" data-reveal>
   <div class="portrait-figure">
-    <CharacterAvatar profile={character} size={192} idPrefix="sheet-avatar" />
-    <CharacterNameplate character={character} as="h3" />
+    <CharacterAvatar profile={character} size={192} idPrefix="sheet-avatar" switchable />
+    <CharacterNameplate character={character} as="h3" switchable />
   </div>
   <div class="portrait-details">
+    <ClassJobSwitcher character={character} />
     <GearLegend gear={character.gear} />
     <ClassWhyPanel character={character} />
     <GithubDataNote asOf={snapshotAsOf} githubUrl={githubUrl} />

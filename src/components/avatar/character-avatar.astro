@@ -1,0 +1,67 @@
+---
+// Layered pixel avatar, composed at build time into one inline SVG (zero client JS).
+// Animated avatars swap two frames with CSS, only while motion is allowed; otherwise frame A stays.
+import { avatarSvgMarkup, type AvatarSize } from '../../utils/avatar/avatar-svg-markup';
+import type { AvatarProfile } from '../../utils/avatar/avatar-description';
+
+interface Props {
+  profile: AvatarProfile;
+  /** Art box at an integer scale (4/6/8 px per art pixel); the sticker margin adds 1/8. */
+  size: AvatarSize;
+  /** Unique per page: prefixes the <title>/<desc> ids. */
+  idPrefix: string;
+  animate?: boolean;
+  class?: string;
+}
+
+const { profile, size, idPrefix, animate = false, class: className } = Astro.props;
+// Markup is built from typed sprite data; every text it carries is XML-escaped in avatarSvgMarkup.
+const svg = avatarSvgMarkup({ profile, size, idPrefix, animate });
+---
+
+<span class:list={['avatar', className]} set:html={svg} />
+
+<style>
+  .avatar {
+    display: inline-block;
+    line-height: 0;
+  }
+
+  .avatar :global(.character-avatar) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    filter: drop-shadow(0 var(--avatar-px) calc(1.5 * var(--avatar-px)) var(--avatar-shadow));
+    /* The art keeps its colors in forced-colors mode: the sticker ring separates it from any
+       background, and the visible nameplate + gear legend carry the meaning as text. */
+    forced-color-adjust: none;
+  }
+
+  .avatar :global(.avatar-frame-b) {
+    visibility: hidden;
+  }
+
+  /* Two-frame action loop: only when the page allows motion (html[data-motion=ok]) and the user does too. */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html[data-motion='ok']) .avatar :global([data-animate] .avatar-frame-a) {
+      animation: avatar-frame-a 0.9s steps(1, end) infinite;
+    }
+
+    :global(html[data-motion='ok']) .avatar :global([data-animate] .avatar-frame-b) {
+      animation: avatar-frame-b 0.9s steps(1, end) infinite;
+    }
+  }
+
+  @keyframes avatar-frame-a {
+    50% {
+      visibility: hidden;
+    }
+  }
+
+  @keyframes avatar-frame-b {
+    50% {
+      visibility: visible;
+    }
+  }
+</style>

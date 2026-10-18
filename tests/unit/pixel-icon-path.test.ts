@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { gridHasChar, gridToPathData } from '../../src/utils/pixel-icon-path.ts';
+import { gridHasChar, gridToMergedPathData, gridToPathData } from '../../src/utils/pixel-icon-path.ts';
 
 const empty = ['........', '........'];
 
@@ -43,5 +43,36 @@ describe('gridHasChar', () => {
   it('detects presence of a char in any row', () => {
     assert.equal(gridHasChar(['....', '..+.'], '+'), true);
     assert.equal(gridHasChar(['....', '..#.'], '+'), false);
+  });
+});
+
+/** Rasterizes `M/m x y h w v h h-w z` rectangles back into a cell set (test oracle). */
+function cells(d: string): Set<string> {
+  const out = new Set<string>();
+  const re = /([Mm])(-?\d+) (-?\d+)h(\d+)v(\d+)h-\d+z/g;
+  let pen = { x: 0, y: 0 };
+  for (const [, cmd, a, b, w, h] of d.matchAll(re)) {
+    pen = cmd === 'M' ? { x: Number(a), y: Number(b) } : { x: pen.x + Number(a), y: pen.y + Number(b) };
+    for (let dy = 0; dy < Number(h); dy++) for (let dx = 0; dx < Number(w); dx++) out.add(`${pen.x + dx},${pen.y + dy}`);
+  }
+  return out;
+}
+const expected = (grid: string[], char: string) =>
+  new Set(grid.flatMap((row, y) => [...row].flatMap((c, x) => (c === char ? [`${x},${y}`] : []))));
+
+describe('gridToMergedPathData', () => {
+  it('merges equal runs stacked in consecutive rows into one rectangle', () => {
+    assert.equal(gridToMergedPathData(['........', '..##....', '..##....'], '#'), 'M2 1h2v2h-2z');
+  });
+
+  it('moves relatively between rectangles and covers exactly the matching cells', () => {
+    const grid = ['#.#+##..', '.###+#+#', '.###+#..', '#......#'];
+    assert.equal(gridToMergedPathData(['#.#'], '#'), 'M0 0h1v1h-1zm2 0h1v1h-1z');
+    for (const char of ['#', '+']) assert.deepEqual(cells(gridToMergedPathData(grid, char)), expected(grid, char));
+    assert.equal(gridToMergedPathData(['....'], '#'), '');
+  });
+
+  it('a run that changes width starts a new rectangle', () => {
+    assert.equal(gridToMergedPathData(['##', '#.'], '#'), 'M0 0h2v1h-2zm0 1h1v1h-1z');
   });
 });

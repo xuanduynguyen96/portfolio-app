@@ -69,6 +69,34 @@
   --shadow-glow-primary: 0 0 24px var(--color-glow-primary);
   --shadow-glow-secondary: 0 0 24px var(--color-glow-secondary);
 
+  /* Avatar sprite palette (src/data/avatar/avatar-palette.ts keys). Art colors are the same in both
+     themes; only the die-cut sticker ring + drop shadow switch. Measured (WCAG ratio): outline vs
+     sticker 4.06 light / 14.97 dark; sticker vs --color-bg 3.35 light / 17.59 dark, vs
+     --color-surface 3.65 / 16.12. */
+  --avatar-sticker: light-dark(#9a7b52, #fbf7ee);
+  --avatar-shadow: light-dark(rgb(43 31 20 / 0.3), rgb(0 0 0 / 0.55));
+  --avatar-outline: #2a1f1d;
+  --avatar-skin: #e9b58f;
+  --avatar-skin-shade: #cd8b6e;
+  --avatar-steel-light: #b4b9c1;
+  --avatar-steel: #7f858f;
+  --avatar-steel-dark: #4a5260;
+  --avatar-gold: #d9a441;
+  --avatar-bronze: #b0712f;
+  --avatar-leather: #8f5f3a;
+  --avatar-leather-dark: #5f3d24;
+  --avatar-red: #b5473a;
+  --avatar-red-dark: #7a2c26;
+  --avatar-blue-light: #7d9db3;
+  --avatar-blue: #557a91;
+  --avatar-green-light: #8fa865;
+  --avatar-green: #6b8447;
+  --avatar-green-dark: #4a5e31;
+  --avatar-teal: #5f9488;
+  --avatar-teal-dark: #3f6b63;
+  --avatar-arcane: #7fd3e0;
+  --avatar-sparkle: #ffffff;
+
   /* Layers */
   --z-bg: -1;
   --z-header: 50;
@@ -111,6 +139,8 @@
     --color-glow-secondary: rgb(229 99 90 / 0.3);
     --color-frame-drop: rgb(0 0 0 / 0.5);
     --color-texture: rgb(234 224 204 / 0.035);
+    --avatar-sticker: #fbf7ee;
+    --avatar-shadow: rgb(0 0 0 / 0.55);
   }
 
   /* Dark-only here: a forced light theme can't recolor, so keep native UI dark too (toggle hidden in theme-toggle.astro). */

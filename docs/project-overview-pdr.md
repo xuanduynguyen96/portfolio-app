@@ -1,6 +1,6 @@
 # Project Overview & PDR
 
-Last updated: 2026-10-18 · Version: v1.3 (0.1.0 in package.json)
+Last updated: 2026-10-18 · Version: v1.4 (0.1.0 in package.json)
 
 ## Vision
 
@@ -50,6 +50,17 @@ Career data now comes from the owner's public GitHub instead of hand-written ent
 - Layered 32x32 pixel avatar (sticker style, hand-authored): hero, character sheet, `/speedrun/`, `/credits/` gallery; text equivalents everywhere.
 - Hand-written copy stays: About, Experience, Contact, hero, availability. Pages state "Based on public GitHub activity as of <date>".
 
+## Scope v1.4: Class/job switcher (done)
+
+Visitor is not locked to the GitHub-derived class/job. Flow: [system-architecture.md](system-architecture.md#classjob-switcher); UI: [design-guidelines.md](design-guidelines.md#class-job-switcher-control).
+
+- Character sheet portrait panel: "Choose class & job" picks any of 10 looks (Warrior/Mage/Archer x Backend/Data/Frontend + Adventurer, no job). Changes the hero + sheet avatar and name.
+- Default and "Reset to GitHub pick" = the look derived from the snapshot ("GitHub pick"). Class/job/gear/XP stay computed, never hand-set; the visitor only chooses the displayed look.
+- Gear tiers (armor=security, shield=testing, boots=automation, amulet=docs) come from GitHub stats only and are drawn on every look.
+- Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (follow-ups, see roadmap).
+- Choice saved in this browser (`localStorage` `portfolio-look`); nothing leaves the browser. No JS = control hidden, GitHub pick shown.
+- Delivery: server render stays zero-JS; switching re-composes in the browser from the same pure modules in a lazy chunk (first open, or on load when a choice is saved).
+
 ## Non-goals (v1)
 
 - Three.js / WebGL hero
@@ -72,6 +83,14 @@ Career data now comes from the owner's public GitHub instead of hand-written ent
 - Hand-picked class or gear (rules are generic; never per-owner hardcodes)
 - LPC or third-party sprite art
 
+## Non-goals (v1.4)
+
+- Choosing gear, XP or level (always derived from GitHub stats)
+- Propagating the chosen look to attributes, the Why panel, `/speedrun/`, `/credits/` (follow-up)
+- Shareable `?look=` link, hero entry link, class-specific gear art
+- Visitor-supplied GitHub username (needs a runtime API: rate limits, privacy; breaks "build never calls GitHub")
+- Server-side storage of the choice
+
 ## Functional requirements
 
 | ID | Requirement |
@@ -92,25 +111,26 @@ Career data now comes from the owner's public GitHub instead of hand-written ent
 | F14 | Refresh workflow (weekly + manual) never fails on API/token problems: keeps the old snapshot, warns, exits 0; validates the schema before committing; dispatches the deploy |
 | F15 | Class, job, gear deterministic (tie-breaks fixed) and explained (ranked "why" signals); rules generic, tested on fixture profiles |
 | F16 | Avatar has text equivalents: `role="img"` named "Class · Job", gear in description, visible nameplate, gear legend, why panel; motion only with `html[data-motion=ok]`, <= ~4.5s then rests; reduced motion / no JS = static frame |
+| F17 | Class/job switcher: any of the 10 looks selectable in the character sheet; default and Reset = the GitHub-derived look, always labelled "GitHub pick"; gear tiers from stats only and drawn on every look; choice saved locally (allow-listed `portfolio-look`, invalid/blocked storage ignored); changes hero + sheet avatar and name; native radio groups, polite status; JS optional (no JS = control hidden, GitHub pick shown); lifecycle-safe across `ClientRouter` |
 
 ## Non-functional requirements
 
 | Area | Target |
 |------|--------|
-| Performance | Lighthouse >=95 all categories; CLS 0; static-first, minimal JS |
+| Performance | Lighthouse >=95 all categories; CLS 0; static-first, minimal JS. Switcher (v1.4): no chunk request for a fresh visitor before first open; lazy chunk <= 5 KB gz. Measured: home HTML 13,790 B gz (+338 B), eager stub 2,826 B gz, lazy chunk 4,627 B gz, compose + apply 10-14 ms warm at 4x CPU throttle |
 | Accessibility | no serious/critical axe-core violations (wcag2a/2aa/21aa + best-practice tags) on home, project, 404, `/speedrun/`, `/changelog/`, `/credits/`, in both themes; visible focus, skip link, semantic landmarks; avatar meaning never color/shape-only; keeps colors under forced-colors |
 | Resilience | Works with no JS, JS failure, or `prefers-reduced-motion: reduce`: content never stays hidden |
 | Browsers | Evergreen Chromium tested in CI; Firefox/WebKit untested (see roadmap) |
 | Theming | Light + dark share one token set; no theme flash; works with no JS (system scheme); forced-colors keeps frames visible |
-| Privacy | No trackers, no third-party requests (fonts self-hosted). GitHub data: public non-fork repos only, activity as weekly counts, dates rounded to ISO-week Monday; token never shares a job with third-party npm code; zero client JS added by the character |
+| Privacy | No trackers, no third-party requests (fonts self-hosted). GitHub data: public non-fork repos only, activity as weekly counts, dates rounded to ISO-week Monday; token never shares a job with third-party npm code; the server-rendered character needs no client JS; the optional switcher adds one small eager script plus a lazy chunk, and its saved choice (`portfolio-look`) stays in the visitor's browser, never sent anywhere |
 | Maintainability | Files <200 lines, kebab-case, TS strict, documented conventions |
 | Determinism | Career state is pure: same content + `CAREER_RPG_NOW` => same output; scoring unit-tested without Astro |
 
 ## Success metrics
 
 - Lighthouse (local preview; `/`, boss project, `/speedrun/`, `/credits/`): mobile 99-100 all categories, desktop 100/100/100/100; CLS <= 0.002.
-- 231 unit + 94 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
-- Home HTML gzip +3.4 KB (budget 6 KB); client JS unchanged.
+- 261 unit + 120 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
+- Home HTML gzip: v1.3 +3.4 KB (budget 6 KB); v1.4 13,790 B gz (+338 B vs 13,452 B). Client JS: unchanged until v1.4; the switcher adds an eager stub (2,826 B gz) and a lazy chunk (4,627 B gz) fetched on first open. Lighthouse mobile home 99/100/100/100, CLS 0.0016 (unchanged).
 - Blind-ID: >=80% of 5 testers name the class at 128px in <=2s (pending, human).
 - Deploy from `master` push with no manual steps after one-time Pages setup.
 
@@ -136,3 +156,4 @@ Career data now comes from the owner's public GitHub instead of hand-written ent
 | 2026-10-17 | v1.1 Career RPG layer (phases 01-09): quests/boss, character sheet + HUD, skill tree, streak + changelog, `/speedrun/`, F6-F12 |
 | 2026-10-17 | v1.2 RPG theme + light theme, pixel icons, `/credits/` |
 | 2026-10-18 | v1.3 GitHub-derived character + layered pixel avatar: snapshot + weekly refresh, class/job/gear classifier, repo quests + case-study overrides, taxonomy skills, contribution streak, avatar UI; F6-F10 revised, F13-F16 added |
+| 2026-10-18 | v1.4 Class/job switcher: 10 selectable looks, "GitHub pick" default + Reset, stats-derived gear on every look, saved choice, lazy browser-side compose; F17 added, privacy/performance NFRs updated |

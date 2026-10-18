@@ -1,0 +1,79 @@
+---
+// Gear legend: each avatar slot as text (slot, skill axis, tier, how many repos prove it).
+import PixelIcon from '../pixel-icon.astro';
+import { gearSlotIcons } from '../../data/pixel-icon-map';
+import { gearRules } from '../../data/gear-rules';
+import type { GearSlotResult } from '../../utils/github-character/character-types';
+
+interface Props {
+  gear: GearSlotResult[];
+}
+
+const { gear } = Astro.props;
+const maxTier = (slot: GearSlotResult['slot']) => gearRules.find((rule) => rule.slot === slot)?.thresholds.length ?? 0;
+const repos = (count: number) => `${count} ${count === 1 ? 'repo' : 'repos'}`;
+---
+
+<div role="group" aria-label="Gear">
+<dl class="gear-legend">
+  {
+    gear.map((slot) => (
+      <div class="gear-row" data-tier={slot.tier}>
+        <dt>
+          <PixelIcon name={gearSlotIcons[slot.slot]} />
+          <span class="gear-label">{slot.label}</span>{' '}
+          <span class="gear-axis">{slot.axis}</span>
+        </dt>
+        <dd class="hud-text">
+          {slot.tier === 0 ? 'Starter gear' : `Tier ${slot.tier} of ${maxTier(slot.slot)}`}
+          {slot.repos.length > 0 && <span class="gear-repos"> · {repos(slot.repos.length)}</span>}
+        </dd>
+      </div>
+    ))
+  }
+</dl>
+</div>
+
+<style>
+  .gear-legend {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .gear-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-1) var(--space-3);
+  }
+
+  .gear-row dt {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted); /* icon ink: grey until earned */
+  }
+
+  .gear-row:not([data-tier='0']) dt {
+    color: var(--color-accent-primary);
+  }
+
+  .gear-label {
+    color: var(--color-text);
+  }
+
+  .gear-axis {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .gear-row dd {
+    color: var(--color-text-muted);
+    font-size: var(--text-hud);
+  }
+
+  .gear-row:not([data-tier='0']) dd {
+    color: var(--color-text);
+  }
+</style>

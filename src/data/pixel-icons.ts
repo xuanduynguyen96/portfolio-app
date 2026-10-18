@@ -1,9 +1,10 @@
 // Pixel icon registry: every hand-authored 8x8 grid, keyed by name.
 // `PixelIconName` is derived from the keys, so an unknown name fails `astro check`.
 import { careerIcons } from './pixel-icons-career.ts';
+import { gearIcons } from './pixel-icons-gear.ts';
 import { hudIcons } from './pixel-icons-hud.ts';
 
-export const pixelIcons = { ...careerIcons, ...hudIcons } as const;
+export const pixelIcons = { ...careerIcons, ...hudIcons, ...gearIcons } as const;
 
 export type PixelIconName = keyof typeof pixelIcons;
 

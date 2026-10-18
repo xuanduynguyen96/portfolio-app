@@ -1,40 +1,9 @@
 import { expect, test } from '@playwright/test';
-import { SITE_NAME, trackPageErrors } from './test-helpers';
+import { PROJECTS, SITE_NAME, trackPageErrors } from './test-helpers';
 
-// Mirrors the real markdown frontmatter in src/content/projects/*.md.
-const PROJECTS = [
-  {
-    slug: 'neon-dashboard',
-    title: 'Neon Analytics Dashboard',
-    tags: ['TypeScript', 'Astro', 'GSAP', 'D3'],
-    coverAlt: /dark dashboard layout/i,
-    questHeading: 'Boss Battle',
-    badge: 'Boss · Raid',
-    questStatus: /^\+\d+ XP earned$/,
-  },
-  {
-    slug: 'realtime-chat',
-    title: 'Realtime Chat',
-    tags: ['Node.js', 'WebSockets', 'TypeScript'],
-    coverAlt: /chat bubbles/i,
-    questHeading: 'Quest Log',
-    badge: 'Main quest',
-    // Its only evidence URL is already credited to the boss quest.
-    questStatus: /^Unverified: every evidence link is already credited to another quest\. 0 XP\.$/,
-  },
-  {
-    slug: 'cli-toolkit',
-    title: 'Developer CLI Toolkit',
-    tags: ['CLI', 'Node.js', 'DX'],
-    coverAlt: /terminal window/i,
-    questHeading: 'Quest Log',
-    badge: 'Side quest',
-    questStatus: /^Unverified: case study has \d+ of 150 required words/,
-  },
-];
-
+// One page per quest repo (mirrored from the snapshot + override files, see career-mirror.ts).
 for (const project of PROJECTS) {
-  test(`project detail renders full content for ${project.slug}`, async ({ page }) => {
+  test(`project detail renders for ${project.slug}`, async ({ page }) => {
     const errors = trackPageErrors(page);
     await page.goto(`./projects/${project.slug}/`);
 
@@ -47,28 +16,24 @@ for (const project of PROJECTS) {
     await expect(summary).not.toBeEmpty();
     const summaryText = (await summary.textContent())?.trim() ?? '';
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', summaryText);
-
+    // Tags come from languages/topics; a repo with neither renders no (empty) list.
     const tags = page.getByRole('list', { name: 'Technologies' }).getByRole('listitem');
-    await expect(tags).toHaveText(project.tags);
+    for (const tag of await tags.all()) await expect(tag).not.toBeEmpty();
 
-    // Cover image: alt text present and the image actually decoded.
-    const cover = page.locator('img.project-cover');
-    await expect(cover).toHaveAttribute('alt', project.coverAlt);
-    await expect.poll(() => cover.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
-
-    // Quest panel: boss vs regular heading, tier badge, XP or unverified reason.
-    const panel = page.getByRole('region', { name: project.questHeading });
-    await expect(panel.getByRole('heading', { level: 2 })).toHaveText(project.questHeading);
-    await expect(panel.locator('.quest-badge')).toHaveText(project.badge);
-    await expect(panel.locator('.quest-xp')).toHaveText(project.questStatus);
+    // Quest panel: boss vs regular heading, tier badge, XP with its basis.
+    const heading = project.isBoss ? 'Boss Battle' : 'Quest Log';
+    const panel = page.getByRole('region', { name: heading });
+    await expect(panel.getByRole('heading', { level: 2 })).toHaveText(heading);
+    await expect(panel.locator('.quest-badge')).toHaveText(project.isBoss ? /^Boss · / : /^(Side quest|Main quest|Raid)$/);
+    await expect(panel.locator('.quest-xp')).toHaveText(/^\+\d+ XP earned · .+$/);
     const evidence = panel.getByRole('list', { name: 'Evidence' }).getByRole('link');
-    await expect(evidence).not.toHaveCount(0);
+    await expect(evidence.first()).toHaveAttribute('href', new RegExp(`^https://github\\.com/[\\w-]+/${project.repo}$`));
     await expect(evidence.first()).toHaveAttribute('rel', 'noopener noreferrer');
 
-    // Markdown body rendered.
-    await expect(page.locator('.prose').getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible();
-    await expect(page.locator('.prose').getByRole('heading', { level: 2, name: 'Highlights' })).toBeVisible();
-    expect(await page.locator('.prose li').count()).toBeGreaterThan(0);
+    // Body: the written case study, or repo facts when there is none.
+    const prose = page.locator('.prose');
+    if (project.hasCaseStudy) await expect(prose.getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible();
+    else await expect(prose.getByRole('heading', { level: 2, name: 'About this repo' })).toBeVisible();
 
     // Repo link is external + safe; back link keeps the base path.
     const repo = page.getByRole('link', { name: /View code/ });

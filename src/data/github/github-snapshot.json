@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "login": "xuanduynguyen96",
+  "asOf": "2026-10-12",
+  "accountCreated": "2019-11-24",
+  "pinned": [],
+  "repos": [
+    {
+      "name": "aspnet_framework_docker_ex",
+      "url": "https://github.com/xuanduynguyen96/aspnet_framework_docker_ex",
+      "description": "Just a example asp.net MVC source code for Docker playground",
+      "homepage": null,
+      "createdWeek": "2023-02-20",
+      "pushedWeek": "2023-02-20",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": null,
+      "languages": [],
+      "topics": [],
+      "license": null,
+      "rootEntries": [],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 0
+    },
+    {
+      "name": "MiniWebServer",
+      "url": "https://github.com/xuanduynguyen96/MiniWebServer",
+      "description": null,
+      "homepage": null,
+      "createdWeek": "2023-07-17",
+      "pushedWeek": "2023-07-17",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "C#",
+      "languages": [
+        {
+          "name": "C#",
+          "bytes": 7655
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        ".gitignore",
+        "MiniWebServer",
+        "MiniWebServer.sln",
+        "README.md"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 4
+    },
+    {
+      "name": "online-resume",
+      "url": "https://github.com/xuanduynguyen96/online-resume",
+      "description": "https://xuanduynguyen96.github.io/online-resume/",
+      "homepage": null,
+      "createdWeek": "2022-06-27",
+      "pushedWeek": "2023-06-12",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "HTML",
+      "languages": [
+        {
+          "name": "HTML",
+          "bytes": 22734
+        },
+        {
+          "name": "CSS",
+          "bytes": 10403
+        },
+        {
+          "name": "JavaScript",
+          "bytes": 4105
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        "assets",
+        "index.html",
+        "README.md"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 5
+    },
+    {
+      "name": "PersonalPortfolio",
+      "url": "https://github.com/xuanduynguyen96/PersonalPortfolio",
+      "description": "My personal portfolio",
+      "homepage": null,
+      "createdWeek": "2022-05-23",
+      "pushedWeek": "2022-05-23",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "JavaScript",
+      "languages": [
+        {
+          "name": "JavaScript",
+          "bytes": 19441
+        },
+        {
+          "name": "HTML",
+          "bytes": 2607
+        },
+        {
+          "name": "C#",
+          "bytes": 2571
+        },
+        {
+          "name": "CSS",
+          "bytes": 450
+        },
+        {
+          "name": "Shell",
+          "bytes": 13
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        "PersonalPortfolio"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 1
+    },
+    {
+      "name": "portfolio-app",
+      "url": "https://github.com/xuanduynguyen96/portfolio-app",
+      "description": null,
+      "homepage": null,
+      "createdWeek": "2026-10-12",
+      "pushedWeek": "2026-10-12",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "TypeScript",
+      "languages": [
+        {
+          "name": "TypeScript",
+          "bytes": 166674
+        },
+        {
+          "name": "Python",
+          "bytes": 127664
+        },
+        {
+          "name": "Astro",
+          "bytes": 77526
+        },
+        {
+          "name": "JavaScript",
+          "bytes": 59806
+        },
+        {
+          "name": "Shell",
+          "bytes": 28563
+        },
+        {
+          "name": "CSS",
+          "bytes": 12695
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        ".claude",
+        ".github",
+        ".gitignore",
+        ".nvmrc",
+        "astro.config.mjs",
+        "CLAUDE.md",
+        "docs",
+        "package-lock.json",
+        "package.json",
+        "plans",
+        "playwright.config.ts",
+        "public",
+        "README.md",
+        "src",
+        "tests",
+        "tsconfig.json"
+      ],
+      "githubEntries": [
+        "workflows"
+      ],
+      "workflowFiles": [
+        "deploy-to-github-pages.yml"
+      ],
+      "commits": 6
+    },
+    {
+      "name": "QrCodeScanner",
+      "url": "https://github.com/xuanduynguyen96/QrCodeScanner",
+      "description": "Xamarin Mobile App for scanning QR or Bar Code",
+      "homepage": null,
+      "createdWeek": "2022-06-13",
+      "pushedWeek": "2022-06-13",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "C#",
+      "languages": [
+        {
+          "name": "C#",
+          "bytes": 27233
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        "BarcodeScanner",
+        "BarcodeScanner.sln"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 2
+    },
+    {
+      "name": "ShopDemo",
+      "url": "https://github.com/xuanduynguyen96/ShopDemo",
+      "description": null,
+      "homepage": null,
+      "createdWeek": "2024-04-08",
+      "pushedWeek": "2024-04-08",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "HTML",
+      "languages": [
+        {
+          "name": "HTML",
+          "bytes": 4804
+        },
+        {
+          "name": "C#",
+          "bytes": 3106
+        },
+        {
+          "name": "CSS",
+          "bytes": 1218
+        },
+        {
+          "name": "JavaScript",
+          "bytes": 227
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        ".gitattributes",
+        ".gitignore",
+        "ShopDemo",
+        "ShopDemo.sln"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 2
+    },
+    {
+      "name": "spring-jenkins",
+      "url": "https://github.com/xuanduynguyen96/spring-jenkins",
+      "description": "Sample spring boot rest api for jenkins demo",
+      "homepage": null,
+      "createdWeek": "2024-06-17",
+      "pushedWeek": "2024-06-24",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "Java",
+      "languages": [
+        {
+          "name": "Java",
+          "bytes": 964
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        ".gitignore",
+        ".mvn",
+        "mvnw",
+        "mvnw.cmd",
+        "pom.xml",
+        "src"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 1
+    },
+    {
+      "name": "WeatherApp",
+      "url": "https://github.com/xuanduynguyen96/WeatherApp",
+      "description": null,
+      "homepage": null,
+      "createdWeek": "2023-08-14",
+      "pushedWeek": "2023-08-14",
+      "isArchived": false,
+      "stars": 0,
+      "primaryLanguage": "C#",
+      "languages": [
+        {
+          "name": "C#",
+          "bytes": 3962
+        }
+      ],
+      "topics": [],
+      "license": null,
+      "rootEntries": [
+        ".gitignore",
+        "WeatherApp",
+        "WeatherApp.sln"
+      ],
+      "githubEntries": [],
+      "workflowFiles": [],
+      "commits": 2
+    }
+  ],
+  "activity": {
+    "weeks": [
+      {
+        "start": "2019-11-18",
+        "count": 1
+      },
+      {
+        "start": "2022-05-23",
+        "count": 2
+      },
+      {
+        "start": "2022-06-13",
+        "count": 3
+      },
+      {
+        "start": "2022-06-27",
+        "count": 5
+      },
+      {
+        "start": "2023-02-20",
+        "count": 1
+      },
+      {
+        "start": "2023-06-12",
+        "count": 1
+      },
+      {
+        "start": "2023-07-03",
+        "count": 1
+      },
+      {
+        "start": "2023-07-17",
+        "count": 5
+      },
+      {
+        "start": "2023-08-14",
+        "count": 3
+      },
+      {
+        "start": "2024-04-08",
+        "count": 3
+      },
+      {
+        "start": "2024-05-20",
+        "count": 2
+      },
+      {
+        "start": "2024-06-17",
+        "count": 2
+      },
+      {
+        "start": "2025-12-01",
+        "count": 2
+      },
+      {
+        "start": "2026-10-12",
+        "count": 12
+      }
+    ],
+    "totals": {
+      "commits": 23,
+      "pullRequests": 5,
+      "reviews": 0,
+      "issues": 0
+    }
+  }
+}

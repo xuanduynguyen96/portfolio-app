@@ -1,0 +1,5 @@
+# Keep GitHub's language stats about the site itself: agent tooling and docs are not "code"
+# (the character class is derived from these stats, see src/data/github/).
+.claude/** linguist-vendored
+plans/** linguist-documentation
+docs/** linguist-documentation

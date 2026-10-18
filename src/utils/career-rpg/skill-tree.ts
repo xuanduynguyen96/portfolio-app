@@ -1,13 +1,12 @@
 import { ATTRIBUTE_IDS, SKILL_ID_PATTERN, xpRules, type XpRules } from '../../data/xp-rules.ts';
 import type { RuleIssue, SkillNodeInput, SkillTreeNode } from './career-types.ts';
-import { decayedSum, normalizeEvidenceUrl, uniqueEvidenceUrls } from './diminishing-returns.ts';
+import { decayedSum } from './diminishing-returns.ts';
 
-/** Unique kebab ids, known attributes, valid URLs used by one node only, existing parents, no cycles. */
+/** Unique kebab ids, known attributes, existing parents, no cycles. (One repo may prove many skills.) */
 export function validateSkillTree(nodes: readonly SkillNodeInput[]): RuleIssue[] {
   const issues: RuleIssue[] = [];
   const issue = (id: string, problem: string) => issues.push({ source: 'skill', id, problem });
   const byId = new Map<string, SkillNodeInput>();
-  const urlOwner = new Map<string, string>();
 
   for (const node of nodes) {
     if (byId.has(node.id)) issue(node.id, 'duplicate skill id');
@@ -15,17 +14,6 @@ export function validateSkillTree(nodes: readonly SkillNodeInput[]): RuleIssue[]
     if (!SKILL_ID_PATTERN.test(node.id)) issue(node.id, 'id must be kebab-case');
     if (!(ATTRIBUTE_IDS as readonly string[]).includes(node.attribute)) {
       issue(node.id, `unknown attribute "${node.attribute}"`);
-    }
-    const ownKeys = new Set<string>();
-    for (const url of node.evidence) {
-      const key = normalizeEvidenceUrl(url);
-      if (key !== null && ownKeys.has(key)) continue;
-      if (key !== null) ownKeys.add(key);
-      const owner = key === null ? undefined : urlOwner.get(key);
-      if (key === null) issue(node.id, `evidence "${url}" is not a valid https URL`);
-      // One link levels one skill: pasting it into every node would inflate the tree.
-      else if (owner !== undefined && owner !== node.id) issue(node.id, `evidence "${url}" already used by skill "${owner}"`);
-      else urlOwner.set(key, node.id);
     }
   }
 
@@ -66,14 +54,14 @@ export function skillNodeLevel(evidenceCount: number, rules: XpRules = xpRules):
 }
 
 /**
- * Nested tree from a validated flat list. Walks pre-order (input order) so the shared
- * `seen` set decides which node first claims a URL: a URL earns XP once site-wide.
- * Evidence (own URLs + verified quests) rolls up to ancestors for levels.
+ * Nested tree from a validated flat list. A node's XP comes from the public repos matching it
+ * (decayed, capped); its level from the distinct repos proving it or a descendant. Quests are
+ * repos too, so they add "Proven in" links but no extra evidence (no double counting).
  */
 export function buildSkillTree(
   nodes: readonly SkillNodeInput[],
-  verifiedQuestIdsBySkill: ReadonlyMap<string, readonly string[]>,
-  seen: Set<string>,
+  repoUrlsBySkill: ReadonlyMap<string, readonly string[]>,
+  questIdsBySkill: ReadonlyMap<string, readonly string[]>,
   rules: XpRules = xpRules,
 ): SkillTreeNode[] {
   const childrenOf = new Map<string | undefined, SkillNodeInput[]>();
@@ -84,14 +72,12 @@ export function buildSkillTree(
   }
 
   const visit = (node: SkillNodeInput): { tree: SkillTreeNode; evidence: Set<string> } => {
-    const ownUrls = uniqueEvidenceUrls(node.evidence);
-    const fresh = ownUrls.filter((url) => !seen.has(url));
-    fresh.forEach((url) => seen.add(url));
-    const { xpPerUrl, decay, nodeCap } = rules.skillEvidence;
-    const xp = decayedSum(fresh.map(() => xpPerUrl), decay, nodeCap);
+    const repoUrls = [...new Set(repoUrlsBySkill.get(node.id) ?? [])];
+    const { xpPerRepo, decay, nodeCap } = rules.skillEvidence;
+    const xp = decayedSum(repoUrls.map(() => xpPerRepo), decay, nodeCap);
 
-    const questIds = [...(verifiedQuestIdsBySkill.get(node.id) ?? [])];
-    const evidence = new Set([...ownUrls, ...questIds.map((id) => `quest:${id}`)]);
+    const questIds = [...(questIdsBySkill.get(node.id) ?? [])];
+    const evidence = new Set(repoUrls);
     const children = (childrenOf.get(node.id) ?? []).map((child) => {
       const result = visit(child);
       result.evidence.forEach((item) => evidence.add(item));
@@ -103,7 +89,7 @@ export function buildSkillTree(
       label: node.label,
       attribute: node.attribute,
       ...(node.parent === undefined ? {} : { parent: node.parent }),
-      evidence: node.evidence,
+      evidence: repoUrls,
       questIds,
       children,
       evidenceCount: evidence.size,

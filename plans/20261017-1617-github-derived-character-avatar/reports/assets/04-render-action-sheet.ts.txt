@@ -1,0 +1,45 @@
+// Action sheet: frame A | frame B per class (static PNG) + animated HTML (2-frame CSS steps loop).
+import { readFileSync, writeFileSync } from 'node:fs';
+import { archer, mage, warrior } from './action-prototypes.ts';
+import { N, type Grid } from './sticker-prototypes.ts';
+
+const src = readFileSync(new URL('./render-sticker-sheet.ts', import.meta.url), 'utf8');
+const C: Record<string, string> = eval('(' + src.slice(src.indexOf('{', src.indexOf('const C')), src.indexOf('};', src.indexOf('const C')) + 1) + ')');
+const PAD = 2, M = N + 2 * PAD;
+function sticker(g: Grid): Grid {
+  const out: Grid = Array.from({ length: M }, () => Array(M).fill('.'));
+  g.forEach((r, y) => r.forEach((c, x) => { out[y + PAD][x + PAD] = c; }));
+  const ring = out.map((r) => [...r]);
+  for (let y = 0; y < M; y++) for (let x = 0; x < M; x++) {
+    if (out[y][x] !== '.') continue;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++)
+      if (dx * dx + dy * dy <= 5 && out[y + dy]?.[x + dx] && out[y + dy][x + dx] !== '.') ring[y][x] = '#';
+  }
+  return ring;
+}
+function paths(g: Grid) {
+  let d = '';
+  for (let y = 0; y < g.length; y++) for (let x = 0; x < g.length;) {
+    const c = g[y][x]; let w = 1;
+    while (x + w < g.length && g[y][x + w] === c) w++;
+    if (c !== '.') d += `<path d="M${x} ${y}h${w}v1h-${w}z" fill="${C[c] ?? 'magenta'}"/>`;
+    x += w;
+  }
+  return d;
+}
+const svg = (inner: string, size: number, cls = '') => `<svg class="${cls}" viewBox="0 0 ${M} ${M}" width="${size}" height="${size}" shape-rendering="crispEdges" style="filter:drop-shadow(0 ${size / 40}px ${size / 40}px rgb(0 0 0/.25))">${inner}</svg>`;
+const looks = { warrior, mage, archer };
+const css = `<style>
+.anim .f1{visibility:hidden}
+@media (prefers-reduced-motion: no-preference){
+ .anim .f0{animation:a .9s steps(1) infinite}.anim .f1{animation:b .9s steps(1) infinite}
+}
+@keyframes a{0%{visibility:visible}50%{visibility:hidden}}@keyframes b{0%{visibility:hidden}50%{visibility:visible}}
+</style>`;
+const paper = 'background:#ece6da;background-image:linear-gradient(#d6cfc1 1px,transparent 1px),linear-gradient(90deg,#d6cfc1 1px,transparent 1px);background-size:48px 48px';
+const band = (bg: string, body: string) => `<div style="${bg};padding:20px;display:flex;gap:24px;align-items:end;flex-wrap:wrap">${body}</div>`;
+const frames = Object.values(looks).map((f) => svg(paths(sticker(f(0))), 200) + svg(paths(sticker(f(1))), 200)).join('<span style="width:24px"></span>');
+const anim = (s: number) => Object.values(looks).map((f) => svg(`<g class="f0">${paths(sticker(f(0)))}</g><g class="f1">${paths(sticker(f(1)))}</g>`, s, 'anim')).join('');
+writeFileSync(new URL('./action-frames.html', import.meta.url), `<!doctype html><body style="margin:0">${band(paper, frames)}${band('background:#14110f', frames)}</body>`);
+writeFileSync(new URL('./action-animated.html', import.meta.url), `<!doctype html><html><head><meta name="viewport" content="width=device-width"><title>Action prototypes</title>${css}</head><body style="margin:0">${band(paper, anim(192))}${band('background:#14110f', anim(128) + anim(64))}</body></html>`);
+for (const [k, f] of Object.entries(looks)) for (const fr of [0, 1] as const) console.log(`${k} f${fr}\n` + f(fr).map((r) => r.join('')).join('\n'));

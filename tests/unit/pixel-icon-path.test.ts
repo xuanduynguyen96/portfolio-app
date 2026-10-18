@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { gridHasChar, gridToPathData } from '../../src/utils/pixel-icon-path.ts';
+import { gridHasChar, gridToMergedPathData, gridToPathData } from '../../src/utils/pixel-icon-path.ts';
+import { gridCells, pathCells } from './path-raster-oracle.ts';
 
 const empty = ['........', '........'];
 
@@ -43,5 +44,22 @@ describe('gridHasChar', () => {
   it('detects presence of a char in any row', () => {
     assert.equal(gridHasChar(['....', '..+.'], '+'), true);
     assert.equal(gridHasChar(['....', '..#.'], '+'), false);
+  });
+});
+
+describe('gridToMergedPathData', () => {
+  it('merges equal runs stacked in consecutive rows into one rectangle', () => {
+    assert.equal(gridToMergedPathData(['........', '..##....', '..##....'], '#'), 'M2 1h2v2h-2z');
+  });
+
+  it('moves relatively between rectangles and covers exactly the matching cells', () => {
+    const grid = ['#.#+##..', '.###+#+#', '.###+#..', '#......#'];
+    assert.equal(gridToMergedPathData(['#.#'], '#'), 'M0 0h1v1h-1zm2 0h1v1h-1z');
+    for (const char of ['#', '+']) assert.deepEqual(pathCells(gridToMergedPathData(grid, char)), gridCells(grid, char));
+    assert.equal(gridToMergedPathData(['....'], '#'), '');
+  });
+
+  it('a run that changes width starts a new rectangle', () => {
+    assert.equal(gridToMergedPathData(['##', '#.'], '#'), 'M0 0h2v1h-2zm0 1h1v1h-1z');
   });
 });

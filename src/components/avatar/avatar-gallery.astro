@@ -1,0 +1,63 @@
+---
+// /credits/ gallery: every class x job look at starter gear, plus one gear ramp (tiers 0-3).
+import CharacterAvatar from './character-avatar.astro';
+import { ARCHETYPE_IDS } from '../../data/character-class-rules';
+import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS } from '../../data/character-job-rules';
+import { GEAR_SLOT_IDS } from '../../data/gear-rules';
+import type { AvatarProfile } from '../../utils/avatar/avatar-description';
+import type { GearTier } from '../../utils/github-character/character-types';
+import { characterTitle } from '../../utils/github-character/character-title';
+import { gearRules } from '../../data/gear-rules';
+
+const gearAt = (tier: GearTier) => GEAR_SLOT_IDS.map((slot) => ({ slot, tier }));
+const looks: AvatarProfile[] = [
+  ...ARCHETYPE_IDS.flatMap((primary) => {
+    const classId = CLASS_BY_ARCHETYPE[primary];
+    return ARCHETYPE_IDS.map((motif) => ({
+      classId, className: CLASS_NAMES[classId], jobName: JOBS[classId][motif].name, motif, gear: gearAt(0),
+    }));
+  }),
+  { classId: 'adventurer', className: CLASS_NAMES.adventurer, jobName: null, motif: null, gear: gearAt(0) },
+];
+// Tier 0..max (every slot has the same number of tiers: its 3 thresholds).
+const ramp = Array.from({ length: gearRules[0].thresholds.length + 1 }, (_, tier) => tier as GearTier);
+---
+
+<ul class="avatar-gallery" role="list" aria-label="Avatar looks">
+  {
+    looks.map((look, index) => (
+      <li>
+        <CharacterAvatar profile={look} size={128} idPrefix={`gallery-${index}`} />
+        <span class="hud-text">{characterTitle(look)}</span>
+      </li>
+    ))
+  }
+</ul>
+<ul class="avatar-gallery" role="list" aria-label="Gear tiers">
+  {
+    ramp.map((tier) => (
+      <li>
+        <CharacterAvatar profile={{ ...looks[0], gear: gearAt(tier) }} size={128} idPrefix={`gallery-tier-${tier}`} />
+        <span class="hud-text">All gear tier {tier}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .avatar-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .avatar-gallery li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+</style>

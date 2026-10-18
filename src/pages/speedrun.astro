@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/base-layout.astro';
 import AchievementCard from '../components/career-rpg/achievement-card.astro';
+import SpeedrunCharacterHeader from '../components/career-rpg/speedrun-character-header.astro';
 import NeonButton from '../components/neon-button.astro';
 import { siteConfig } from '../data/site-config';
 import { xpRules } from '../data/xp-rules';
@@ -8,7 +9,8 @@ import { formatClock } from '../utils/career-rpg/countdown-clock';
 import { loadCareerState } from '../utils/career-rpg/load-career-state';
 import { withBasePath } from '../utils/with-base-path';
 
-const { achievements, level } = await loadCareerState();
+const state = await loadCareerState();
+const { achievements } = state;
 const { status, note } = siteConfig.availability;
 const statusLabel = { open: 'Open to work', limited: 'Limited availability', closed: 'Not available' }[status];
 const seconds = xpRules.speedrun.countdownSeconds;
@@ -28,10 +30,7 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
           {startClock}
         </span>
       </div>
-      <h1 class="speedrun-title">{siteConfig.name}</h1>
-      <p class="speedrun-identity hud-text">
-        {siteConfig.role} · Level {level.level} {level.title}
-      </p>
+      <SpeedrunCharacterHeader state={state} />
       <div class="availability hud-text">
         <p class="availability-status">
           <span class="status-dot" data-status={status} aria-hidden="true"></span><strong>{statusLabel}</strong>
@@ -45,7 +44,7 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
       {
         hasSample && (
           <p class="sample-note hud-text">
-            <strong>Sample data:</strong> metrics marked “Sample” come from placeholder projects and are not real
+            <strong>Sample data:</strong> metrics marked “Sample” come from a case study still in draft and are not final
             results yet.
           </p>
         )
@@ -112,14 +111,6 @@ const hasSample = achievements.some((achievement) => achievement.isSample);
     font-size: var(--text-sm);
     font-variant-numeric: tabular-nums;
     letter-spacing: var(--tracking-hud);
-  }
-
-  .speedrun-title {
-    font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
-  }
-
-  .speedrun-identity {
-    color: var(--color-text-muted);
   }
 
   .availability {

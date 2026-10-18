@@ -7,6 +7,7 @@ import {
   skillNodeLevel,
   validateSkillTree,
 } from '../../src/utils/career-rpg/skill-tree.ts';
+import { xpRules } from '../../src/data/xp-rules.ts';
 import { baseSkills, skill } from './career-fixtures.ts';
 
 const problems = (nodes: SkillNodeInput[]) => validateSkillTree(nodes).map((item) => `${item.id}: ${item.problem}`);
@@ -39,27 +40,12 @@ describe('validateSkillTree', () => {
     assert.deepEqual(issues, ['a: parent cycle a -> b -> a']);
   });
 
-  it('rejects one evidence URL reused across skills (even in a variant form)', () => {
-    assert.deepEqual(
-      problems([
-        skill({ id: 'a', evidence: ['https://ex.dev/repo'] }),
-        skill({ id: 'b', evidence: ['https://www.ex.dev/Repo/'] }),
-        skill({ id: 'c', evidence: ['https://ex.dev/repo', 'https://ex.dev/repo#same-node-is-fine'] }),
-      ]),
-      ['b: evidence "https://www.ex.dev/Repo/" already used by skill "a"', 'c: evidence "https://ex.dev/repo" already used by skill "a"'],
-    );
-  });
-
-  it('rejects bad ids, unknown attributes and non-https evidence', () => {
+  it('rejects bad ids and unknown attributes', () => {
     const issues = problems([
       // Deliberately invalid attribute (bypasses the type like bad content would).
-      { id: 'Bad_Id', label: 'x', attribute: 'charisma' as never, evidence: ['http://plain.dev'] },
+      { id: 'Bad_Id', label: 'x', attribute: 'charisma' as never },
     ]);
-    assert.deepEqual(issues, [
-      'Bad_Id: id must be kebab-case',
-      'Bad_Id: unknown attribute "charisma"',
-      'Bad_Id: evidence "http://plain.dev" is not a valid https URL',
-    ]);
+    assert.deepEqual(issues, ['Bad_Id: id must be kebab-case', 'Bad_Id: unknown attribute "charisma"']);
   });
 });
 
@@ -70,40 +56,38 @@ describe('skillNodeLevel', () => {
 });
 
 describe('buildSkillTree', () => {
+  const none = new Map<string, string[]>();
+
   it('nests children in input order', () => {
-    const roots = buildSkillTree(baseSkills, new Map(), new Set());
+    const roots = buildSkillTree(baseSkills, none, none);
     assert.deepEqual(roots.map((root) => root.id), ['languages', 'frontend', 'collaboration']);
     assert.deepEqual(flattenSkillTree(roots).map((node) => node.id), baseSkills.map((node) => node.id));
   });
 
-  it('rolls evidence and verified quests up to ancestors', () => {
-    const nodes = [
-      skill({ id: 'root' }),
-      skill({ id: 'child', parent: 'root', evidence: ['https://a.dev', 'https://b.dev'] }),
-      skill({ id: 'sibling', parent: 'root', evidence: ['https://b.dev/'] }),
-    ];
-    const [root] = buildSkillTree(nodes, new Map([['sibling', ['quest-1']]]), new Set());
+  it('rolls matching repos up to ancestors; quests add links, not evidence', () => {
+    const nodes = [skill({ id: 'root' }), skill({ id: 'child', parent: 'root' }), skill({ id: 'sibling', parent: 'root' })];
+    const repos = new Map([['child', ['https://github.com/u/a', 'https://github.com/u/b']], ['sibling', ['https://github.com/u/b']]]);
+    const [root] = buildSkillTree(nodes, repos, new Map([['sibling', ['quest-1']]]));
     const [child, sibling] = root.children;
     assert.equal(child.evidenceCount, 2);
-    assert.equal(sibling.evidenceCount, 2); // own URL + quest-1
-    assert.equal(root.evidenceCount, 3); // a, b (deduped), quest-1
-    assert.equal(root.level, 2);
+    assert.equal(sibling.evidenceCount, 1); // repo b; quest-1 is a repo already counted
+    assert.equal(root.evidenceCount, 2); // a, b (deduped)
+    assert.equal(root.level, 1);
     assert.deepEqual(sibling.questIds, ['quest-1']);
+    assert.deepEqual(child.evidence, ['https://github.com/u/a', 'https://github.com/u/b']);
   });
 
-  it('awards XP for a URL once even if the builder sees it twice (validation rejects this input)', () => {
-    const url = 'https://github.com/example-user/repo';
-    const nodes = Array.from({ length: 20 }, (_, index) => skill({ id: `s-${index}`, evidence: [url] }));
-    assert.equal(validateSkillTree(nodes).length, 19);
-    const flat = flattenSkillTree(buildSkillTree(nodes, new Map(), new Set()));
-    assert.equal(flat.reduce((total, node) => total + node.xp, 0), 40);
+  it('one repo may prove many skills; per-node XP decays and caps', () => {
+    const urls = Array.from({ length: 10 }, (_, index) => `https://github.com/u/${index}`);
+    const nodes = [skill({ id: 'a' }), skill({ id: 'b' })];
+    const [a, b] = buildSkillTree(nodes, new Map([['a', urls], ['b', urls.slice(0, 1)]]), none);
+    assert.equal(a.xp, xpRules.skillEvidence.nodeCap);
+    assert.equal(b.xp, xpRules.skillEvidence.xpPerRepo);
   });
 
-  it('skips URLs already claimed by quests and caps per-node XP with decay', () => {
-    const urls = Array.from({ length: 10 }, (_, index) => `https://ex.dev/${index}`);
-    const seen = new Set(['https://ex.dev/0']);
-    const [node] = buildSkillTree([skill({ id: 'many', evidence: urls })], new Map(), seen);
-    assert.equal(node.xp, 120);
-    assert.equal(seen.size, 10);
+  it('duplicate URLs for one node count once', () => {
+    const [node] = buildSkillTree([skill({ id: 'a' })], new Map([['a', ['https://x.dev', 'https://x.dev']]]), none);
+    assert.equal(node.evidenceCount, 1);
+    assert.equal(node.xp, xpRules.skillEvidence.xpPerRepo);
   });
 });

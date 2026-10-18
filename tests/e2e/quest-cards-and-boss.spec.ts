@@ -7,13 +7,14 @@ const cardFor = (page: import('@playwright/test').Page, slug: string) =>
 test.describe('project quests', () => {
   test.use({ viewport: { width: 1280, height: 800 } });
 
-  test('every card shows exactly one tier badge and an XP or unverified label', async ({ page }) => {
+  test('one card per quest repo, each with one tier badge and its XP', async ({ page }) => {
     await page.goto('./');
+    await expect(page.locator('.project-card')).toHaveCount(PROJECT_SLUGS.length);
     for (const slug of PROJECT_SLUGS) {
       const card = cardFor(page, slug);
       await expect(card.locator('.quest-badge')).toHaveCount(1);
       await expect(card.locator('.quest-badge')).toHaveText(/^(Side quest|Main quest|Raid|Boss · (Side quest|Main quest|Raid))$/);
-      await expect(card.locator('.quest-xp')).toHaveText(/^(\+\d+ XP|Unverified)$/);
+      await expect(card.locator('.quest-xp')).toHaveText(/^\+\d+ XP$/);
     }
   });
 
@@ -30,14 +31,6 @@ test.describe('project quests', () => {
       cards.nth(1).evaluate((card) => card.getBoundingClientRect().width),
     ]);
     expect(bossWidth).toBeGreaterThan(otherWidth * 1.8);
-  });
-
-  test('evidence-less or too-short case studies earn no XP', async ({ page }) => {
-    await page.goto('./');
-    await expect(cardFor(page, BOSS_SLUG).locator('.quest-xp')).toHaveText(/^\+\d+ XP$/);
-    await expect(cardFor(page, 'cli-toolkit').locator('.quest-xp')).toHaveText('Unverified');
-    // Shares its only evidence URL with the boss: a URL earns XP once site-wide.
-    await expect(cardFor(page, 'realtime-chat').locator('.quest-xp')).toHaveText('Unverified');
   });
 });
 

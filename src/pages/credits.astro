@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/base-layout.astro';
 import GlassCard from '../components/glass-card.astro';
 import PixelIconGallery from '../components/pixel-icon-gallery.astro';
+import AvatarGallery from '../components/avatar/avatar-gallery.astro';
 import { creditGroups } from '../data/credits-data';
 import { siteConfig } from '../data/site-config';
 import { withBasePath } from '../utils/with-base-path';
@@ -51,6 +52,7 @@ import { withBasePath } from '../utils/with-base-path';
             ))}
           </ul>
           {group.id === 'icons' && <PixelIconGallery />}
+          {group.id === 'icons' && <AvatarGallery />}
         </section>
       ))
     }

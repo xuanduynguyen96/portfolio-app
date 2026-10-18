@@ -87,11 +87,33 @@ Tokens only; no new colors.
 | Boss card / `BossBattlePanel` | Crimson frame + `drop-shadow` glow (one glow). Spans 2 columns at >=56rem. Panel h2 uses `.h2-compact`. "Boss Battle" vs "Quest Log"; unverified quests state reason + "0 XP" in text |
 | `XpProgressBar` | Native `<progress>` styled as framed track with segmented gold fill (`--seg`), named via `aria-labelledby`, `aria-valuetext` "450 / 520 XP"; visible value `aria-hidden`. Static |
 | `CompletenessHud` | Panel; missing items in native `<details>`; summary >=44px |
-| `StreakBadge` | Framed link to `/changelog/`; text states streak, paused or empty; >=44px |
+| `StreakBadge` | Framed link to `/changelog/`; text states streak (GitHub weeks), paused or empty; >=44px |
 | `SkillTreeNode` | Nested `<ul role="list">`; pixel-dashed connectors; gem pips (`--pip-size`; hollow = locked, solid gold = earned, shape differs) decorative, real level in visually-hidden text; evidence in `<details>` |
 | `AchievementCard` | Big HUD value + quest name; "Sample" framed tag for placeholder-sourced metrics |
 
+| `CharacterNameplate` | "Class · Job" (+ "Lv N · Title"): text twin of the avatar; heading level via `as` (hero already has the h1) |
+| `CharacterPortraitPanel` | Character sheet identity: avatar 192 + nameplate, `GearLegend`, `ClassWhyPanel`, `GithubDataNote` |
+| `GearLegend` | `<dl>` per slot: pixel gear icon, label, skill axis, "Tier n of 3" / "Starter gear", repo count; the text version of the gear art |
+| `ClassWhyPanel` | `.pixel-details` disclosure "Why Warrior?": ranked repo signals per archetype; Adventurer shows the "not enough signal" text |
+| `GithubDataNote` | "Based on public GitHub activity as of <date>" + profile link; muted small text |
+| `SpeedrunCharacterHeader` | Avatar 128 + nameplate on `/speedrun/` |
+| `.pixel-details` (`effects.css`) | Shared disclosure: >=44px summary, pixel triangle marker that rotates when open; native `<details>` |
+
 Availability gem (`.status-dot`): gold = open, crimson = limited, muted = closed via `data-status`. Decorative; always next to visible text.
+
+## Character avatar
+
+Layered 32x32 pixel sticker-style character, hand-authored (`src/data/avatar/`), composed at build into one inline SVG (`CharacterAvatar`). Authoring rules: [code-standards.md](code-standards.md#avatar-sprites).
+
+- **Look:** side-view, action-pose chibi with a 1px dark outline and a 2px die-cut sticker ring, so it reads on both themes. Ring + drop shadow switch per theme; art colors are identical in both (`--avatar-*` tokens, contrast figures in the `design-tokens.css` comment). No literal colors in components.
+- **Sizes:** art box 128 / 192 / 256 px = 4 / 6 / 8 CSS px per art pixel (integer scale, `crispEdges`), plus the sticker margin. Hero 256, sheet 192, speedrun + gallery 128. Fixed size from first paint (CLS <= 0.002); the hero avatar is never pre-hidden.
+- **Class = silhouette:** Warrior (plumed great helm, sword), Mage (bearded, pointed hat, arcane orb + staff), Archer (hood, longbow), Adventurer (traveler with walking stick; fallback, no job prop). Guarded by silhouette IoU tests; the human blind-ID test (class named at 128px in <=2s) is the real check.
+- **Job = prop:** top-right motif by secondary archetype: banner (backend), crystal (data), hawk (frontend). 9 jobs = class x prop. Two frames (flutter, bob, flap).
+- **Gear = materials:** armor (Security), shield (Testing), boots (Automation), amulet (Docs); tier 0 leather/wood, 1 bronze, 2 iron, 3 gold + sparkle. Each tier only adds pixels.
+- **Meaning is also text:** `role="img"` named "Class · Job", description lists gear tiers; visible nameplate, gear legend and why panel say the same. Avatar is never the only carrier of information.
+- **Motion:** two-frame action loop, 5 x 900ms (~4.5s) then rests on frame A (WCAG 2.2.2). CSS only, and only under `html[data-motion=ok]` with no reduced-motion preference; no JS or reduce = frame A static. Frame B is `visibility: hidden` until animated.
+- **Forced colors:** `forced-color-adjust: none` keeps the art colors; the ring separates it from any background and the text twin carries the meaning.
+- **Review:** `node scripts/render-avatar-sheet.ts` renders every class x motif x tier set, both frames and themes. `/credits/` shows the gallery.
 
 ## Motion
 
@@ -99,13 +121,14 @@ Availability gem (`.status-dot`): gold = open, crimson = limited, muted = closed
 - Hero: title chars rise from line masks, then eyebrow/role/tagline/CTAs fade up. Sections/cards: fade-up once on enter, batched.
 - Page transitions: Astro `ClientRouter`; shared `transition:name` on project title/cover.
 - Menu caret (`[data-caret]`, pixel triangle on hover/focus) blinks only under `html[data-motion="ok"]`; otherwise static.
-- Career RPG: bars and pips are static. Only motion is the `/speedrun/` countdown.
+- Career RPG: bars and pips are static. Only motion: the `/speedrun/` countdown and the bounded avatar action loop (see [Character avatar](#character-avatar)).
 
 ### Reduced-motion policy
 
 - `prefers-reduced-motion: reduce` => `data-motion` never set, nothing pre-hidden, GSAP never runs (no blinking caret either). Global CSS clamps animation/transition durations.
 - Switching to reduce mid-session removes the flag and reveals everything.
 - Never convey information by motion alone.
+- Avatar loop: stops after ~4.5s, gated by `data-motion=ok` + `prefers-reduced-motion: no-preference`; nothing depends on it.
 - `/speedrun/` countdown (`speedrun-countdown.ts`): decorative, `aria-hidden`, server-rendered start value; static with no JS or reduce. Never gates content.
 - Failure policy: content visible beats animation. See [system-architecture.md](system-architecture.md#root-flags-progressive-enhancement).
 
@@ -121,6 +144,6 @@ Availability gem (`.status-dot`): gold = open, crimson = limited, muted = closed
 
 ## Images
 
-- Covers: SVG in `src/assets/projects/`, 16:9, rendered 600x338 (card) / 1200x675 (detail) via `astro:assets`. Always supply `coverAlt`. Still the old cyan/magenta palette (recolor deferred, see [roadmap](project-roadmap.md)).
-- OG image: 1200x630 PNG in `public/og-image.png` from `src/assets/og-image-source.svg` (also old palette).
+- Covers: optional per case-study override (`cover` image in frontmatter, 16:9, rendered 600x338 card / 1200x675 detail via `astro:assets`); always supply `coverAlt`. No covers today (the placeholder projects and their cyan/magenta SVGs were removed); project cards and pages work without.
+- OG image: 1200x630 PNG in `public/og-image.png` from `src/assets/og-image-source.svg` (old palette). Regenerating it from the avatar is deferred (see [roadmap](project-roadmap.md#open-items-v13)).
 - Favicon: `public/favicon.svg` (literal colors by exception).

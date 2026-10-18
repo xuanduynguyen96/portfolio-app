@@ -49,7 +49,7 @@ const shortUrl = (url: string) => {
 }
 {
   node.evidence.length > 0 && (
-    <details class="skill-evidence">
+    <details class="skill-evidence pixel-details">
       <summary class="hud-text">Evidence ({node.evidence.length})</summary>
       <ul role="list">
         {node.evidence.map((url) => (
@@ -131,30 +131,6 @@ const shortUrl = (url: string) => {
     color: var(--color-text-muted);
     font-size: var(--text-hud);
   }
-
-  /* Pixel triangle replaces the native disclosure marker */
-  .skill-evidence summary {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    width: fit-content;
-    padding-block: var(--space-3);
-    color: var(--color-accent-primary);
-    list-style: none;
-    cursor: pointer;
-  }
-
-  .skill-evidence summary::-webkit-details-marker { display: none; }
-
-  .skill-evidence summary::before {
-    content: '';
-    inline-size: calc(1.5 * var(--pixel));
-    block-size: calc(2.5 * var(--pixel));
-    background: currentColor;
-    clip-path: polygon(0 0, 33% 0, 33% 20%, 67% 20%, 67% 40%, 100% 40%, 100% 60%, 67% 60%, 67% 80%, 33% 80%, 33% 100%, 0 100%);
-  }
-
-  .skill-evidence[open] summary::before { rotate: 90deg; }
 
   .skill-evidence ul {
     display: grid;

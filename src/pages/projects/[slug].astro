@@ -1,7 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { Image } from 'astro:assets';
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/base-layout.astro';
 import NeonButton from '../../components/neon-button.astro';
 import TagList from '../../components/tag-list.astro';
@@ -9,31 +9,36 @@ import { siteConfig } from '../../data/site-config';
 import { withBasePath } from '../../utils/with-base-path';
 import { getEvidenceLink } from '../../utils/career-rpg/evidence-links';
 import { loadCareerState } from '../../utils/career-rpg/load-career-state';
+import type { ScoredQuest } from '../../utils/career-rpg/career-types';
 import BossBattlePanel from '../../components/career-rpg/boss-battle-panel.astro';
 
+// One page per quest (public repo picked by the career engine); the override adds a case study.
 export const getStaticPaths = (async () => {
-  const projects = await getCollection('projects');
-  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+  const { quests } = await loadCareerState();
+  return quests.map((quest) => ({ params: { slug: quest.id }, props: { quest } }));
 }) satisfies GetStaticPaths;
 
 interface Props {
-  project: CollectionEntry<'projects'>;
+  quest: ScoredQuest;
 }
 
-const { project } = Astro.props;
-const { title, summary, tags, cover, coverAlt, evidence } = project.data;
+const { quest } = Astro.props;
+const { id, title, summary, tags, evidence, repoMetrics } = quest;
+const override = (await getCollection('projects')).find((entry) => entry.id === id);
+const cover = override?.data.cover;
+const coverAlt = override?.data.coverAlt ?? '';
+const Content = override && override.body?.trim() ? (await render(override)).Content : undefined;
 const repoUrl = getEvidenceLink(evidence, 'repo');
 const demoUrl = getEvidenceLink(evidence, 'demo');
-const { Content } = await render(project);
-const quest = (await loadCareerState()).quests.find((item) => item.id === project.id);
+const facts = repoMetrics.map((metric) => `${metric.label}: ${metric.value}${metric.unit ? ` ${metric.unit}` : ''}`);
 ---
 
 <BaseLayout title={`${title} | ${siteConfig.name}`} description={summary}>
   <article class="project-detail container" aria-labelledby="project-title">
     <a class="back-link hud-text" href={withBasePath('/#projects')}>← All projects</a>
     <header class="project-header">
-      <p class="eyebrow">Case study</p>
-      <h1 id="project-title" transition:name={`project-title-${project.id}`}>{title}</h1>
+      <p class="eyebrow">{Content ? 'Case study' : 'Quest'}</p>
+      <h1 id="project-title" transition:name={`project-title-${id}`}>{title}</h1>
       <p class="project-summary">{summary}</p>
       <TagList tags={tags} label="Technologies" />
       <div class="project-actions">
@@ -41,7 +46,7 @@ const quest = (await loadCareerState()).quests.find((item) => item.id === projec
         {demoUrl && <NeonButton href={demoUrl} variant="ghost" external>Live demo ↗</NeonButton>}
       </div>
     </header>
-    {quest && <BossBattlePanel quest={quest} />}
+    <BossBattlePanel quest={quest} />
     {
       cover && (
         <Image
@@ -51,12 +56,31 @@ const quest = (await loadCareerState()).quests.find((item) => item.id === projec
           width={1200}
           height={675}
           loading="eager"
-          transition:name={`project-cover-${project.id}`}
+          transition:name={`project-cover-${id}`}
         />
       )
     }
     <div class="prose">
-      <Content />
+      {
+        Content ? (
+          <Content />
+        ) : (
+          <>
+            <h2>About this repo</h2>
+            <p>
+              Derived from the public GitHub repository <code>{quest.repo}</code>. No written case study yet: the quest
+              is scored from repository facts only.
+            </p>
+            {facts.length > 0 && (
+              <ul>
+                {facts.map((fact) => (
+                  <li>{fact}</li>
+                ))}
+              </ul>
+            )}
+          </>
+        )
+      }
     </div>
   </article>
 </BaseLayout>

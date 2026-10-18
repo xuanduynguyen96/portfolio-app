@@ -1,11 +1,16 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
+import { xpRules } from '../../src/data/xp-rules.ts';
 import {
-  computeStreak,
+  computeContributionStreak,
+  computeWeekStreak,
   validateChangelog,
   weekStartUtc,
 } from '../../src/utils/career-rpg/consistency-streak.ts';
 import { entry, NOW } from './career-fixtures.ts';
+
+/** Monday dates -> week starts (ms). */
+const weeks = (...mondays: string[]) => mondays.map((day) => Date.parse(`${day}T00:00:00Z`));
 
 const iso = (ms: number) => new Date(ms).toISOString().slice(0, 10);
 
@@ -24,54 +29,58 @@ describe('weekStartUtc', () => {
   });
 });
 
-describe('computeStreak', () => {
+describe('computeWeekStreak', () => {
   it('counts consecutive weeks ending this week', () => {
-    const streak = computeStreak([entry('a', '2026-10-14'), entry('b', '2026-10-07'), entry('c', '2026-09-30')], NOW);
+    const streak = computeWeekStreak(weeks('2026-10-12', '2026-10-05', '2026-09-28'), NOW);
     assert.deepEqual({ current: streak.current, longest: streak.longest }, { current: 3, longest: 3 });
-    assert.equal(streak.lastEntryDate?.toISOString().slice(0, 10), '2026-10-14');
+    assert.equal(streak.lastActiveWeek?.toISOString().slice(0, 10), '2026-10-12');
   });
 
   it('resets on a gap week', () => {
-    assert.equal(computeStreak([entry('a', '2026-10-14'), entry('c', '2026-09-30')], NOW).current, 1);
+    assert.equal(computeWeekStreak(weeks('2026-10-12', '2026-09-28'), NOW).current, 1);
   });
 
   it('gives the open current week grace', () => {
-    assert.equal(computeStreak([entry('b', '2026-10-07'), entry('c', '2026-09-30')], NOW).current, 2);
+    assert.equal(computeWeekStreak(weeks('2026-10-05', '2026-09-28'), NOW).current, 2);
   });
 
-  it('breaks when neither this nor last week has an entry', () => {
-    const streak = computeStreak([entry('c', '2026-09-30')], NOW);
+  it('breaks when neither this nor last week is active', () => {
+    const streak = computeWeekStreak(weeks('2026-09-28'), NOW);
     assert.equal(streak.current, 0);
     assert.equal(streak.longest, 1);
   });
 
-  it('counts two entries in one week once', () => {
-    const streak = computeStreak([entry('a', '2026-10-12'), entry('b', '2026-10-16')], NOW);
-    assert.equal(streak.current, 1);
-    assert.equal(streak.longest, 1);
+  it('counts a repeated week once and ignores weeks after now', () => {
+    const streak = computeWeekStreak(weeks('2026-10-12', '2026-10-12', '2026-10-19'), NOW);
+    assert.deepEqual(streak, { current: 1, longest: 1, lastActiveWeek: new Date('2026-10-12T00:00:00Z') });
   });
 
   it('spans the year boundary', () => {
-    const now = new Date('2027-01-06T12:00:00Z');
-    assert.equal(computeStreak([entry('a', '2026-12-31'), entry('b', '2027-01-04')], now).current, 2);
+    assert.equal(computeWeekStreak(weeks('2026-12-28', '2027-01-04'), new Date('2027-01-06T12:00:00Z')).current, 2);
   });
 
   it('tracks the longest run separately from the current one', () => {
-    const streak = computeStreak(
-      [entry('x', '2026-06-01'), entry('y', '2026-06-08'), entry('z', '2026-06-15'), entry('now', '2026-10-15')],
-      NOW,
-    );
+    const streak = computeWeekStreak(weeks('2026-06-01', '2026-06-08', '2026-06-15', '2026-10-12'), NOW);
     assert.equal(streak.current, 1);
     assert.equal(streak.longest, 3);
   });
 
-  it('ignores entries with too-short bodies and future entries', () => {
-    const streak = computeStreak([entry('short', '2026-10-14', 39), entry('future', '2026-10-19')], NOW);
-    assert.deepEqual(streak, { current: 0, longest: 0, lastEntryDate: null });
+  it('returns an empty streak for no weeks', () => {
+    assert.deepEqual(computeWeekStreak([], NOW), { current: 0, longest: 0, lastActiveWeek: null });
   });
+});
 
-  it('returns an empty streak for no entries', () => {
-    assert.deepEqual(computeStreak([], NOW), { current: 0, longest: 0, lastEntryDate: null });
+describe('computeContributionStreak', () => {
+  it('uses snapshot weeks with enough contributions', () => {
+    const rules = { ...xpRules, streak: { ...xpRules.streak, minWeeklyContributions: 2 } };
+    const streak = computeContributionStreak(
+      [{ start: '2026-09-28', count: 5 }, { start: '2026-10-05', count: 1 }, { start: '2026-10-12', count: 3 }],
+      NOW,
+      rules,
+    );
+    assert.equal(streak.current, 1, 'the 1-contribution week breaks the run');
+    assert.equal(streak.longest, 1);
+    assert.equal(computeContributionStreak([{ start: '2026-10-05', count: 1 }], NOW).current, 1);
   });
 });
 

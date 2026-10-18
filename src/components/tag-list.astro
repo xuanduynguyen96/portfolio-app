@@ -10,9 +10,13 @@ interface Props {
 const { tags, label } = Astro.props;
 ---
 
-<ul class="tag-list" role="list" aria-label={label}>
-  {tags.map((tag) => <TagChip label={tag} />)}
-</ul>
+{
+  tags.length > 0 && (
+    <ul class="tag-list" role="list" aria-label={label}>
+      {tags.map((tag) => <TagChip label={tag} />)}
+    </ul>
+  )
+}
 
 <style>
   .tag-list {

@@ -20,6 +20,15 @@ test.describe('forced colors', () => {
     }
   });
 
+  test('the avatar keeps its own colors (art is not flattened to one system color)', async ({ page }) => {
+    await page.goto('./');
+    const avatar = page.locator('.hero svg.character-avatar');
+    await expect(avatar).toHaveCSS('forced-color-adjust', 'none');
+    const fills = await avatar.locator('.avatar-frame-a path').evaluateAll((paths) =>
+      new Set(paths.map((path) => getComputedStyle(path).fill)).size);
+    expect(fills).toBeGreaterThan(4);
+  });
+
   test.describe('mobile', () => {
     test.use({ viewport: { width: 360, height: 740 } });
 

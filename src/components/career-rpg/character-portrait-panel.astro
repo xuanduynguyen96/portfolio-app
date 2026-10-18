@@ -1,0 +1,60 @@
+---
+// Character sheet portrait: avatar + nameplate, gear legend and "why this class" (text twin of the art).
+import GlassCard from '../glass-card.astro';
+import CharacterAvatar from '../avatar/character-avatar.astro';
+import CharacterNameplate from './character-nameplate.astro';
+import GearLegend from './gear-legend.astro';
+import ClassWhyPanel from './class-why-panel.astro';
+import GithubDataNote from './github-data-note.astro';
+import type { CareerState } from '../../utils/career-rpg/career-types';
+
+interface Props {
+  state: CareerState;
+}
+
+const { character, snapshotAsOf, githubUrl } = Astro.props.state;
+---
+
+<GlassCard class="portrait" data-reveal>
+  <div class="portrait-figure">
+    <CharacterAvatar profile={character} size={192} idPrefix="sheet-avatar" />
+    <CharacterNameplate character={character} as="h3" />
+  </div>
+  <div class="portrait-details">
+    <GearLegend gear={character.gear} />
+    <ClassWhyPanel character={character} />
+    <GithubDataNote asOf={snapshotAsOf} githubUrl={githubUrl} />
+  </div>
+</GlassCard>
+
+<style>
+  .portrait {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .portrait-figure {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .portrait-details {
+    display: grid;
+    align-content: start;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 56rem) {
+    .portrait {
+      grid-template-columns: auto 1fr;
+      align-items: start;
+    }
+
+    .portrait-figure {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

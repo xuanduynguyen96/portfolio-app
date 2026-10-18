@@ -1,0 +1,46 @@
+---
+// "Warrior · Vanguard" + "Lv 10 · Senior Adventurer": the text twin of the avatar (WCAG 1.1.1).
+import type { CharacterProfile } from '../../utils/github-character/character-types';
+import type { LevelInfo } from '../../utils/career-rpg/career-types';
+
+interface Props {
+  character: CharacterProfile;
+  /** Omit where the level is already shown (character sheet identity card). */
+  level?: LevelInfo;
+  /** Heading level for the class line (the hero already has its h1). */
+  as?: 'p' | 'h2' | 'h3';
+}
+
+const { character, level, as: Tag = 'p' } = Astro.props;
+---
+
+<div class="nameplate">
+  <Tag class="nameplate-class hud-text">
+    <span>{character.className}</span>{character.jobName && ' '}{character.jobName && <span class="nameplate-job">· {character.jobName}</span>}
+  </Tag>
+  {level && <p class="nameplate-level hud-text">Lv {level.level} · {level.title}</p>}
+</div>
+
+<style>
+  .nameplate {
+    display: grid;
+    gap: var(--space-1);
+  }
+
+  .nameplate-class {
+    color: var(--color-accent-primary);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-hud);
+    text-wrap: balance;
+  }
+
+  .nameplate-job {
+    color: var(--color-text);
+    white-space: nowrap;
+  }
+
+  .nameplate-level {
+    color: var(--color-text-muted);
+    font-size: var(--text-hud);
+  }
+</style>

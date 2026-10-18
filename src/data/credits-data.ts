@@ -59,6 +59,12 @@ export const creditGroups: CreditGroup[] = [
         license: 'Own work',
         note: 'Hand-authored as 8x8 grids and rendered as inline SVG. Full set below.',
       },
+      {
+        name: 'Character avatar sprites (32x32)',
+        author: 'Drawn for this site',
+        license: 'Own work',
+        note: 'Hand-authored layered sprites (classes, job props, 4 gear tiers, 2 action frames), composed at build time. No third-party art.',
+      },
     ],
   },
   {

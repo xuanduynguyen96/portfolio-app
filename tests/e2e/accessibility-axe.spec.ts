@@ -1,11 +1,11 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { expectAllRevealsVisible } from './test-helpers';
+import { BOSS_SLUG, DERIVED_PROJECT, expectAllRevealsVisible } from './test-helpers';
 
 const PAGES = [
   { name: 'home', path: './', hasReveals: true },
-  { name: 'project detail', path: './projects/neon-dashboard/', hasReveals: false },
-  { name: 'unverified project detail', path: './projects/cli-toolkit/', hasReveals: false },
+  { name: 'boss project detail', path: `./projects/${BOSS_SLUG}/`, hasReveals: false },
+  ...(DERIVED_PROJECT ? [{ name: 'derived project detail', path: `./projects/${DERIVED_PROJECT.slug}/`, hasReveals: false }] : []),
   { name: 'speedrun', path: './speedrun/', hasReveals: true },
   { name: 'changelog', path: './changelog/', hasReveals: false },
   { name: 'credits', path: './credits/', hasReveals: false },

@@ -171,3 +171,33 @@ html[data-motion='ok'] [data-caret]:is(:hover, :focus-visible)::before {
     opacity: 0;
   }
 }
+
+/* Pixel disclosure: <details class="pixel-details"> with a >=44px summary and a pixel triangle marker. */
+.pixel-details > summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: fit-content;
+  min-block-size: 2.75rem; /* 44px target */
+  color: var(--color-accent-primary);
+  font-size: var(--text-sm);
+  list-style: none;
+  cursor: pointer;
+}
+
+.pixel-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pixel-details > summary::before {
+  content: '';
+  flex: none;
+  inline-size: calc(1.5 * var(--pixel));
+  block-size: calc(2.5 * var(--pixel));
+  background: currentColor;
+  clip-path: polygon(0 0, 33% 0, 33% 20%, 67% 20%, 67% 40%, 100% 40%, 100% 60%, 67% 60%, 67% 80%, 33% 80%, 33% 100%, 0 100%);
+}
+
+.pixel-details[open] > summary::before {
+  rotate: 90deg;
+}

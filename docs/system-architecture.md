@@ -125,7 +125,7 @@ sequenceDiagram
   Note over S,L: import() failure: control reverts and says "Couldn't switch class. Showing the GitHub pick." until reload (browser caches the failed import)
 ```
 
-- Lifecycle: bind on `astro:page-load`, abort (`AbortController`) on `astro:before-swap`; a stale in-flight import is ignored via a token. Rule list: [code-standards.md](code-standards.md#class-job-switcher).
+- Lifecycle: bind on `astro:page-load`, abort (`AbortController`) on `astro:before-swap`; a stale in-flight import is ignored via a token. Rule list: [code-standards.md](code-standards.md#classjob-switcher).
 - Saved choice: `localStorage` key `portfolio-look`, value = allow-listed look key (e.g. `mage/data`). Removed on Reset and when it equals the GitHub pick; invalid value or blocked storage is ignored (the choice then lasts for the page). Per browser only; nothing is sent anywhere.
 - Progressive enhancement: control markup is in the server HTML but hidden until the stub sets `data-ready` on it (a control-local attribute, not a root flag), and `@media (scripting: none)` removes it. No JS or a failed bundle = GitHub pick only, nothing broken.
 - Motion: the replacement frame `<g>` elements restart the CSS loop on the new frames under the same gating (`data-motion=ok`, no reduced motion).

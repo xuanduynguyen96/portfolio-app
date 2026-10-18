@@ -153,7 +153,7 @@ How to:
 
 ## Class/job switcher
 
-Files: `src/utils/avatar/{class-looks,class-labels,look-avatar-model}.ts` (pure), `src/scripts/{class-job-switcher,look-apply-model,switcher-body}.ts`, `src/components/avatar/class-job-switcher.astro`. Flow: [system-architecture.md](system-architecture.md#classjob-switcher). Visual rules: [design-guidelines.md](design-guidelines.md#class-job-switcher-control).
+Files: `src/utils/avatar/{class-looks,class-labels,look-avatar-model}.ts` (pure), `src/scripts/{class-job-switcher,look-apply-model,switcher-body}.ts`, `src/components/avatar/class-job-switcher.astro`. Flow: [system-architecture.md](system-architecture.md#classjob-switcher). Visual rules: [design-guidelines.md](design-guidelines.md#classjob-switcher-control).
 
 Rules:
 1. **Derived vs chosen.** Class, job, gear and XP are computed from the snapshot, never hand-set. The switcher only chooses which class/job sprite + name is displayed. Gear tiers come from GitHub stats only and are never a function of the chosen look; the derived look is always labelled "GitHub pick" and is the default and the Reset target.

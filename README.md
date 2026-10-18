@@ -60,7 +60,7 @@ Derived vs hand-written:
 | Experience timeline | `src/data/experience-data.ts` |
 | Changelog entries (dated build log on `/changelog/`; no longer feeds the streak) | `src/content/changelog/*.md` |
 | Avatar art (class poses, job props, gear tiers, palette) | `src/data/avatar/*`, colors `--avatar-*` in `src/styles/design-tokens.css`; see [code standards](docs/code-standards.md#avatar-sprites) |
-| Class/job switcher (the 10 selectable looks are derived from the class + job rules, so a new class/job appears automatically; labels, saved key, lazy chunk) | `src/utils/avatar/{class-looks,class-labels,look-avatar-model}.ts`, `src/scripts/{class-job-switcher,look-apply-model,switcher-body}.ts`, `src/components/avatar/class-job-switcher.astro`; see [code standards](docs/code-standards.md#class-job-switcher) |
+| Class/job switcher (the 10 selectable looks are derived from the class + job rules, so a new class/job appears automatically; labels, saved key, lazy chunk) | `src/utils/avatar/{class-looks,class-labels,look-avatar-model}.ts`, `src/scripts/{class-job-switcher,look-apply-model,switcher-body}.ts`, `src/components/avatar/class-job-switcher.astro`; see [code standards](docs/code-standards.md#classjob-switcher) |
 | Pixel icons: 8x8 grids (add one + a unit test; see [code standards](docs/code-standards.md#pixel-icons)) | `src/data/pixel-icons-{career,hud,gear}.ts`, mapping in `src/data/pixel-icon-map.ts` |
 | Credits page (fonts, libraries, licenses; icon + avatar galleries are automatic) | `src/data/credits-data.ts` |
 | Theme colors, fonts, frames | `src/styles/design-tokens.css`, [docs/design-guidelines.md](docs/design-guidelines.md) |

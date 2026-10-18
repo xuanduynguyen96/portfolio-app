@@ -120,7 +120,7 @@ Layered 32x32 pixel sticker-style character, hand-authored (`src/data/avatar/`),
 
 ### Class/job switcher control
 
-Lets a visitor display any of the 10 looks (3 combat classes x 3 jobs + Adventurer). Hero + sheet avatar and name change; gear, attributes, Why panel, `/speedrun/` and `/credits/` still describe the GitHub-derived character. Flow and rules: [system-architecture.md](system-architecture.md#classjob-switcher), [code-standards.md](code-standards.md#class-job-switcher).
+Lets a visitor display any of the 10 looks (3 combat classes x 3 jobs + Adventurer). Hero + sheet avatar and name change; gear, attributes, Why panel, `/speedrun/` and `/credits/` still describe the GitHub-derived character. Flow and rules: [system-architecture.md](system-architecture.md#classjob-switcher), [code-standards.md](code-standards.md#classjob-switcher).
 
 - **Placement:** inside the portrait panel, a `.pixel-details` disclosure ("Choose class & job"), closed by default; summary >=44px. No hero control.
 - **Options:** native radio groups in fieldsets (Class: 4; Job: the 3 for the class, shown for the selected class; Adventurer shows a note instead of a job group). Each option is a pixel-framed label with the native input stretched over it, so the whole box (>=44px) is the target; arrow keys move within a group.

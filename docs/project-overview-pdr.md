@@ -52,7 +52,7 @@ Career data now comes from the owner's public GitHub instead of hand-written ent
 
 ## Scope v1.4: Class/job switcher (done)
 
-Visitor is not locked to the GitHub-derived class/job. Flow: [system-architecture.md](system-architecture.md#classjob-switcher); UI: [design-guidelines.md](design-guidelines.md#class-job-switcher-control).
+Visitor is not locked to the GitHub-derived class/job. Flow: [system-architecture.md](system-architecture.md#classjob-switcher); UI: [design-guidelines.md](design-guidelines.md#classjob-switcher-control).
 
 - Character sheet portrait panel: "Choose class & job" picks any of 10 looks (Warrior/Mage/Archer x Backend/Data/Frontend + Adventurer, no job). Changes the hero + sheet avatar and name.
 - Default and "Reset to GitHub pick" = the look derived from the snapshot ("GitHub pick"). Class/job/gear/XP stay computed, never hand-set; the visitor only chooses the displayed look.

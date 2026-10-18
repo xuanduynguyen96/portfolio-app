@@ -91,7 +91,7 @@ Plan: `plans/20261017-1617-github-derived-character-avatar/` (phases 00-07, repo
 
 ## v1.4: Class/job switcher (done, branch `feat/class-job-switcher`)
 
-Plan: `plans/20261018-0541-class-job-switcher/` (phases 00-06, reports in `reports/`). Design: [system-architecture](system-architecture.md#classjob-switcher), [design-guidelines](design-guidelines.md#class-job-switcher-control).
+Plan: `plans/20261018-0541-class-job-switcher/` (phases 00-06, reports in `reports/`). Design: [system-architecture](system-architecture.md#classjob-switcher), [design-guidelines](design-guidelines.md#classjob-switcher-control).
 
 | Phase | Scope | Status |
 |-------|-------|--------|

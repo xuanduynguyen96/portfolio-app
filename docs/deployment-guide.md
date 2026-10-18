@@ -71,8 +71,8 @@ Seed note: the committed snapshot predates `.gitattributes` (`.claude/**` vendor
 
 ```bash
 npm run check
-npm run test:unit     # engine, classifier, snapshot, avatar; 231 tests, no build (Node >=22.18)
-npm run test:e2e      # builds + previews + runs 94 tests
+npm run test:unit     # engine, classifier, snapshot, avatar, class-look; 261 tests, no build (Node >=22.18)
+npm run test:e2e      # builds + previews + runs 120 tests
 ```
 
 ## Base path

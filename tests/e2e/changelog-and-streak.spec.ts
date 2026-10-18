@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 import { BOSS_SLUG, SITE_NAME, trackPageErrors } from './test-helpers';
 
 const entryCount = readdirSync('src/content/changelog').filter((file) => file.endsWith('.md')).length;
-const STREAK_TEXT = /^(\d+-week streak · best \d+|Streak paused · last active week of \w{3} \d{1,2}, \d{4}|No GitHub activity yet) \(GitHub profile, opens in new tab\)$/;
+const STREAK_TEXT = /^(\d+-week contribution streak · best \d+|Streak paused · last active week of \w{3} \d{1,2}, \d{4}|No GitHub activity yet) \(GitHub profile, opens in new tab\)$/;
 
 test('changelog lists every entry newest first with machine-readable dates', async ({ page }) => {
   const errors = trackPageErrors(page);

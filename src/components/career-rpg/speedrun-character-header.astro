@@ -1,0 +1,48 @@
+---
+// /speedrun/ identity block: static avatar + name + role/level + class line.
+import CharacterAvatar from '../avatar/character-avatar.astro';
+import { siteConfig } from '../../data/site-config';
+import type { CareerState } from '../../utils/career-rpg/career-types';
+
+interface Props {
+  state: CareerState;
+}
+
+const { character, level } = Astro.props.state;
+---
+
+<div class="speedrun-character">
+  <CharacterAvatar profile={character} size={128} idPrefix="speedrun-avatar" />
+  <div class="speedrun-character-text">
+    <h1 class="speedrun-title">{siteConfig.name}</h1>
+    <p class="speedrun-identity hud-text">{siteConfig.role} · Level {level.level} {level.title}</p>
+    <p class="speedrun-class hud-text">{character.className}{character.jobName && ` · ${character.jobName}`}</p>
+  </div>
+</div>
+
+<style>
+  .speedrun-character {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .speedrun-character-text {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .speedrun-title {
+    font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
+  }
+
+  .speedrun-identity {
+    color: var(--color-text-muted);
+  }
+
+  .speedrun-class {
+    color: var(--color-accent-primary);
+  }
+</style>

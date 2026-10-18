@@ -1,0 +1,61 @@
+---
+// /credits/ gallery: every class x job look at starter gear, plus one gear ramp (tiers 0-3).
+import CharacterAvatar from './character-avatar.astro';
+import { ARCHETYPE_IDS } from '../../data/character-class-rules';
+import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS } from '../../data/character-job-rules';
+import { GEAR_SLOT_IDS } from '../../data/gear-rules';
+import type { AvatarProfile } from '../../utils/avatar/avatar-description';
+import type { GearTier } from '../../utils/github-character/character-types';
+
+const gearAt = (tier: GearTier) => GEAR_SLOT_IDS.map((slot) => ({ slot, axis: slot, label: slot, tier, repos: [] }));
+const looks: AvatarProfile[] = [
+  ...ARCHETYPE_IDS.flatMap((primary) => {
+    const classId = CLASS_BY_ARCHETYPE[primary];
+    return ARCHETYPE_IDS.map((motif) => ({
+      classId, className: CLASS_NAMES[classId], jobName: JOBS[classId][motif].name, motif, gear: gearAt(0),
+    }));
+  }),
+  { classId: 'adventurer', className: CLASS_NAMES.adventurer, jobName: null, motif: null, gear: gearAt(0) },
+];
+const ramp: GearTier[] = [0, 1, 2, 3];
+const caption = (look: AvatarProfile) => (look.jobName ? `${look.className} · ${look.jobName}` : look.className);
+---
+
+<ul class="avatar-gallery" role="list" aria-label="Avatar looks">
+  {
+    looks.map((look, index) => (
+      <li>
+        <CharacterAvatar profile={look} size={128} idPrefix={`gallery-${index}`} />
+        <span class="hud-text">{caption(look)}</span>
+      </li>
+    ))
+  }
+</ul>
+<ul class="avatar-gallery" role="list" aria-label="Gear tiers">
+  {
+    ramp.map((tier) => (
+      <li>
+        <CharacterAvatar profile={{ ...looks[0], gear: gearAt(tier) }} size={128} idPrefix={`gallery-tier-${tier}`} />
+        <span class="hud-text">All gear tier {tier}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .avatar-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .avatar-gallery li {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+  }
+</style>

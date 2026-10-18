@@ -40,6 +40,7 @@ const detailHref = withBasePath(`/projects/${id}/`);
   <div class="project-body">
     <p class="quest-meta">
       <QuestTierBadge difficulty={difficulty} isBoss={isBoss} />
+      {quest.status === 'case-study' && <span class="case-study-tag hud-text">Case study</span>}
       <span class:list={['quest-reward', { 'quest-reward--earned': questXp > 0 }]}>
         {questXp > 0 && <PixelIcon name="xp" />}
         <span class="quest-xp hud-text">{`+${Math.round(questXp)} XP`}</span>
@@ -106,6 +107,11 @@ const detailHref = withBasePath(`/projects/${id}/`);
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-3);
+  }
+
+  .case-study-tag {
+    color: var(--color-accent-arcane);
+    font-size: var(--text-hud);
   }
 
   .quest-reward {

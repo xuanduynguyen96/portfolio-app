@@ -13,7 +13,7 @@ const { streak, href } = Astro.props;
 const weeks = (count: number) => `${count}-week`;
 const text =
   streak.current > 0
-    ? `${weeks(streak.current)} streak · best ${streak.longest}`
+    ? `${weeks(streak.current)} contribution streak · best ${streak.longest}`
     : streak.lastActiveWeek
       ? `Streak paused · last active week of ${formatEntryDate(streak.lastActiveWeek)}`
       : 'No GitHub activity yet';

@@ -1,0 +1,80 @@
+---
+// "Why Warrior?": the ranked repo signals behind the class and job, so the result is explainable.
+import { ARCHETYPE_LABELS } from '../../data/character-job-rules';
+import type { CharacterProfile } from '../../utils/github-character/character-types';
+
+interface Props {
+  character: CharacterProfile;
+}
+
+const { character } = Astro.props;
+const { primary, secondary } = character;
+const primarySignals = character.signals.filter((signal) => signal.archetype === primary);
+const secondarySignals = character.signals.filter((signal) => signal.archetype === secondary);
+const points = (value: number) => `+${value.toFixed(2)}`;
+---
+
+<details class="why pixel-details">
+  <summary class="hud-text">Why {character.className}?</summary>
+  {
+    primary === null ? (
+      <p class="why-text">Not enough public signal yet: a class appears once a few public repos show a clear focus.</p>
+    ) : (
+      <div class="why-body">
+        <p class="why-text">
+          Strongest area: <strong>{ARCHETYPE_LABELS[primary]}</strong>
+          {secondary && (
+            <>
+              , with <strong>{ARCHETYPE_LABELS[secondary]}</strong> as the job ({character.jobName})
+            </>
+          )}
+          .
+        </p>
+        <ul class="why-signals" role="list" aria-label={`Evidence for ${character.className}`}>
+          {primarySignals.map((signal) => (
+            <li>
+              <span class="why-repo">{signal.repo}</span> {signal.reason} <span class="why-points hud-text">{points(signal.points)}</span>
+            </li>
+          ))}
+        </ul>
+        {secondarySignals.length > 0 && (
+          <ul class="why-signals" role="list" aria-label={`Evidence for ${character.jobName}`}>
+            {secondarySignals.map((signal) => (
+              <li>
+                <span class="why-repo">{signal.repo}</span> {signal.reason} <span class="why-points hud-text">{points(signal.points)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )
+  }
+</details>
+
+<style>
+  .why-body {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .why-text,
+  .why-signals {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .why-signals {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .why-repo {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .why-points {
+    color: var(--color-accent-primary);
+    white-space: nowrap;
+  }
+</style>

@@ -1,21 +1,38 @@
 ---
 import NeonButton from '../neon-button.astro';
+import CharacterAvatar from '../avatar/character-avatar.astro';
+import CharacterNameplate from '../career-rpg/character-nameplate.astro';
+import GithubDataNote from '../career-rpg/github-data-note.astro';
 import { siteConfig } from '../../data/site-config';
+import { loadCareerState } from '../../utils/career-rpg/load-career-state';
 import { withBasePath } from '../../utils/with-base-path';
+
+const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
 ---
 
 <section class="hero" aria-labelledby="hero-title">
-  <div class="container hero-inner">
-    <p class="eyebrow" data-hero>
-      <span class="status-dot" data-status={siteConfig.availability.status} aria-hidden="true"></span>{siteConfig.availability.note}
-    </p>
-    <h1 id="hero-title" class="hero-title glow-primary" data-hero data-hero-title>{siteConfig.name}</h1>
-    <p class="hero-role neon-text" data-hero>{siteConfig.role}</p>
-    <p class="hero-tagline" data-hero>{siteConfig.tagline}</p>
-    <div class="hero-ctas" data-hero>
-      <NeonButton href="#projects">View projects</NeonButton>
-      <NeonButton href="#contact" variant="ghost">Get in touch</NeonButton>
-      <NeonButton href={withBasePath('/speedrun/')} variant="ghost">60s recruiter view</NeonButton>
+  <div class="container hero-layout">
+    <!-- Never pre-hidden (no data-hero): the character is visible from first paint, fixed size (CLS 0). -->
+    <figure class="hero-character">
+      <CharacterAvatar profile={character} size={256} idPrefix="hero-avatar" animate class="hero-avatar" />
+      <figcaption class="hero-character-caption">
+        <CharacterNameplate character={character} level={level} />
+        <a class="hero-sheet-link hud-text" href="#character">See character sheet →</a>
+        <GithubDataNote asOf={snapshotAsOf} githubUrl={githubUrl} />
+      </figcaption>
+    </figure>
+    <div class="hero-inner">
+      <p class="eyebrow" data-hero>
+        <span class="status-dot" data-status={siteConfig.availability.status} aria-hidden="true"></span>{siteConfig.availability.note}
+      </p>
+      <h1 id="hero-title" class="hero-title glow-primary" data-hero data-hero-title>{siteConfig.name}</h1>
+      <p class="hero-role neon-text" data-hero>{siteConfig.role}</p>
+      <p class="hero-tagline" data-hero>{siteConfig.tagline}</p>
+      <div class="hero-ctas" data-hero>
+        <NeonButton href="#projects">View projects</NeonButton>
+        <NeonButton href="#contact" variant="ghost">Get in touch</NeonButton>
+        <NeonButton href={withBasePath('/speedrun/')} variant="ghost">60s recruiter view</NeonButton>
+      </div>
     </div>
   </div>
 </section>
@@ -28,9 +45,62 @@ import { withBasePath } from '../../utils/with-base-path';
     padding-block: var(--space-8);
   }
 
+  .hero-layout {
+    display: grid;
+    gap: var(--space-6);
+  }
+
   .hero-inner {
     display: grid;
+    align-content: center;
     gap: var(--space-5);
+  }
+
+  /* Phones: avatar beside its nameplate so the name (h1) stays above the fold at 360x640. */
+  .hero-character {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  /* Integer scales of the 36-unit sticker viewBox: 4 px/art px on phones, 8 on wide screens. */
+  .hero-character :global(.hero-avatar) {
+    width: calc(36 * 4px);
+  }
+
+  .hero-character-caption {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .hero-sheet-link {
+    width: fit-content;
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 48rem) {
+    .hero-layout {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+
+    .hero-character {
+      order: 1;
+      grid-template-columns: none;
+      justify-items: center;
+      max-width: 22rem;
+      text-align: center;
+    }
+
+    .hero-character-caption {
+      justify-items: center;
+    }
+
+    .hero-character :global(.hero-avatar) {
+      width: calc(36 * 8px);
+    }
   }
 
   .eyebrow {

@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { attributeIcons, bossIcon, difficultyIcons, skillRootIcon, skillRootIcons } from '../../src/data/pixel-icon-map.ts';
+import { GEAR_SLOT_IDS } from '../../src/data/gear-rules.ts';
+import { attributeIcons, bossIcon, difficultyIcons, gearSlotIcons, skillRootIcon, skillRootIcons } from '../../src/data/pixel-icon-map.ts';
+import { gearIcons } from '../../src/data/pixel-icons-gear.ts';
 import { careerIcons } from '../../src/data/pixel-icons-career.ts';
 import { hudIcons } from '../../src/data/pixel-icons-hud.ts';
 import {
@@ -42,10 +44,9 @@ describe('pixel icon grids', () => {
     }
   });
 
-  it('names are kebab-case and unique across career + hud sets', () => {
-    const career = Object.keys(careerIcons);
-    const hud = Object.keys(hudIcons);
-    assert.equal(new Set([...career, ...hud]).size, career.length + hud.length, 'career/hud name collision');
+  it('names are kebab-case and unique across career + hud + gear sets', () => {
+    const all = [careerIcons, hudIcons, gearIcons].flatMap((set) => Object.keys(set));
+    assert.equal(new Set(all).size, all.length, 'icon set name collision');
     for (const name of iconNames) assert.match(name, /^[a-z]+(-[a-z]+)*$/);
   });
 
@@ -71,6 +72,11 @@ describe('pixel icon mappings', () => {
   it('maps every attribute id to an existing icon', () => {
     for (const id of ATTRIBUTE_IDS) assert.ok(iconNames.has(attributeIcons[id]), id);
     assert.equal(Object.keys(attributeIcons).length, ATTRIBUTE_IDS.length);
+  });
+
+  it('maps every gear slot to its own existing icon', () => {
+    for (const slot of GEAR_SLOT_IDS) assert.ok(iconNames.has(gearSlotIcons[slot]), slot);
+    assert.equal(new Set(Object.values(gearSlotIcons)).size, GEAR_SLOT_IDS.length);
   });
 
   it('maps every quest difficulty (+ boss) to an existing icon', () => {

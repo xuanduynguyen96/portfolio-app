@@ -1,4 +1,5 @@
 // Career RPG id -> pixel icon mappings. Records keyed by xp-rules unions are exhaustive at type level.
+import type { GearSlotId } from './gear-rules.ts';
 import type { PixelIconName } from './pixel-icons.ts';
 import type { AttributeId, QuestDifficulty } from './xp-rules.ts';
 
@@ -7,6 +8,14 @@ export const attributeIcons: Readonly<Record<AttributeId, PixelIconName>> = {
   'ui-polish': 'ui-polish',
   reliability: 'reliability',
   communication: 'communication',
+};
+
+/** Avatar gear legend: one icon per slot. */
+export const gearSlotIcons: Readonly<Record<GearSlotId, PixelIconName>> = {
+  armor: 'armor',
+  shield: 'shield',
+  boots: 'boots',
+  amulet: 'amulet',
 };
 
 export const difficultyIcons: Readonly<Record<QuestDifficulty, PixelIconName>> = {

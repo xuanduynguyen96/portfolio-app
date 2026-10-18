@@ -1,0 +1,23 @@
+---
+// "Based on public GitHub activity as of <date>" + profile link: says where the character comes from.
+import { formatEntryDate } from '../../utils/format-date-range';
+
+interface Props {
+  asOf: string;
+  githubUrl: string;
+}
+
+const { asOf, githubUrl } = Astro.props;
+const date = new Date(`${asOf}T00:00:00Z`);
+---
+
+<p class="github-note">
+  Based on public GitHub activity as of <time datetime={asOf}>{formatEntryDate(date)}</time>{' · '}<a href={githubUrl} target="_blank" rel="noopener noreferrer">GitHub profile ↗<span class="visually-hidden"> (opens in new tab)</span></a>
+</p>
+
+<style>
+  .github-note {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+</style>

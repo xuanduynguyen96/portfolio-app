@@ -6,7 +6,12 @@
 - Docs: `docs/code-standards.md#career-rpg-modules-srcutilscareer-rpg` (pure-module rules), `#avatar-sprites`
 
 ## Overview
-- Date: 2026-10-18 · Priority: P0 · Effort: S (3h) · Implementation: Not started · Review: Not started
+- Date: 2026-10-18 · Priority: P0 · Effort: S (3h) · Implementation: Done · Review: covered by full-branch code review (report 03)
+
+## Outcome (as built)
+- Shipped `class-looks.ts`, `class-labels.ts`, 3 unit test files; gallery + sheet script share `allClassLooks()`.
+- Deviation: `parseStoredLook` = alias of `parseLookKey` (no separate validator).
+- Unit total after all phases: 261 (231 + 30).
 - One pure source of truth for: which looks exist, which jobs are valid per class, state transitions, display strings, GitHub-pick-vs-chosen. Used by the Astro component (build), the eager client stub, the model builder and tests. Also removes two copies of "enumerate the 10 looks".
 
 ## Key Insights
@@ -80,11 +85,11 @@ Read: `src/data/character-job-rules.ts`, `src/data/character-class-rules.ts` (`A
 7. Re-run the sheet script; `diff before.html after.html` must be empty.
 
 ## Todo List
-- [ ] class-looks.ts
-- [ ] class-labels.ts
-- [ ] 3 unit test files
-- [ ] gallery + sheet script de-duplicated, sheet output identical
-- [ ] check + unit + e2e green
+- [x] class-looks.ts
+- [x] class-labels.ts
+- [x] 3 unit test files
+- [x] gallery + sheet script de-duplicated, sheet output identical
+- [x] check + unit + e2e green
 
 ## Success Criteria
 - All 10 looks and only those are reachable via transitions (exhaustive test)

@@ -6,7 +6,11 @@
 - Docs: all of `README.md`, `docs/*.md`; precedent [v1.3 docs phase](../20261017-1617-github-derived-character-avatar/phase-07-docs-update.md)
 
 ## Overview
-- Date: 2026-10-18 · Priority: P1 · Effort: S (2h) · Implementation: Not started · Review: Not started
+- Date: 2026-10-18 · Priority: P1 · Effort: S (2h) · Implementation: In progress (docs-manager) · Review: Not started
+
+## Status
+- In progress by docs-manager. No docs/README/changelog edits recorded yet; all todos open.
+- Docs must use the as-built values: plan.md "Measured vs budget" + "Deviations" (is:global styles, `switcher-body.ts` on-open radios, no retry after failed import, equivalent (not byte-identical) Reset, eager <= 3 KB gz, compose <= 16 ms warm, counts unit 261 / e2e 120).
 - Update every place that claims "no client JS" for the avatar or lists files/tests/versions, document the class/job switcher, the "GitHub pick" default and the stats-derived gear, add the v1.4 roadmap entry and a changelog entry. Run by the **docs-manager** agent. No source or test edits in this phase.
 
 ## Key Insights

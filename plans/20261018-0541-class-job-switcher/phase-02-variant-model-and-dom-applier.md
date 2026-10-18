@@ -6,7 +6,12 @@
 - Docs: `docs/code-standards.md#avatar-sprites`, `docs/design-guidelines.md#character-avatar` (loop gating, forced colors)
 
 ## Overview
-- Date: 2026-10-18 · Priority: P0 · Effort: S (3h) · Implementation: Not started · Review: Not started
+- Date: 2026-10-18 · Priority: P0 · Effort: S (3h) · Implementation: Done · Review: covered by full-branch code review (report 03)
+
+## Outcome (as built)
+- Files: `src/utils/avatar/look-avatar-model.ts`, `src/scripts/look-apply-model.ts`, `tests/unit/look-avatar-model.test.ts`.
+- Deviations: model fields `title`/`desc` (not svgTitle/svgDesc); `lookAvatarModel(look, gear)`; `parseGear(json)` replaces `parseDefaultProfile`.
+- Applier uses DOM APIs + CSSOM fills (no innerHTML). Reset equivalence: see plan.md deviations.
 - Replaces the originally planned "build-time variant generation" (option C needs none). Two files: a pure, JSON-serializable **variant model** (same build modules as the server render) and a small **DOM applier** that is the lazy chunk's entry. If phase 00 picks option B, this phase instead emits `src/pages/look/[look].json.ts` (`getStaticPaths` over `allClassLooks()`, same model) and the applier fetches it; everything else is unchanged.
 
 ## Key Insights
@@ -56,10 +61,10 @@ Read: `src/utils/avatar/avatar-svg-markup.ts` (`avatarFrameGrid`, markup shape),
 5. `npm run check` (types for DOM code), `npm run test:unit`.
 
 ## Todo List
-- [ ] look-avatar-model.ts + unit tests
-- [ ] look-apply-model.ts
-- [ ] dev-console smoke for 10 looks
-- [ ] check + unit green
+- [x] look-avatar-model.ts + unit tests
+- [x] look-apply-model.ts
+- [ ] dev-console smoke for 10 looks (not recorded; 10 looks covered by e2e)
+- [x] check + unit green
 
 ## Success Criteria
 - GitHub-pick model reproduces the SSR title, desc and paths exactly (unit)

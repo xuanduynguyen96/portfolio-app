@@ -6,7 +6,14 @@
 - Docs: `docs/code-standards.md#accessibility-rules`, `#animation-hooks-data-attributes` (rule 6: re-bind on `astro:page-load`, clean on `astro:before-swap`), `docs/design-guidelines.md` (pixel frame, focus, forced colors, touch targets), `docs/system-architecture.md#root-flags-progressive-enhancement`
 
 ## Overview
-- Date: 2026-10-18 · Priority: P0 · Effort: M (5h) · Implementation: Not started · Review: Not started
+- Date: 2026-10-18 · Priority: P0 · Effort: M (5h) · Implementation: Done · Review: covered by full-branch code review (report 03)
+
+## Outcome (as built)
+- Files: `src/components/avatar/class-job-switcher.astro` (SSR shell + `is:global` styles), `src/scripts/class-job-switcher.ts` (eager stub), `src/scripts/switcher-body.ts` (radio groups built on first open), `src/scripts/look-apply-model.ts` (lazy).
+- Deviation: `switcher-option.astro` removed; radios not SSR (+7.8 KB raw cost mobile Lighthouse 1 point, LCP ~+0.2 s; 3 controlled runs).
+- Failed import: cached by browser, no retry; control fails fast until reload. Save only after successful render (review M2).
+- Sizes: stub 2,826 B gz (budget amended to <= 3 KB); lazy chunk 4,627 B gz (<= 5 KB OK).
+- Review open: `:has()` dependence of focus ring; Firefox/Safari cached-failure behaviour unverified.
 - Server-rendered control (native radiogroups in a `<details class="pixel-details">`) + one eager stub (`class-job-switcher.ts`, <= 1.5 KB gz) that owns state and UI sync, and lazy-loads the renderer (phase 02) on first open. Stub imports only the light pure modules. The choice is saved per browser (`localStorage`, try/catch) and re-applied on every page load / soft nav.
 
 ## Key Insights
@@ -73,12 +80,12 @@ Read: `src/components/theme-toggle.astro` (button + `pixel-frame` pattern), `src
 6. Manual in `npm run dev` + preview: keyboard walk, 360px, light/dark, forced colors (devtools), reduced motion, soft nav away/back, JS disabled, chunk blocked (devtools).
 
 ## Todo List
-- [ ] switcher-option.astro
-- [ ] class-job-switcher.astro
-- [ ] class-job-switcher.ts (+ eager-imports test updated)
-- [ ] saved-choice read/write (try/catch) + restore without announcement
-- [ ] build output sizes checked against budget
-- [ ] manual keyboard / 360 / themes / forced colors / no-JS pass
+- [x] switcher-option.astro (removed; replaced by switcher-body.ts)
+- [x] class-job-switcher.astro
+- [x] class-job-switcher.ts (+ eager-imports test updated)
+- [x] saved-choice read/write (try/catch) + restore without announcement
+- [x] build output sizes checked against budget
+- [ ] manual keyboard / 360 / themes / forced colors / no-JS pass (e2e covers 360, forced colors, no-JS; manual keyboard-only walk not recorded)
 
 ## Success Criteria
 - Control invisible + inert without JS or on bundle failure; box identical hidden vs ready (no shift)

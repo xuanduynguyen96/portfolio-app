@@ -6,7 +6,13 @@
 - Docs: `docs/design-guidelines.md#character-avatar`, `docs/code-standards.md#component-conventions`
 
 ## Overview
-- Date: 2026-10-18 · Priority: P0 · Effort: S (3h) · Implementation: Not started · Review: Not started
+- Date: 2026-10-18 · Priority: P0 · Effort: S (3h) · Implementation: Done · Review: covered by full-branch code review (report 03)
+
+## Outcome (as built)
+- Hero + sheet tagged `switchable`; control mounted in portrait `.portrait-details`. Default text and SVG boxes (288/216) unchanged.
+- HTML gzip 13,452 -> 13,790 B (+338 B, within 2 KB).
+- Deviation: switcher styles are `is:global` in `class-job-switcher.astro` (JS-built radios lack Astro scope attrs), so "scoped styles" criterion is not met as written.
+- Screenshots: `reports/assets/switcher-*.png`, `hero-*.png` (m360 dark, d1280 light; default + archer/arcane).
 - Tag the two real avatars and nameplates as switch targets and mount the control in the character-sheet portrait panel. No badge or preview label: the chosen class/job is simply the displayed one. Default render (no interaction, no JS) must stay byte-for-byte equivalent in text and size to v1.3 so existing e2e/Lighthouse results hold.
 
 ## Key Insights
@@ -55,11 +61,11 @@ Read: `src/styles/effects.css`, `tests/e2e/character-avatar.spec.ts`, `character
 7. Visual check 360x640 and 1280x800, light/dark, default + a chosen look (e.g. Mage · Sorcerer, Archer · Arcane Archer for longest name), hero layout at 360 with the longest name, screenshots into `reports/assets/`.
 
 ## Todo List
-- [ ] `switchable` prop on avatar + nameplate
-- [ ] hero + portrait panel wired, control mounted
-- [ ] default-state parity (text, boxes) confirmed
-- [ ] HTML gzip growth measured (<= 2 KB)
-- [ ] screenshots 360/1280, light/dark, default + chosen look
+- [x] `switchable` prop on avatar + nameplate
+- [x] hero + portrait panel wired, control mounted
+- [x] default-state parity (text, boxes) confirmed
+- [x] HTML gzip growth measured (<= 2 KB; +338 B)
+- [x] screenshots 360/1280, light/dark, default + chosen look
 
 ## Success Criteria
 - Existing 94 e2e + 231 unit pass untouched

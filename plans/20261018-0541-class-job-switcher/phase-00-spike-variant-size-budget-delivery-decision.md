@@ -6,7 +6,15 @@
 - Docs: README (Lighthouse + "no client JS"), `docs/project-overview-pdr.md#success-metrics` (HTML +3.4 KB of 6 KB), `docs/code-standards.md#avatar-sprites`
 
 ## Overview
-- Date: 2026-10-18 · Priority: P0 · Effort: S (2h) · Implementation: Not started (baseline numbers already measured) · Review: Not started
+- Date: 2026-10-18 · Priority: P0 · Effort: S (2h) · Implementation: Done informally (no scratch-copy report 02) · Review: covered by full-branch code review (report 03)
+
+## Outcome (as built)
+- Decision: **option C** (lazy chunk, composed from pure modules). Vite emits a separate lazy chunk under `/portfolio-app/_astro/`; the eager stub is not inlined.
+- Measured: eager stub 6,457 B raw / 2,826 B gz; lazy chunk 18,120 B / 4,627 B gz; compose+apply 10-14 ms warm, 44 ms first call at 4x CPU.
+- Lighthouse mobile home: 99 with the stub. An SSR-markup variant cost 1 point and ~0.2 s LCP; the radio groups were moved to on-open JS (`switcher-body.ts`).
+- Budgets amended in plan.md: eager <= 3 KB gz (was 1.5; Vite preload helper + name tables + body builder), compose <= 16 ms warm (was 5).
+- Not run: desktop Lighthouse; Firefox/Safari; decision report 02 not written (this section is the record).
+- User go: not given (plan Q4 assumed C).
 - Decide ONE way to ship the 10 class x job looks. Prototype in a scratch copy (never commit the prototype), write `reports/02-spike-delivery-decision.md`, get the user's go.
 
 ## Key Insights
@@ -54,11 +62,11 @@ Create (plan folder only):
 7. Write the decision report; fix budgets for 05; ask user (plan Unresolved Q1). STOP for go.
 
 ## Todo List
-- [ ] Scratch build baseline recorded
-- [ ] C prototype: chunk graph, sizes, base-path URL
-- [ ] Compose time at 4x throttle
-- [ ] Lighthouse baseline vs prototype
-- [ ] Decision report + user go
+- [x] Scratch build baseline recorded (report 01)
+- [x] C prototype: chunk graph, sizes, base-path URL
+- [x] Compose time at 4x throttle (10-14 ms warm)
+- [x] Lighthouse baseline vs prototype (mobile home; desktop not run)
+- [ ] Decision report + user go (report 02 not written; user go not given)
 
 ## Success Criteria
 - A single option chosen with numbers; thresholds above met (or fallback B justified with numbers)

@@ -1,6 +1,6 @@
 # Plan: GitHub-derived character + layered pixel avatar
 
-Created: 2026-10-17 · Status: **In progress (00-02 done, 03 in test, 04 in progress)** · Branch: `feat/github-derived-character` · Inputs: [scout](scout/scout-01-report.md), [research 01 GitHub](research/researcher-01-report.md) (verified in 00), [research 02 avatar](research/researcher-02-report.md), [owner data](reports/01-owner-github-data-report.md) · Prior: [career RPG](../20261017-0432-career-rpg-gamification-layer/plan.md), [theme](../20261017-0821-rpg-theme-redesign/plan.md)
+Created: 2026-10-17 · Status: **Implemented; pending merge, live refresh run, blind-ID** · Branch: `feat/github-derived-character` · Inputs: [scout](scout/scout-01-report.md), [research 01 GitHub](research/researcher-01-report.md) (verified in 00), [research 02 avatar](research/researcher-02-report.md), [owner data](reports/01-owner-github-data-report.md) · Prior: [career RPG](../20261017-0432-career-rpg-gamification-layer/plan.md), [theme](../20261017-0821-rpg-theme-redesign/plan.md)
 
 ## Goal
 Career RPG data (character sheet, skills, XP, quests, streak) derived from owner's public GitHub (committed snapshot, build-time only). Layered 32x32 pixel avatar: class, job, gear readable instantly, no text needed. Hand-written About/Experience/Contact/hero copy stays. Fun tone + "based on public GitHub activity" note.
@@ -20,15 +20,15 @@ Career RPG data (character sheet, skills, XP, quests, streak) derived from owner
 | # | Phase | Priority | Effort | Status | Progress |
 |---|---|---|---|---|---|
 | 00 | [Spike: live query verify, classifier dry-run, 3 silhouettes](phase-00-spike-live-query-classifier-dry-run-silhouettes.md) | P0 | M (4h) | Done ([report](reports/02-spike-results-report.md)); art direction approved (sticker, side view, action poses) | 100% |
-| 01 | [GitHub fetcher, normalized snapshot, refresh workflow](phase-01-github-fetcher-snapshot-refresh-workflow.md) | P0 | M (5h) | Done, reviewed (live run pending merge) | 95% |
+| 01 | [GitHub fetcher, normalized snapshot, refresh workflow](phase-01-github-fetcher-snapshot-refresh-workflow.md) | P0 | M (5h) | Done, reviewed (live run after merge) | 95% |
 | 02 | [Classifier + class/job/gear rules](phase-02-classifier-class-job-gear-rules.md) | P0 | M (5h) | Done, reviewed ([dry-run](reports/03-classifier-dry-run-report.md)) | 100% |
-| 03 | [Engine rewire: repo quests, taxonomy, streak, HUD, overrides](phase-03-career-engine-rewire.md) | P0 | L (8h) | Implemented, testing | 85% |
-| 04 | [Avatar sprite system: grids, palette, composer, tests](phase-04-avatar-sprite-system.md) | P0 | L (10h, half drawing) | In progress | 40% |
-| 05 | [UI integration: hero, sheet, speedrun, legend, why, projects](phase-05-avatar-and-character-ui-integration.md) | P0 | L (7h) | Not started | 0% |
-| 06 | [Verification: tests, perf, a11y, blind-ID](phase-06-verification-tests-perf-a11y-blind-id.md) | P0 | M (4h) | Not started | 0% |
-| 07 | [Docs update](phase-07-docs-update.md) | P1 | S (3h) | Not started | 0% |
+| 03 | [Engine rewire: repo quests, taxonomy, streak, HUD, overrides](phase-03-career-engine-rewire.md) | P0 | L (8h) | Done, reviewed | 100% |
+| 04 | [Avatar sprite system: grids, palette, composer, tests](phase-04-avatar-sprite-system.md) | P0 | L (10h, half drawing) | Done, reviewed ([sheet](reports/assets/05-avatar-sheet.png)) | 100% |
+| 05 | [UI integration: hero, sheet, speedrun, legend, why, projects](phase-05-avatar-and-character-ui-integration.md) | P0 | L (7h) | Done, reviewed ([hero](reports/assets/05-hero-desktop.png)) | 100% |
+| 06 | [Verification: tests, perf, a11y, blind-ID](phase-06-verification-tests-perf-a11y-blind-id.md) | P0 | M (4h) | Automated done ([report](reports/04-verification-report.md)); live refresh + blind-ID pending | 80% |
+| 07 | [Docs update](phase-07-docs-update.md) | P1 | S (3h) | In progress | 50% |
 
-Progress: 3/8 done (00, 01, 02). Decisions taken (user "go ahead" = defaults): Q1 public-only, Q2 half-life 48 → Warrior · Vanguard. Gates: user reviews owner dry-run class (end 00) and avatar prototypes (end 00, end 04).
+Progress: 6/8 done (00-05); 06 automated checks done; 07 in progress. Decisions taken (user "go ahead" = defaults): Q1 public-only, Q2 half-life 48 → Warrior · Vanguard. Gates: user reviews owner dry-run class (end 00) and avatar prototypes (end 00, end 04).
 
 ## Dependencies
 ```

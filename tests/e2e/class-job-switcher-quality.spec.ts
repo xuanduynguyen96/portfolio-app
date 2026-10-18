@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { lookKey } from '../../src/utils/avatar/class-looks.ts';
 import { expectAllRevealsVisible } from './test-helpers';
-import { HERO, LOOKS, SHEET, STORAGE_KEY, chooseLook, closedSwitcherReady, openSwitcher, resetButton, root } from './switcher-helpers';
+import { HERO, LOOKS, SHEET, STORAGE_KEY, chooseLook, closedSwitcherReady, openSwitcher, resetButton, root, status } from './switcher-helpers';
 import { lookTitle } from '../../src/utils/avatar/class-labels.ts';
 
 // Longest name ("Archer · Arcane Archer") is the worst case for a saved look rewrapping the hero caption.
@@ -99,17 +99,19 @@ for (const colorScheme of ['dark', 'light'] as const) {
   });
 }
 
-test('keyboard: summary toggles with Enter, Tab reaches the radios and Reset, focus is visible', async ({ page }) => {
+test('keyboard: summary toggles with Enter, Tab reaches the class radios with a visible focus ring', async ({ page }) => {
   await page.goto('./');
   await closedSwitcherReady(page);
   await root(page).locator('summary').focus();
   await page.keyboard.press('Enter');
   await expect(root(page)).toHaveAttribute('open', '');
+  await expect(root(page).locator('input[name="switcher-class"]')).toHaveCount(4); // built on open
   await page.keyboard.press('Tab');
   const focused = page.locator('input[name="switcher-class"]:focus');
   await expect(focused).toHaveCount(1);
   const ring = await focused.locator('xpath=ancestor::label').evaluate((el) => getComputedStyle(el).outlineStyle);
   expect(ring).not.toBe('none');
-  await page.keyboard.press('Enter');
-  await expect(root(page)).toHaveAttribute('open', '');
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('input[name="switcher-class"]:checked')).toHaveCount(1);
+  await expect(status(page)).toContainText('Showing');
 });

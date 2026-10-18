@@ -1,6 +1,7 @@
 // Class/job switcher (character sheet). The visitor may pick any class or job; GitHub only supplies
 // the default ("GitHub pick") and the gear. This eager stub owns state, the saved choice and the
 // controls; the sprite composer is a lazy chunk fetched on first open, or on load for a saved look.
+import { buildSwitcherBody } from './switcher-body';
 import { SWITCH_FAILED_MESSAGE, lookTitle, statusMessage } from '../utils/avatar/class-labels';
 import { changeClass, changeMotif, lookKey, parseClassId, parseLookKey, parseMotif, parseStoredLook, sameLook, type ClassLook } from '../utils/avatar/class-looks';
 
@@ -10,12 +11,10 @@ const JOB_PREFIX = 'switcher-job-';
 let controller: AbortController | null = null;
 let renderer: Promise<typeof import('./look-apply-model')> | undefined;
 
+// A failed dynamic import stays cached by the browser, so a retry cannot succeed: keep the rejected
+// promise (later changes fail fast and revert) until the page is reloaded.
 function loadRenderer() {
-  renderer ??= import('./look-apply-model').catch((error) => {
-    renderer = undefined; // let the next change retry
-    throw error;
-  });
-  return renderer;
+  return (renderer ??= import('./look-apply-model'));
 }
 
 function readSaved(pick: ClassLook): ClassLook | null {
@@ -49,9 +48,10 @@ function bind(): void {
   controller = new AbortController();
   const { signal } = controller;
   const pickTitle = lookTitle(pick);
-  const classRadios = [...root.querySelectorAll<HTMLInputElement>('input[name="switcher-class"]')];
-  const jobRadios = [...root.querySelectorAll<HTMLInputElement>(`input[name^="${JOB_PREFIX}"]`)];
-  const jobGroups = [...root.querySelectorAll<HTMLElement>('[data-look-jobs]')];
+  const body = root.querySelector('[data-look-body]');
+  let classRadios: HTMLInputElement[] = [];
+  let jobRadios: HTMLInputElement[] = [];
+  let jobGroups: HTMLElement[] = [];
   let look = readSaved(pick) ?? pick; // chosen look (controls)
   let applied = pick; // look currently drawn (server render = GitHub pick)
   let token = 0;
@@ -62,6 +62,16 @@ function bind(): void {
     jobGroups.forEach((group) => (group.hidden = group.dataset.lookJobs !== look.classId));
     reset.disabled = sameLook(look, pick);
   };
+
+  // The radio groups are built on first open (not server-rendered) to keep the home HTML small.
+  function ensureBody() {
+    if (!body || body.childElementCount) return;
+    body.append(buildSwitcherBody(pick!));
+    classRadios = [...root!.querySelectorAll<HTMLInputElement>('input[name="switcher-class"]')];
+    jobRadios = [...root!.querySelectorAll<HTMLInputElement>(`input[name^="${JOB_PREFIX}"]`)];
+    jobGroups = [...root!.querySelectorAll<HTMLElement>('[data-look-jobs]')];
+    sync();
+  }
 
   async function show(next: ClassLook, quiet = false): Promise<void> {
     const mine = ++token;
@@ -83,7 +93,11 @@ function bind(): void {
     }
   }
 
-  root.addEventListener('toggle', () => root.open && void loadRenderer().catch(() => {}), { signal });
+  root.addEventListener('toggle', () => {
+    if (!root.open) return;
+    ensureBody();
+    void loadRenderer().catch(() => {});
+  }, { signal });
   root.addEventListener('change', (event) => {
     const input = event.target as HTMLInputElement;
     if (input.name === 'switcher-class') {

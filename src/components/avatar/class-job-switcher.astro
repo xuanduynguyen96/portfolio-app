@@ -1,12 +1,10 @@
 ---
 // Class/job picker for the character sheet. Anyone may choose any of the 10 looks; the GitHub-derived
 // look is only the default ("GitHub pick") and gear always comes from the GitHub stats.
-// Server-rendered, hidden until its script binds (data-ready), so no JS = no dead control.
-import SwitcherOption from './switcher-option.astro';
-import { ARCHETYPE_IDS } from '../../data/character-class-rules';
-import { ARCHETYPE_LABELS, CLASS_IDS, CLASS_NAMES, JOBS } from '../../data/character-job-rules';
+// The radio groups are built by the script on first open (switcher-body.ts) to keep the HTML small;
+// the shell is hidden until the script binds (data-ready), so no JS = no dead control.
 import { lookTitle, suggestionLine } from '../../utils/avatar/class-labels';
-import { defaultLook, lookKey, sameLook } from '../../utils/avatar/class-looks';
+import { defaultLook, lookKey } from '../../utils/avatar/class-looks';
 import type { CharacterProfile } from '../../utils/github-character/character-types';
 
 interface Props {
@@ -16,7 +14,6 @@ interface Props {
 const { character } = Astro.props;
 const pick = defaultLook(character);
 const gear = JSON.stringify(character.gear.map(({ slot, tier }) => ({ slot, tier })));
-const combatClasses = CLASS_IDS.filter((id) => id !== 'adventurer');
 ---
 
 <details class="look-switcher pixel-details" data-look data-default-look={lookKey(pick)} data-gear={gear}>
@@ -26,33 +23,7 @@ const combatClasses = CLASS_IDS.filter((id) => id !== 'adventurer');
     <p class="switcher-note">
       Class and job change the sprite and name. Gear is earned from the public GitHub stats and shows on any class.
     </p>
-    <fieldset class="switcher-group">
-      <legend class="hud-text">Class</legend>
-      <div class="switcher-options">
-        {CLASS_IDS.map((id) => (
-          <SwitcherOption name="switcher-class" value={id} label={CLASS_NAMES[id]} isPick={id === pick.classId} />
-        ))}
-      </div>
-    </fieldset>
-    {combatClasses.map((classId) => (
-      <fieldset class="switcher-group" data-look-jobs={classId} hidden={classId !== pick.classId}>
-        <legend class="hud-text">Job</legend>
-        <div class="switcher-options">
-          {ARCHETYPE_IDS.map((motif) => (
-            <SwitcherOption
-              name={`switcher-job-${classId}`}
-              value={motif}
-              label={JOBS[classId][motif].name}
-              hint={ARCHETYPE_LABELS[motif]}
-              isPick={sameLook({ classId, motif }, pick)}
-            />
-          ))}
-        </div>
-      </fieldset>
-    ))}
-    <p class="switcher-note" data-look-jobs="adventurer" hidden={pick.classId !== 'adventurer'}>
-      Adventurer has no job: too little public signal for a focus.
-    </p>
+    <div class="switcher-groups" data-look-body></div>
     <button type="button" class="switcher-reset pixel-frame hud-text" data-look-reset disabled>Reset to GitHub pick</button>
     <p class="switcher-status" role="status" data-look-status></p>
   </div>
@@ -62,7 +33,7 @@ const combatClasses = CLASS_IDS.filter((id) => id !== 'adventurer');
   import '../../scripts/class-job-switcher';
 </script>
 
-<style>
+<style is:global>
   /* Enhancement only: hidden (same box) until the script binds; gone without JS. */
   .look-switcher:not([data-ready]) {
     visibility: hidden;
@@ -74,7 +45,7 @@ const combatClasses = CLASS_IDS.filter((id) => id !== 'adventurer');
     }
   }
 
-  .switcher-body {
+  .look-switcher .switcher-body {
     display: grid;
     gap: var(--space-3);
     padding-block: var(--space-2);
@@ -141,5 +112,80 @@ const combatClasses = CLASS_IDS.filter((id) => id !== 'adventurer');
     min-block-size: 1.5em; /* reserved: the message appears without moving the panel */
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+  }
+
+  .look-switcher .switcher-groups {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  /* One radio in a pixel-framed label: the native input covers the label (whole box is the target);
+     checked = thicker frame + filled marker, so it never relies on colour alone. */
+  .switcher-option {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    min-block-size: 2.75rem; /* 44px target */
+    margin: var(--pixel-thin);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    cursor: pointer;
+  }
+
+  .switcher-option:hover {
+    --frame-color: var(--color-frame-hover);
+  }
+
+  .switcher-option input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .switcher-marker {
+    flex: none;
+    inline-size: calc(2 * var(--pixel));
+    block-size: calc(2 * var(--pixel));
+    margin-block-start: calc(0.5 * var(--pixel));
+    border: var(--pixel-thin) solid var(--color-accent-primary);
+  }
+
+  .switcher-option:has(input:checked) {
+    --frame-width: var(--pixel);
+    --frame-color: var(--color-accent-primary);
+    background: var(--color-surface-hover);
+  }
+
+  .switcher-option:has(input:checked) .switcher-marker {
+    background: var(--color-accent-primary);
+  }
+
+  .switcher-option:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: calc(var(--frame-width) + 2px);
+  }
+
+  .switcher-text {
+    display: grid;
+    gap: var(--pixel-thin);
+    min-inline-size: 0;
+  }
+
+  .switcher-label {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .switcher-hint {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .switcher-pick-tag {
+    color: var(--color-accent-primary);
+    font-size: var(--text-hud);
   }
 </style>

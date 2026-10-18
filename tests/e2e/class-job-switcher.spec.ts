@@ -160,9 +160,10 @@ test.describe('class/job switcher', () => {
   });
 
   test('an invalid stored value is ignored and removed; unrelated keys stay', async ({ page }) => {
-    await page.addInitScript(([key]) => { localStorage.setItem(key, 'warrior/<img src=x>'); }, [STORAGE_KEY]);
+    await page.addInitScript(([key]) => { localStorage.setItem(key, 'warrior/<img src=x>'); localStorage.setItem('unrelated', 'keep'); }, [STORAGE_KEY]);
     await page.goto('./');
     await closedSwitcherReady(page);
+    expect(await page.evaluate(() => localStorage.getItem('unrelated'))).toBe('keep');
     await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(pickTitle);
     expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
   });
@@ -198,6 +199,14 @@ test.describe('class/job switcher', () => {
     await expect(classRadio(page, pick.classId)).toBeChecked();
     await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(pickTitle);
     expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+    // The browser caches a failed module import: the control fails fast (no retry) until a reload.
+    await page.unroute('**/look-apply-model*.js');
+    await classRadio(page, other.classId).click();
+    await expect(status(page)).toHaveText("Couldn't switch class. Showing the GitHub pick.");
+    await page.reload();
+    await openSwitcher(page);
+    await chooseLook(page, other);
+    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
     expect(errors).toEqual([]);
   });
 });

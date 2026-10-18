@@ -82,7 +82,6 @@ test('class/job switcher re-binds across soft navigations and keeps the saved lo
     // New DOM: control bound again, saved look applied, no stale or duplicated listeners.
     await expect(page.locator('[data-look][data-ready]')).toBeAttached();
     await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
-    await expect(classRadio(page, other.classId)).toBeChecked();
     await expect(status(page)).toHaveText('');
     await page.evaluate(() => {
       const el = document.querySelector('[data-look-status]')!;
@@ -90,6 +89,7 @@ test('class/job switcher re-binds across soft navigations and keeps the saved lo
       new MutationObserver(() => (window as unknown as { __log: string[] }).__log.push(el.textContent ?? '')).observe(el, { childList: true, characterData: true, subtree: true });
     });
     await root(page).locator('summary').click();
+    await expect(classRadio(page, other.classId)).toBeChecked(); // radios are built on open from the saved look
     await classRadio(page, pick.classId).check();
     await expect(status(page)).toContainText('Showing');
     expect(await page.evaluate(() => (window as unknown as { __log: string[] }).__log.length)).toBe(1);

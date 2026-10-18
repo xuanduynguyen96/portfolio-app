@@ -9,14 +9,16 @@ interface Props {
   level?: LevelInfo;
   /** Heading level for the class line (the hero already has its h1). */
   as?: 'p' | 'h2' | 'h3';
+  /** Marks the class/job text as a class/job switcher target. */
+  switchable?: boolean;
 }
 
-const { character, level, as: Tag = 'p' } = Astro.props;
+const { character, level, as: Tag = 'p', switchable = false } = Astro.props;
 ---
 
-<div class="nameplate">
+<div class="nameplate" data-look-name={switchable ? '' : undefined}>
   <Tag class="nameplate-class hud-text">
-    <span>{character.className}</span>{character.jobName && ' '}{character.jobName && <span class="nameplate-job">· {character.jobName}</span>}
+    <span data-look-class={switchable ? '' : undefined}>{character.className}</span>{' '}<span class="nameplate-job" data-look-job={switchable ? '' : undefined} hidden={!character.jobName}>{character.jobName ? `· ${character.jobName}` : ''}</span>
   </Tag>
   {level && <p class="nameplate-level hud-text">Lv {level.level} · {level.title}</p>}
 </div>

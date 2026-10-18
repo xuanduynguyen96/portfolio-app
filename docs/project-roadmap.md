@@ -1,6 +1,6 @@
 # Project Roadmap
 
-Last updated: 2026-10-18
+Last updated: 2026-10-18 (v1.4)
 
 ## v1: shipped to repo (pending first deploy + real content)
 
@@ -89,6 +89,30 @@ Plan: `plans/20261017-1617-github-derived-character-avatar/` (phases 00-07, repo
 - [ ] OG image from the avatar: deferred (still old-palette `og-image-source.svg`).
 - [ ] Remaining `TODO(content)`: `site-config.ts`, `experience-data.ts`.
 
+## v1.4: Class/job switcher (done, branch `feat/class-job-switcher`)
+
+Plan: `plans/20261018-0541-class-job-switcher/` (phases 00-06, reports in `reports/`). Design: [system-architecture](system-architecture.md#classjob-switcher), [design-guidelines](design-guidelines.md#classjob-switcher-control).
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| 00 | Spike: variant payload budget, delivery decision (browser compose from the pure modules in a lazy chunk) | Done |
+| 01 | Pure `class-looks` + `class-labels` modules, unit tests | Done |
+| 02 | `look-avatar-model` + lazy DOM applier, gear-on-every-look tests | Done |
+| 03 | Switcher component + eager stub + saved choice | Done |
+| 04 | Integration: hero + character sheet (`switchable` avatar/nameplate) | Done |
+| 05 | Verification: 261 unit, 120 e2e; Lighthouse mobile home 99/100/100/100, CLS 0.0016 (unchanged); home HTML gzip +338 B (13,790 B); eager stub 2,826 B gz; lazy chunk 4,627 B gz; no chunk request before first open; compose + apply 10-14 ms warm at 4x CPU throttle | Done |
+| 06 | Docs + changelog | Done |
+
+What shipped: visitor picks any of 10 looks in the character sheet; default and "Reset to GitHub pick" = the GitHub-derived look; gear tiers from GitHub stats only, drawn on every look; choice saved in `localStorage` (`portfolio-look`); hero + sheet avatar and name change. No new library, font or asset (`credits-data.ts` unchanged).
+
+### Follow-ups (v1.4, not built)
+
+- [ ] Attributes bars + `Why <Class>?` panel for the chosen class (today they describe the GitHub-derived class).
+- [ ] Propagate the chosen look to `/speedrun/` and `/credits/` (cheap with the saved key).
+- [ ] Class-specific gear art (gear is the same sprite set on every class).
+- [ ] Visitor-supplied GitHub username (gear and class from their own stats): needs a runtime API, rate limits, privacy review; conflicts with "build never calls GitHub".
+- [ ] Smaller ideas: theme accents per class, hero entry link / reset, shareable `?look=` link.
+
 ## v2 ideas (unscheduled)
 
 | Idea | Notes |
@@ -101,7 +125,8 @@ Plan: `plans/20261017-1617-github-derived-character-avatar/` (phases 00-07, repo
 | More classes / archetypes | New archetype = class pose + motif + 3 jobs ([code standards](code-standards.md#avatar-sprites)); e.g. DevOps/mobile split |
 | Private data (aggregate) | Opt-in aggregate private contribution/repo counts; today public-only |
 | Better gear signals | Tests below repo root (Maven `src/test`, Go `_test.go`); needs deeper tree data in the snapshot |
-| Avatar extras | `fx` layer (level-up sparkles), more tiers/poses, `<symbol>` reuse if HTML weight grows |
+| Avatar extras | `fx` layer (level-up sparkles), more tiers/poses, `<symbol>` reuse if HTML weight grows, class-specific gear art |
+| Switcher follow-ups | Chosen class in attributes + Why panel, `/speedrun/` + `/credits/` propagation, theme accents, shareable `?look=`, visitor-supplied GitHub username (runtime API) |
 | Multiple profiles | Parametrize `GITHUB_LOGIN`; today one account |
 | Sitemap | `@astrojs/sitemap` (+ robots.txt) |
 | Supply chain hardening | SHA-pinned actions + Dependabot for npm and Actions |
@@ -118,6 +143,7 @@ Plan: `plans/20261017-1617-github-derived-character-avatar/` (phases 00-07, repo
 - Gear hygiene signals read root, `.github/` and workflow file names only (tests below the root are missed).
 - Quests are repo facts plus the owner's case-study text; override text, metrics and changelog dates are self-attested (backdating not verified). Repos can be created to inflate counts; caps and decay limit the effect.
 - Class art readability is unit-tested by silhouette overlap only; human blind-ID still pending.
+- Class/job choice is client-only, per browser (`localStorage`), sprite + name only, hero and character sheet only. Attributes and the `Why <Class>?` panel describe the GitHub-derived class, and `/speedrun/` + `/credits/` always show it. Gear is the same stats-derived tiers on every look. If the lazy chunk fails to load, the control reverts and stays unavailable until reload.
 - Tests hardcode `SITE_NAME` and the base path (see deployment guide); project expectations are computed from the snapshot (`career-mirror.ts`).
 - e2e does not pin `CAREER_RPG_NOW`, so streak assertions accept any valid state.
 - Only Chromium covered by e2e.
@@ -132,3 +158,4 @@ Plan: `plans/20261017-1617-github-derived-character-avatar/` (phases 00-07, repo
 | 2026-10-17 | v1.1 Career RPG layer implemented (phases 01-09); docs updated |
 | 2026-10-17 | v1.2 RPG theme + light (parchment) theme implemented; SFX, external packs, sprite sheet, cover/OG recolor deferred; docs updated |
 | 2026-10-18 | v1.3 GitHub-derived character + layered pixel avatar implemented (phases 00-07); live refresh run, blind-ID, OG image pending; docs updated |
+| 2026-10-18 | v1.4 Class/job switcher implemented (phases 00-06): 10 selectable looks, "GitHub pick" default + Reset, stats-derived gear on every look, saved choice, lazy browser-side compose; follow-ups listed above; docs updated |

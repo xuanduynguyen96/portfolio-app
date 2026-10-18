@@ -39,6 +39,9 @@ JS and CSS find animated elements by data attributes, not classes/ids.
 | `data-spotlight` | `card-spotlight.ts`, `effects.css` | Pointer-follow glow on `.glass` |
 | `data-menu-toggle`, `data-menu` | `mobile-menu.ts` | Mobile nav button / panel |
 | `data-theme-toggle` | `theme-head-script.astro` (delegated click) | Light/dark toggle button; `aria-pressed` = dark. No per-element JS |
+| `data-look` | `class-job-switcher.ts` | Switcher root (`<details>`); carries `data-default-look` (GitHub pick key) and `data-gear` (tiers JSON); `data-ready` = script bound (reveals the control) |
+| `data-look-avatar`, `data-look-name`, `data-look-class`, `data-look-job` | `look-apply-model.ts` | Targets whose SVG `<title>`/`<desc>`/frames or name text the switcher replaces (set by the `switchable` prop on avatar/nameplate) |
+| `data-look-body`, `data-look-reset`, `data-look-status`, `data-look-jobs` | `class-job-switcher.ts`, `switcher-body.ts` | Radio group mount, Reset button, polite status line, per-class job group |
 | `data-caret` | `effects.css` | Pixel caret on hover/focus; blinks only under `html[data-motion="ok"]` |
 
 Rules:
@@ -144,14 +147,29 @@ Grid rules:
 How to:
 - **Redraw or tune a gear tier:** edit the rows in `avatar-gear-*.ts` (keep size and monotonic rule), run `node scripts/render-avatar-sheet.ts out.html --png out.png` and look at all classes x tiers, then `npm run test:unit`.
 - **Add a pose frame detail / class art:** edit `avatar-class-<class>.ts`; keep 32x32, update `identity` boxes and anchors for both frames; frames must differ.
-- **Add a job prop:** a motif is per archetype (`avatar-job-motifs.ts`, 6x11, two frames, name in `MOTIF_PROP_NAMES`); 9 jobs = 3 classes x 3 motifs. A 4th archetype means: id in `ARCHETYPE_IDS`, class + 3 jobs in `character-job-rules.ts`, class pose, motif, class/job tests.
+- **Add a job prop:** a motif is per archetype (`avatar-job-motifs.ts`, 6x11, two frames, name in `MOTIF_PROP_NAMES`); 9 jobs = 3 classes x 3 motifs. A 4th archetype means: id in `ARCHETYPE_IDS`, class + 3 jobs in `character-job-rules.ts`, class pose, motif, class/job tests. The switcher's look list, labels and radio groups derive from those rules (`allClassLooks`, `buildSwitcherBody`), so a new class/job appears there with no extra wiring; update the look/label unit tests and the switcher e2e counts.
 - **Add a gear slot:** id + rule in `gear-rules.ts`; 8x8 icon in `pixel-icons-gear.ts`; 4-tier sprite file registered in `avatar-sprites.ts`; `LayerSlot` + `LAYER_Z` entry; anchor in `PoseAnchors` for every pose frame; layer in `select-avatar-layers.ts`; update sprite tests, `gear-tiers` tests, silhouette/budget tests. The tier count (0-3) is fixed in `GearTier`, `TieredRows` and `GEAR_MATERIALS`; a 5th tier is a type change across them.
-- Sprite changes: also re-run the blind-ID check if class readability could change; no new client JS (`character-avatar.astro` stays pure markup + CSS).
+- Sprite changes: also re-run the blind-ID check if class readability could change. `character-avatar.astro` stays pure markup + CSS (the server render needs no JS); the browser-side swap lives only in the switcher scripts ([Class/job switcher](#classjob-switcher)).
+
+## Class/job switcher
+
+Files: `src/utils/avatar/{class-looks,class-labels,look-avatar-model}.ts` (pure), `src/scripts/{class-job-switcher,look-apply-model,switcher-body}.ts`, `src/components/avatar/class-job-switcher.astro`. Flow: [system-architecture.md](system-architecture.md#classjob-switcher). Visual rules: [design-guidelines.md](design-guidelines.md#classjob-switcher-control).
+
+Rules:
+1. **Derived vs chosen.** Class, job, gear and XP are computed from the snapshot, never hand-set. The switcher only chooses which class/job sprite + name is displayed. Gear tiers come from GitHub stats only and are never a function of the chosen look; the derived look is always labelled "GitHub pick" and is the default and the Reset target.
+2. **Lifecycle.** Bind on `astro:page-load` (call `unbind()` first, idempotent), abort the `AbortController` on `astro:before-swap`. Async work (lazy import) carries a token and checks `signal.aborted` and the token before touching the DOM.
+3. **No `innerHTML` / `set:html` in client code.** Build DOM with `createElement` / `createElementNS` and `textContent`; set fills through CSSOM (`style.setProperty('fill', 'var(--avatar-...)')`), not attribute strings. All text comes from the class/job rules or `class-labels.ts`.
+4. **Allow-list parsing.** Anything read from storage or the DOM (`localStorage` `portfolio-look`, `data-default-look`, input values, gear JSON) goes through `parseLookKey` / `parseClassId` / `parseMotif` / `parseGear`; only one of the 10 exact keys (e.g. `mage/data`, `adventurer`) is accepted, else ignored. Never pass raw text to the composer.
+5. **Storage is optional.** Wrap every `localStorage` read/write in try/catch. Remove the key on Reset and when the saved look equals the GitHub pick; invalid or unreadable values are ignored and cleaned up when possible.
+6. **Eager-import guard.** The stub (`class-job-switcher.ts`) and everything it statically imports (`class-looks.ts`, `class-labels.ts`, `switcher-body.ts`, rules files) must not reach `src/data/avatar/*`, `avatar-description`, `select-avatar-layers`, `compose-avatar-grid`, `avatar-svg-*`, `avatar-sticker*`, `gear-rules`, `look-avatar-model` or `look-apply-model`. Those load only through the dynamic `import('./look-apply-model')`. Guarded by `tests/unit/switcher-eager-imports.test.ts`.
+7. **Failed import.** The browser caches a failed dynamic import, so the stub keeps the rejected promise and later changes fail fast: the control reverts to the last applied look and says "Couldn't switch class. Showing the GitHub pick." (or the applied look) until reload. Do not add retry loops.
+8. **Pure modules** (`class-looks`, `class-labels`, `look-avatar-model`) follow the career-rpg rules above (`.ts` imports, erasable syntax, no DOM, no clock). Titles come from `characterTitle` (one source).
+9. **Progressive enhancement.** Markup is in the server HTML but hidden until `data-ready`, and removed under `@media (scripting: none)`. Radio groups are built by the script on first open to keep the home HTML small. Status text is a polite `role="status"` region with reserved height (no layout shift).
 
 ## Testing
 
-- Unit: `tests/unit/**/*.test.ts` (`node:test` + `node:assert`; 231 tests), runner `npm run test:unit`, Node >=22.18 (type stripping, so `.ts` specifiers and erasable syntax). Inputs via `career-fixtures.ts`, `github-snapshot-fixtures.ts`, `github-raw-fixtures.ts`, `avatar-test-helpers.ts`. Add/adjust a unit test with every rule or weight change; assert against `xpRules`, not copied numbers where practical.
-- E2E specs in `tests/e2e/*.spec.ts` (94 tests), shared helpers in `tests/e2e/test-helpers.ts`. Expected quests/boss come from `career-mirror.ts`, which reuses the engine's pure modules on the committed snapshot + override files: don't hardcode project lists in specs.
+- Unit: `tests/unit/**/*.test.ts` (`node:test` + `node:assert`; 261 tests), runner `npm run test:unit`, Node >=22.18 (type stripping, so `.ts` specifiers and erasable syntax). Inputs via `career-fixtures.ts`, `github-snapshot-fixtures.ts`, `github-raw-fixtures.ts`, `avatar-test-helpers.ts`. Switcher: `class-looks`, `class-labels`, `look-avatar-model` (gear drawn on every look, same gear text, matches the server markup) and `switcher-eager-imports`. Add/adjust a unit test with every rule or weight change; assert against `xpRules`, not copied numbers where practical.
+- E2E specs in `tests/e2e/*.spec.ts` (120 tests), shared helpers in `tests/e2e/test-helpers.ts` (switcher specs also use `switcher-helpers.ts`). Expected quests/boss come from `career-mirror.ts`, which reuses the engine's pure modules on the committed snapshot + override files: don't hardcode project lists in specs.
 - Tests run against the production build (`astro preview`) so base-path bugs show.
 - Add a spec when adding: a page, a new root flag, a new nav/link pattern.
 - Do not skip or loosen failing tests to pass CI.

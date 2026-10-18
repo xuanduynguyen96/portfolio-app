@@ -4,10 +4,11 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { ARCHETYPE_IDS, type ArchetypeId } from '../src/data/character-class-rules.ts';
-import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS, type ClassId } from '../src/data/character-job-rules.ts';
+import { CLASS_BY_ARCHETYPE, type ClassId } from '../src/data/character-job-rules.ts';
 import { GEAR_SLOT_IDS } from '../src/data/gear-rules.ts';
 import type { AvatarFrame } from '../src/data/avatar/avatar-types.ts';
 import type { AvatarProfile } from '../src/utils/avatar/avatar-description.ts';
+import { allClassLooks, lookProfile } from '../src/utils/avatar/class-looks.ts';
 import { AVATAR_VIEWBOX, avatarFrameGrid, avatarFramePaths, avatarSvgMarkup } from '../src/utils/avatar/avatar-svg-markup.ts';
 import type { GearTier } from '../src/utils/github-character/character-types.ts';
 
@@ -28,21 +29,10 @@ const TIER_SETS: readonly [string, Tiers][] = [
 ];
 
 function profileOf(classId: ClassId, motif: ArchetypeId | null, tiers: Tiers): AvatarProfile {
-  const job = classId !== 'adventurer' && motif ? JOBS[classId][motif] : null;
-  return {
-    classId,
-    className: CLASS_NAMES[classId],
-    jobName: job?.name ?? null,
-    motif: classId === 'adventurer' ? null : motif,
-    gear: GEAR_SLOT_IDS.map((slot, i) => ({ slot, axis: '', label: '', tier: tiers[i], repos: [] })),
-  };
+  return lookProfile({ classId, motif }, GEAR_SLOT_IDS.map((slot, i) => ({ slot, tier: tiers[i] })));
 }
 
-const LOOKS: AvatarProfile[] = [
-  ...ARCHETYPE_IDS.flatMap((primary) =>
-    ARCHETYPE_IDS.map((motif) => profileOf(CLASS_BY_ARCHETYPE[primary], motif, [0, 0, 0, 0]))),
-  profileOf('adventurer', null, [0, 0, 0, 0]),
-];
+const LOOKS: AvatarProfile[] = allClassLooks().map(({ classId, motif }) => profileOf(classId, motif, [0, 0, 0, 0]));
 const PURE = [...ARCHETYPE_IDS.map((a) => profileOf(CLASS_BY_ARCHETYPE[a], a, [0, 0, 0, 0])), profileOf('adventurer', null, [0, 0, 0, 0])];
 
 /** One static frame (frame B included) at `art` px per 32-grid. */

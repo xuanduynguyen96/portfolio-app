@@ -92,7 +92,9 @@ Tokens only; no new colors.
 | `AchievementCard` | Big HUD value + quest name; "Sample" framed tag for placeholder-sourced metrics |
 
 | `CharacterNameplate` | "Class · Job" (+ "Lv N · Title"): text twin of the avatar; heading level via `as` (hero already has the h1) |
-| `CharacterPortraitPanel` | Character sheet identity: avatar 192 + nameplate, `GearLegend`, `ClassWhyPanel`, `GithubDataNote` |
+| `CharacterPortraitPanel` | Character sheet identity: avatar 192 + nameplate, `ClassJobSwitcher`, `GearLegend`, `ClassWhyPanel`, `GithubDataNote` |
+| `ClassJobSwitcher` | `.pixel-details` disclosure "Choose class & job" under the portrait; GitHub pick line, note, native radio groups (Class, Job), "Reset to GitHub pick", polite status. Details: [Class/job switcher control](#classjob-switcher-control) |
+| `SwitcherOption` (built by `switcher-body.ts`, not an Astro file) | `<label class="switcher-option pixel-frame">` around a native radio: marker, label, optional hint, "GitHub pick" tag |
 | `GearLegend` | `<dl>` per slot: pixel gear icon, label, skill axis, "Tier n of 3" / "Starter gear", repo count; the text version of the gear art |
 | `ClassWhyPanel` | `.pixel-details` disclosure "Why Warrior?": ranked repo signals per archetype; Adventurer shows the "not enough signal" text |
 | `GithubDataNote` | "Based on public GitHub activity as of <date>" + profile link; muted small text |
@@ -110,10 +112,26 @@ Layered 32x32 pixel sticker-style character, hand-authored (`src/data/avatar/`),
 - **Class = silhouette:** Warrior (plumed great helm, sword), Mage (bearded, pointed hat, arcane orb + staff), Archer (hood, longbow), Adventurer (traveler with walking stick; fallback, no job prop). Guarded by silhouette IoU tests; the human blind-ID test (class named at 128px in <=2s) is the real check.
 - **Job = prop:** top-right motif by secondary archetype: banner (backend), crystal (data), hawk (frontend). 9 jobs = class x prop. Two frames (flutter, bob, flap).
 - **Gear = materials:** armor (Security), shield (Testing), boots (Automation), amulet (Docs); tier 0 leather/wood, 1 bronze, 2 iron, 3 gold + sparkle. Each tier only adds pixels.
+- **Switchable looks:** the displayed class/job may differ from the GitHub pick (visitor choice, [control](#classjob-switcher-control)). Silhouette, job prop and gear rules above hold for all 10 looks; the same earned gear tiers are drawn on every look. `/speedrun/` and `/credits/` always show the GitHub pick.
 - **Meaning is also text:** `role="img"` named "Class · Job", description lists gear tiers; visible nameplate, gear legend and why panel say the same. Avatar is never the only carrier of information.
 - **Motion:** two-frame action loop, 5 x 900ms (~4.5s) then rests on frame A (WCAG 2.2.2). CSS only, and only under `html[data-motion=ok]` with no reduced-motion preference; no JS or reduce = frame A static. Frame B is `visibility: hidden` until animated.
 - **Forced colors:** `forced-color-adjust: none` keeps the art colors; the ring separates it from any background and the text twin carries the meaning.
 - **Review:** `node scripts/render-avatar-sheet.ts` renders every class x motif x tier set, both frames and themes. `/credits/` shows the gallery.
+
+### Class/job switcher control
+
+Lets a visitor display any of the 10 looks (3 combat classes x 3 jobs + Adventurer). Hero + sheet avatar and name change; gear, attributes, Why panel, `/speedrun/` and `/credits/` still describe the GitHub-derived character. Flow and rules: [system-architecture.md](system-architecture.md#classjob-switcher), [code-standards.md](code-standards.md#classjob-switcher).
+
+- **Placement:** inside the portrait panel, a `.pixel-details` disclosure ("Choose class & job"), closed by default; summary >=44px. No hero control.
+- **Options:** native radio groups in fieldsets (Class: 4; Job: the 3 for the class, shown for the selected class; Adventurer shows a note instead of a job group). Each option is a pixel-framed label with the native input stretched over it, so the whole box (>=44px) is the target; arrow keys move within a group.
+- **Checked state is not color-only:** thicker frame (`--pixel`), filled square marker, tinted surface. Focus ring: 2px `--color-focus` outlined outside the frame (same offset rule as other framed controls).
+- **GitHub pick marker:** the derived look shows a "GitHub pick" tag in its option (HUD font, gold) and the line "GitHub pick: <Class · Job>" at the top of the panel. Text, not color. It is the default and the reset target; the chosen look is just the displayed look (no "preview" styling, no badge on the avatar).
+- **Reset:** "Reset to GitHub pick" framed button, >=44px, disabled while the pick is shown; focus moves to the pick's class radio after reset.
+- **Status:** polite `role="status"` line, one message per change ("Showing Mage · Sorcerer. Your GitHub pick is Warrior · Vanguard."); height reserved so it never moves the panel. A failed chunk load shows "Couldn't switch class. Showing the GitHub pick." and the control reverts.
+- **Tokens only:** `--color-surface(-hover)`, `--color-accent-primary`, `--color-text(-muted)`, `--color-focus`, `--color-frame-hover`, `--space-*`, `--pixel(-thin)`. No new colors.
+- **Forced colors:** options keep a real border (shared `.pixel-frame` fallback), the checked option's border is thicker, the avatar keeps its colors (`forced-color-adjust: none`) (covered by `class-job-switcher-quality.spec.ts`).
+- **Reduced motion:** the control itself has no animation. The hero avatar loop follows the same gating after a switch (below); the sheet avatar stays static.
+- **No JS:** control hidden (hidden until bound, removed under `scripting: none`); the GitHub pick shows. The 360px layout has no horizontal scroll and a saved look adds almost no layout shift (e2e-guarded).
 
 ## Motion
 
@@ -121,14 +139,14 @@ Layered 32x32 pixel sticker-style character, hand-authored (`src/data/avatar/`),
 - Hero: title chars rise from line masks, then eyebrow/role/tagline/CTAs fade up. Sections/cards: fade-up once on enter, batched.
 - Page transitions: Astro `ClientRouter`; shared `transition:name` on project title/cover.
 - Menu caret (`[data-caret]`, pixel triangle on hover/focus) blinks only under `html[data-motion="ok"]`; otherwise static.
-- Career RPG: bars and pips are static. Only motion: the `/speedrun/` countdown and the bounded avatar action loop (see [Character avatar](#character-avatar)).
+- Career RPG: bars and pips are static. Only motion: the `/speedrun/` countdown and the bounded avatar action loop (see [Character avatar](#character-avatar)). After a class/job switch the loop restarts on the new frames under the same gating.
 
 ### Reduced-motion policy
 
 - `prefers-reduced-motion: reduce` => `data-motion` never set, nothing pre-hidden, GSAP never runs (no blinking caret either). Global CSS clamps animation/transition durations.
 - Switching to reduce mid-session removes the flag and reveals everything.
 - Never convey information by motion alone.
-- Avatar loop: stops after ~4.5s, gated by `data-motion=ok` + `prefers-reduced-motion: no-preference`; nothing depends on it.
+- Avatar loop: stops after ~4.5s (restarts on the new frames after a switch), gated by `data-motion=ok` + `prefers-reduced-motion: no-preference`; nothing depends on it.
 - `/speedrun/` countdown (`speedrun-countdown.ts`): decorative, `aria-hidden`, server-rendered start value; static with no JS or reduce. Never gates content.
 - Failure policy: content visible beats animation. See [system-architecture.md](system-architecture.md#root-flags-progressive-enhancement).
 

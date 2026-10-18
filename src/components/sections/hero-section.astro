@@ -14,9 +14,9 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
   <div class="container hero-layout">
     <!-- Never pre-hidden (no data-hero): the character is visible from first paint, fixed size (CLS 0). -->
     <figure class="hero-character">
-      <CharacterAvatar profile={character} size={256} idPrefix="hero-avatar" animate class="hero-avatar" />
+      <CharacterAvatar profile={character} size={256} idPrefix="hero-avatar" animate switchable class="hero-avatar" />
       <figcaption class="hero-character-caption">
-        <CharacterNameplate character={character} level={level} />
+        <CharacterNameplate character={character} level={level} switchable />
         <a class="hero-sheet-link hud-text" href="#character">Character sheet →</a>
       </figcaption>
     </figure>

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fully static site. No server runtime, no API, no network at build. Astro renders HTML at build; a small client bundle adds motion (GSAP) and the mobile menu. The character and avatar add no client JS.
+Fully static site. No server runtime, no API, no network at build. Astro renders HTML at build; a small client bundle adds motion (GSAP) and the mobile menu. The avatar is composed at build time and the server render is zero-JS; the optional class/job switcher adds one small eager script and a lazy chunk ([Class/job switcher](#classjob-switcher)).
 
 ```mermaid
 flowchart LR
@@ -33,7 +33,7 @@ BaseLayout (head SEO + ThemeHeadScript + root-flag script + ClientRouter)
 ├── SkipToContentLink
 ├── SiteHeader (logo initials, nav, HeaderControls = ThemeToggle + MenuToggleButton)  -> scripts/mobile-menu.ts
 ├── <main id="main">
-│   ├── index: Hero (CharacterAvatar 256 + CharacterNameplate + GithubDataNote) > About > CharacterSheet (CharacterPortraitPanel: avatar 192, GearLegend, ClassWhyPanel) > Skills(tree) > Projects(ProjectCard*) > Experience > Contact
+│   ├── index: Hero (CharacterAvatar 256 + CharacterNameplate + GithubDataNote; hero and sheet avatar + nameplate are `switchable`) > About > CharacterSheet (CharacterPortraitPanel: avatar 192, ClassJobSwitcher, GearLegend, ClassWhyPanel) > Skills(tree) > Projects(ProjectCard*) > Experience > Contact
 │   ├── projects/[slug]: back link, header, TagList, cover, BossBattlePanel (quest log), markdown prose (override body, if any)
 │   ├── speedrun: SpeedrunCharacterHeader (avatar 128), availability, AchievementCard*, contact CTAs, decorative countdown
 │   ├── changelog: StreakBadge, entries newest first
@@ -87,6 +87,49 @@ flowchart LR
 - `character-avatar.astro` inlines the SVG (`role=img`, name "Class · Job", desc = gear). Animated variant holds both frames; CSS toggles them, 5 loops x 900ms (~4.5s) then rests on frame A, only under `html[data-motion=ok]` and no reduced motion. `forced-color-adjust: none` on the art.
 - Sizes: art box 128 / 192 / 256 px (4/6/8 px per art pixel) plus 2px sticker margin. Used: hero 256, sheet 192, speedrun 128, `/credits/` gallery 128.
 - Budgets (unit-tested): <= 16 colors + ring; static <= 6 KB raw; animated <= 11 KB raw, <= 2.5 KB gzip.
+- The server render always shows the look derived from GitHub ("GitHub pick"). Gear tiers are a function of the snapshot only (`gear = f(snapshot)`); the displayed class/job is a function of the visitor (`look = f(visitor)`, default = GitHub pick). Gear is drawn on every look.
+
+### Class/job switcher
+
+Visitor may display any of 10 looks (Warrior/Mage/Archer x Backend/Data/Frontend jobs, plus Adventurer, which has no job). Changes the hero + character-sheet avatar and name only. Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (roadmap follow-ups). Server HTML stays zero-JS for the avatar; switching re-composes in the browser from the SAME pure modules (`select-avatar-layers`, `compose-avatar-grid`, `avatar-svg-paths`), so output cannot drift from the build.
+
+| Piece | Where | Loaded |
+|-------|-------|--------|
+| Look list, keys, parse, moves | `src/utils/avatar/class-looks.ts` (pure; `allClassLooks`, `lookProfile`, `parseLookKey`) | eager (stub) |
+| Display strings | `src/utils/avatar/class-labels.ts` | eager (stub) |
+| Look -> frames/title/desc | `src/utils/avatar/look-avatar-model.ts` (pure; takes gear tiers from the snapshot) | lazy chunk |
+| DOM applier | `src/scripts/look-apply-model.ts` | lazy chunk |
+| Stub: state, storage, lifecycle | `src/scripts/class-job-switcher.ts` | eager, from `class-job-switcher.astro` |
+| Radio groups | `src/scripts/switcher-body.ts` (built on first open, keeps HTML small) | eager (stub) |
+
+Hooks: `data-look` (control root, carries `data-default-look` and `data-gear`), `data-look-avatar`, `data-look-name`, `data-look-class`, `data-look-job`.
+
+```mermaid
+sequenceDiagram
+  participant V as Visitor
+  participant S as eager stub (class-job-switcher.ts)
+  participant L as lazy chunk (look-apply-model.ts)
+  participant D as DOM (hero + sheet)
+  S->>S: astro:page-load -> bind, read portfolio-look (allow-list parse)
+  alt saved look differs from GitHub pick
+    S->>L: import() on load
+    L->>D: re-compose frames, swap title/desc/g, update names
+  end
+  V->>S: open details (first time)
+  S->>S: build radio groups; start import()
+  V->>S: pick class / job / Reset
+  S->>L: renderLook(key, gear)
+  L->>D: swap SVG title, desc, frame groups; names
+  L-->>S: done
+  S->>S: save key (removed when equal to pick), set polite status
+  Note over S,L: import() failure: control reverts and says "Couldn't switch class. Showing the GitHub pick." until reload (browser caches the failed import)
+```
+
+- Lifecycle: bind on `astro:page-load`, abort (`AbortController`) on `astro:before-swap`; a stale in-flight import is ignored via a token. Rule list: [code-standards.md](code-standards.md#classjob-switcher).
+- Saved choice: `localStorage` key `portfolio-look`, value = allow-listed look key (e.g. `mage/data`). Removed on Reset and when it equals the GitHub pick; invalid value or blocked storage is ignored (the choice then lasts for the page). Per browser only; nothing is sent anywhere.
+- Progressive enhancement: control markup is in the server HTML but hidden until the stub sets `data-ready` on it (a control-local attribute, not a root flag), and `@media (scripting: none)` removes it. No JS or a failed bundle = GitHub pick only, nothing broken.
+- Motion: the replacement frame `<g>` elements restart the CSS loop on the new frames under the same gating (`data-motion=ok`, no reduced motion).
+- Measured (v1.4): no chunk request before first open (or load with a saved look); eager stub 6,457 B raw / 2,826 B gzip; lazy chunk 18,120 B raw / 4,627 B gzip; home HTML 112,855 B raw / 13,790 B gzip (v1.3 baseline 111,740 / 13,452, +338 B gzip); compose + apply 10-14 ms warm at 4x CPU throttle.
 
 ### Refresh and deploy sequence
 
@@ -172,6 +215,8 @@ Inline `<head>` script sets flags on `<html>` before first paint:
 | `data-menu-enhanced` | head script | Mobile nav collapses behind toggle | Failsafe fires |
 | `data-motion-ready` | `init-animations.ts` | Animations took over | never (checked by failsafe) |
 | `data-menu-ready` | `mobile-menu.ts` | Menu JS bound | never (checked by failsafe) |
+
+The class/job switcher does not use a root flag: it sets `data-ready` on its own `<details data-look>`, which only reveals the control. It never hides content, so the failsafe does not cover it.
 
 `data-theme` is a root flag too but is not part of the failsafe: it is cosmetic and never hides content.
 
@@ -268,5 +313,8 @@ See [deployment-guide.md](deployment-guide.md).
 | Token step runs only our no-dependency script | Write token never shares a job with third-party npm code |
 | Refresh never fails the run | Stale data beats a broken weekly deploy; the HUD flags a stale snapshot |
 | Data-driven, generic classifier + fixtures | Honesty rule: no per-owner hardcode; rule changes must keep other profiles' classes |
-| Hand-authored sprites composed to inline SVG | Zero client JS, no asset requests, token-driven palette (themeable ring), unit-testable layers |
+| Hand-authored sprites composed to inline SVG | Server render is zero-JS, no asset requests, token-driven palette (themeable ring), unit-testable layers |
 | CSS-only bounded action loop | Meets WCAG 2.2.2 (stops), honours reduced motion, no JS |
+| Switcher composes in the browser on demand | Inlining 10 looks costs ~7.8 KB gzip on every home load; per-look files cost more in total. A lazy chunk (4.6 KB gzip) is fetched only on first open or with a saved look, and reuses the build's pure modules, so no drift |
+| Choice persisted per browser, derived pick is the default | `localStorage` only (no server, no tracking); fresh and no-JS visitors see the GitHub pick; Reset clears the key |
+| Gear independent of class/job | Gear tiers stay a function of the GitHub snapshot; a visitor picks a look, never gear, and class/job/gear/XP are still never hand-set |

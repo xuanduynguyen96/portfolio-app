@@ -1,0 +1,191 @@
+---
+// Class/job picker for the character sheet. Anyone may choose any of the 10 looks; the GitHub-derived
+// look is only the default ("GitHub pick") and gear always comes from the GitHub stats.
+// The radio groups are built by the script on first open (switcher-body.ts) to keep the HTML small;
+// the shell is hidden until the script binds (data-ready), so no JS = no dead control.
+import { lookTitle, suggestionLine } from '../../utils/avatar/class-labels';
+import { defaultLook, lookKey } from '../../utils/avatar/class-looks';
+import type { CharacterProfile } from '../../utils/github-character/character-types';
+
+interface Props {
+  character: CharacterProfile;
+}
+
+const { character } = Astro.props;
+const pick = defaultLook(character);
+const gear = JSON.stringify(character.gear.map(({ slot, tier }) => ({ slot, tier })));
+---
+
+<details class="look-switcher pixel-details" data-look data-default-look={lookKey(pick)} data-gear={gear}>
+  <summary class="hud-text">Choose class &amp; job</summary>
+  <div class="switcher-body">
+    <p class="switcher-pick">{suggestionLine(lookTitle(pick))}</p>
+    <p class="switcher-note">
+      Class and job change the sprite and name. Gear is earned from the public GitHub stats and shows on any class.
+    </p>
+    <div class="switcher-groups" data-look-body></div>
+    <button type="button" class="switcher-reset pixel-frame hud-text" data-look-reset disabled>Reset to GitHub pick</button>
+    <p class="switcher-status" role="status" data-look-status></p>
+  </div>
+</details>
+
+<script>
+  import '../../scripts/class-job-switcher';
+</script>
+
+<style is:global>
+  /* Enhancement only: hidden (same box) until the script binds; gone without JS. */
+  .look-switcher:not([data-ready]) {
+    visibility: hidden;
+  }
+
+  @media (scripting: none) {
+    .look-switcher {
+      display: none;
+    }
+  }
+
+  .look-switcher .switcher-body {
+    display: grid;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+  }
+
+  .switcher-pick {
+    color: var(--color-accent-primary);
+    font-weight: 600;
+  }
+
+  .switcher-note {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .switcher-group {
+    display: grid;
+    gap: var(--space-2);
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .switcher-group[hidden],
+  .switcher-note[hidden] {
+    display: none;
+  }
+
+  .switcher-group legend {
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-hud);
+    letter-spacing: var(--tracking-hud);
+  }
+
+  .switcher-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
+    gap: var(--space-2);
+  }
+
+  .switcher-reset {
+    justify-self: start;
+    min-block-size: 2.75rem;
+    margin: var(--pixel-thin);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border: 0;
+    color: var(--color-accent-primary);
+    cursor: pointer;
+  }
+
+  .switcher-reset:hover:not(:disabled) {
+    --frame-color: var(--color-frame-hover);
+  }
+
+  .switcher-reset:disabled {
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+  }
+
+  .switcher-status {
+    min-block-size: 1.5em; /* reserved: the message appears without moving the panel */
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .look-switcher .switcher-groups {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  /* One radio in a pixel-framed label: the native input covers the label (whole box is the target);
+     checked = thicker frame + filled marker, so it never relies on colour alone. */
+  .switcher-option {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    min-block-size: 2.75rem; /* 44px target */
+    margin: var(--pixel-thin);
+    padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    cursor: pointer;
+  }
+
+  .switcher-option:hover {
+    --frame-color: var(--color-frame-hover);
+  }
+
+  .switcher-option input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .switcher-marker {
+    flex: none;
+    inline-size: calc(2 * var(--pixel));
+    block-size: calc(2 * var(--pixel));
+    margin-block-start: calc(0.5 * var(--pixel));
+    border: var(--pixel-thin) solid var(--color-accent-primary);
+  }
+
+  .switcher-option:has(input:checked) {
+    --frame-width: var(--pixel);
+    --frame-color: var(--color-accent-primary);
+    background: var(--color-surface-hover);
+  }
+
+  .switcher-option:has(input:checked) .switcher-marker {
+    background: var(--color-accent-primary);
+  }
+
+  .switcher-option:has(input:focus-visible) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: calc(var(--frame-width) + 2px);
+  }
+
+  .switcher-text {
+    display: grid;
+    gap: var(--pixel-thin);
+    min-inline-size: 0;
+  }
+
+  .switcher-label {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .switcher-hint {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .switcher-pick-tag {
+    color: var(--color-accent-primary);
+    font-size: var(--text-hud);
+  }
+</style>

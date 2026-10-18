@@ -1,4 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
+import { classRadio, closedSwitcherReady, jobRadio, root, status, HERO, LOOKS, pick, STORAGE_KEY } from './switcher-helpers';
+import { lookTitle } from '../../src/utils/avatar/class-labels.ts';
 import { BOSS, SITE_NAME, expectAllRevealsVisible, expectHeroVisible, trackPageErrors } from './test-helpers';
 
 const PROJECT_TITLE = BOSS.title;
@@ -58,4 +60,47 @@ test('mobile menu still works after a soft navigation', async ({ page }) => {
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('navigation', { name: 'Primary' })).toBeVisible();
+});
+
+test('class/job switcher re-binds across soft navigations and keeps the saved look', async ({ page }) => {
+  const errors = trackPageErrors(page);
+  const other = LOOKS.find((look) => look.classId !== pick.classId && look.motif !== null)!;
+  await page.goto('./');
+  await closedSwitcherReady(page);
+  await root(page).locator('summary').click();
+  await classRadio(page, other.classId).check();
+  await jobRadio(page, other.classId, other.motif!).check();
+  await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
+  await page.evaluate(() => Object.assign(window, { __softNavMarker: true }));
+
+  for (let round = 1; round <= 3; round += 1) {
+    await projectLink(page).click();
+    await expect(page).toHaveURL(new RegExp(`/projects/${BOSS.slug}/$`));
+    await page.getByRole('link', { name: '← All projects' }).click();
+    await expect(page).toHaveURL(/\/portfolio-app\/#projects$/);
+    expect(await page.evaluate(() => '__softNavMarker' in window)).toBe(true);
+    // New DOM: control bound again, saved look applied, no stale or duplicated listeners.
+    await expect(page.locator('[data-look][data-ready]')).toBeAttached();
+    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
+    await expect(status(page)).toHaveText('');
+    await page.evaluate(() => {
+      const el = document.querySelector('[data-look-status]')!;
+      (window as unknown as { __log: string[] }).__log = [];
+      new MutationObserver(() => (window as unknown as { __log: string[] }).__log.push(el.textContent ?? '')).observe(el, { childList: true, characterData: true, subtree: true });
+    });
+    await root(page).locator('summary').click();
+    await expect(classRadio(page, other.classId)).toBeChecked(); // radios are built on open from the saved look
+    await classRadio(page, pick.classId).check();
+    await expect(status(page)).toContainText('Showing');
+    expect(await page.evaluate(() => (window as unknown as { __log: string[] }).__log.length)).toBe(1);
+    await classRadio(page, other.classId).check();
+    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
+    await jobRadio(page, other.classId, other.motif!).check();
+    expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).not.toBeNull();
+  }
+
+  await page.goBack();
+  await page.goForward();
+  await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
+  expect(errors).toEqual([]);
 });

@@ -1,6 +1,6 @@
 # Codebase Summary
 
-Static Astro 7 site plus the GitHub-derived Career RPG layer and pixel avatar (see [system-architecture.md](system-architecture.md#github-derived-pipeline)). Hand-maintained from the actual tree (not repomix). Last updated 2026-10-18 (v1.3).
+Static Astro 7 site plus the GitHub-derived Career RPG layer and pixel avatar (see [system-architecture.md](system-architecture.md#github-derived-pipeline)). Hand-maintained from the actual tree (not repomix). Last updated 2026-10-18 (v1.4).
 
 ## Root
 
@@ -29,7 +29,7 @@ src/
 │   ├── neon-button.astro            link button (primary|ghost, external), `data-caret`
 │   ├── pixel-icon.astro             8x8 inline-SVG icon (sizes 16/24/32/48, aria-hidden unless `label`)
 │   ├── pixel-icon-gallery.astro     all icons, shown on /credits/
-│   ├── avatar/                      character-avatar (inline SVG, optional 2-frame loop), avatar-gallery (/credits/: 10 looks + tier ramp)
+│   ├── avatar/                      character-avatar (inline SVG, optional 2-frame loop, `switchable` hook), avatar-gallery (/credits/: 10 looks + tier ramp), class-job-switcher (v1.4: `<details>` control, styles, loads the stub script)
 │   ├── theme-head-script.astro      inline head script: sole writer of html[data-theme], theme-color metas
 │   ├── theme-toggle.astro           light/dark button (`data-theme-toggle`), hidden without JS
 │   ├── menu-toggle-button.astro     mobile nav button (own file, forced-colors safe)
@@ -42,7 +42,7 @@ src/
 │   ├── tag-chip.astro / tag-list.astro
 │   ├── career-rpg/                  quest-tier-badge, boss-battle-panel, xp-progress-bar, completeness-hud,
 │   │                                streak-badge, skill-tree-node (recursive), achievement-card,
-│   │                                character-nameplate, character-portrait-panel, gear-legend, class-why-panel,
+│   │                                character-nameplate (`switchable`), character-portrait-panel (hosts the switcher), gear-legend, class-why-panel,
 │   │                                github-data-note, speedrun-character-header
 │   └── sections/                    hero, about, character-sheet (new), skills (skill tree), projects, experience, contact
 ├── content/
@@ -76,6 +76,9 @@ src/
 │   └── 404.astro                    "Off the map", noindex
 ├── scripts/
 │   ├── mobile-menu.ts               nav toggle (progressive enhancement)
+│   ├── class-job-switcher.ts        eager stub: state, saved choice (`portfolio-look`), controls, lifecycle; lazy-imports `look-apply-model`
+│   ├── look-apply-model.ts          lazy chunk: composes the chosen look in the browser, swaps avatar title/desc/frames + names (no innerHTML)
+│   ├── switcher-body.ts             builds the class/job radio groups on first open (DOM APIs)
 │   ├── speedrun-countdown.ts        decorative 60s clock on /speedrun/ (aria-hidden, static under reduced motion/no JS)
 │   └── animations/
 │       ├── gsap-setup.ts            registers ScrollTrigger + SplitText; `PIXEL_STEP` (8)
@@ -103,7 +106,10 @@ src/
     │   ├── select-avatar-layers.ts  profile + frame -> placed layers (anchors per pose frame)
     │   ├── compose-avatar-grid.ts   z-ordered 32x32 grid; `avatar-sticker-outline.ts` pad + outline + ring
     │   ├── avatar-svg-paths.ts / avatar-svg-markup.ts   merged paths per palette key; accessible SVG string, sizes 128/192/256
-    │   └── avatar-description.ts    `AvatarProfile`, gear/look text for `<desc>`
+    │   ├── avatar-description.ts    `AvatarProfile`, gear/look text for `<desc>`
+    │   ├── class-looks.ts           the 10 selectable looks (`allClassLooks`), keys (`mage/data`), allow-list parsers, `changeClass`/`changeMotif`, `defaultLook`, `lookProfile`
+    │   ├── class-labels.ts          switcher strings: `lookTitle`, GitHub pick line, status + failure messages
+    │   └── look-avatar-model.ts     look + stats gear -> frames, title, desc (`lookAvatarModel`, `parseGear`); same modules as the build
     └── career-rpg/                  Career RPG engine (pure except load-career-state.ts)
         ├── career-types.ts / career-state-types.ts   input/output types (QuestInput, ScoredQuest, SkillTreeNode, CareerState...)
         ├── count-words.ts           prose words (code/urls/hidden/link defs excluded), distinct words
@@ -123,11 +129,11 @@ src/
 
 `favicon.svg` (literal colors), `og-image.png` (generated; command in README; still old palette, not the avatar).
 
-## `tests/unit/` (`node --test`, 231 tests)
+## `tests/unit/` (`node --test`, 261 tests)
 
-`npm run test:unit` runs `tests/unit/**/*.test.ts` through Node type stripping (no build, no Astro). One test file per pure module in `src/utils/{career-rpg,github-character,avatar}/` (plus `career-schemas`, `character-rules`, `github-snapshot-schema`, `fetch-github-data` for the script, `format-date-range`, `pixel-icons`, `pixel-icon-path`, `to-roman-numeral`). Notable: `classify-character.test.ts` (fixture profiles per class, hybrid vs pure job, Adventurer fallback, tie-breaks, purity), `avatar-sprites.test.ts` (shape, tier superset, identity boxes), `avatar-silhouette.test.ts` (class IoU), `avatar-svg-paths.test.ts` (color/size budgets, `--avatar-*` tokens defined). Shared builders: `career-fixtures.ts`, `github-snapshot-fixtures.ts`, `github-raw-fixtures.ts`, `avatar-test-helpers.ts`, `path-raster-oracle.ts`. `load-career-state.ts` is not unit-tested (needs `astro:content`); e2e covers it.
+`npm run test:unit` runs `tests/unit/**/*.test.ts` through Node type stripping (no build, no Astro). One test file per pure module in `src/utils/{career-rpg,github-character,avatar}/` (plus `career-schemas`, `character-rules`, `github-snapshot-schema`, `fetch-github-data` for the script, `format-date-range`, `pixel-icons`, `pixel-icon-path`, `to-roman-numeral`). Notable: `classify-character.test.ts` (fixture profiles per class, hybrid vs pure job, Adventurer fallback, tie-breaks, purity), `avatar-sprites.test.ts` (shape, tier superset, identity boxes), `avatar-silhouette.test.ts` (class IoU), `avatar-svg-paths.test.ts` (color/size budgets, `--avatar-*` tokens defined). Switcher: `class-looks.test.ts` (10 valid looks, parsers, moves), `class-labels.test.ts`, `look-avatar-model.test.ts` (matches server markup, gear on every look, `parseGear`), `switcher-eager-imports.test.ts` (eager graph never reaches sprites/composer/gear rules). Shared builders: `career-fixtures.ts`, `github-snapshot-fixtures.ts`, `github-raw-fixtures.ts`, `avatar-test-helpers.ts`, `path-raster-oracle.ts`. `load-career-state.ts` is not unit-tested (needs `astro:content`); e2e covers it.
 
-## `tests/e2e/` (Playwright, 94 tests)
+## `tests/e2e/` (Playwright, 120 tests)
 
 | Spec | Covers |
 |------|--------|
@@ -136,7 +142,7 @@ src/
 | `accessibility-axe.spec.ts` | axe (serious/critical = 0) on home, project details, speedrun, changelog, credits, 404; light + dark |
 | `reduced-motion.spec.ts` | Reduce pref, no-JS, bundle-failure failsafe, mid-session switch |
 | `responsive-layout.spec.ts` | 360px (no h-scroll, menu), 1280px (inline nav, grid) |
-| `page-navigation-lifecycle.spec.ts` | Re-init across ClientRouter, back/forward, menu after soft nav |
+| `page-navigation-lifecycle.spec.ts` | Re-init across ClientRouter, back/forward, menu after soft nav; switcher rebinds after soft nav |
 | `scroll-position.spec.ts` | Hash deep link, reload scroll restore |
 | `project-detail-and-focus.spec.ts` | Detail page content per slug; visible focus on Tab |
 | `quest-cards-and-boss.spec.ts` | Tier badge + XP/Unverified per card, boss first + spans 2 cols (>=56rem), single column at 360px |
@@ -148,6 +154,9 @@ src/
 | `pixel-icons.spec.ts` | Icons crisp (16/24/32/48, `crispEdges`) and decorative/labelled on home, project, speedrun, credits |
 | `forced-colors.spec.ts` | Frames fall back to a real border under `forced-colors: active` |
 | `character-avatar.spec.ts` | Hero avatar role/name matches nameplate; sheet legend per slot + keyboard-openable why panel; frames swap only when motion allowed; no-JS fixed integer size (no layout shift); speedrun header + credits gallery |
+| `class-job-switcher.spec.ts` | No-JS: control absent; no chunk request before first open; GitHub pick marked, valid jobs per class; arrow keys; all 10 looks (names, status, pixels vs pure modules); gear legend + Why panel stay GitHub-derived; Reset (focus); one status per change; saved/restored/cleared choice; invalid + blocked storage; `/speedrun/` + `/credits/` unchanged; failed chunk load; only hero + sheet are targets |
+| `class-job-switcher-quality.spec.ts` | Motion (hero loop follows preference, sheet static), layout shift with a saved look, 360px + 44px targets, forced colors, axe open/chosen in both themes, keyboard |
+| `switcher-helpers.ts` | Not a spec: shared helpers for the two switcher specs |
 | `credits-page.spec.ts` | `/credits/` groups, entries, license links, icon + avatar gallery, footer link on every page |
 | `career-mirror.ts` | Not a spec: recomputes expected quests/boss/titles from the snapshot + override files with the engine's own pure modules |
 | `test-helpers.ts` | `SITE_NAME`, `SECTION_IDS` (incl. `character`), re-exports from `career-mirror.ts` (`PROJECT_SLUGS`, `BOSS_SLUG`, `PROJECTS`, `DERIVED_PROJECT`), `CAREER_PAGES`, `INFO_PAGES`, `trackPageErrors`, `expectAllRevealsVisible` |
@@ -156,4 +165,4 @@ Tests mirror real content through `career-mirror.ts` (computed from the committe
 
 ## Data flow
 
-Weekly workflow -> `src/data/github/github-snapshot.json`; snapshot + `src/data/*.ts` rules + `src/content/{projects,changelog}/*.md` -> `loadCareerState()` (pure classify + scoring) -> section components / pages (avatar composed to inline SVG) -> static HTML in `dist/`. See [system-architecture.md](system-architecture.md).
+Weekly workflow -> `src/data/github/github-snapshot.json`; snapshot + `src/data/*.ts` rules + `src/content/{projects,changelog}/*.md` -> `loadCareerState()` (pure classify + scoring) -> section components / pages (avatar composed to inline SVG) -> static HTML in `dist/`. In the browser, the class/job switcher re-composes the avatar on demand from the same pure modules (lazy chunk) and keeps the visitor's choice in `localStorage`. See [system-architecture.md](system-architecture.md).

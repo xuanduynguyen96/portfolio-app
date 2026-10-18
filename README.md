@@ -10,7 +10,7 @@ RPG-themed animated developer portfolio (parchment/dungeon themes, 8x8 pixel ico
 Astro 7.4 (static output) · GSAP 3.15 (ScrollTrigger, SplitText) · plain CSS tokens · Fontsource self-hosted fonts (MedievalSharp headings, Pixelify Sans HUD labels, Space Grotesk body; code uses system mono) · TypeScript strict · Playwright + axe-core e2e · `node:test` unit tests.
 No UI framework, no Tailwind.
 
-Career RPG layer (v1.3): the character is **derived from the owner's public GitHub** (committed weekly snapshot, build-time only, no runtime fetch): class, job, gear, quests, skills, XP, streak, plus a layered 32x32 pixel avatar. See [Career RPG](#career-rpg).
+Career RPG layer (v1.3): the character is **derived from the owner's public GitHub** (committed weekly snapshot, build-time only, no runtime fetch): class, job, gear, quests, skills, XP, streak, plus a layered 32x32 pixel avatar. Since v1.4 a visitor can switch the displayed class/job (default = the GitHub pick). See [Career RPG](#career-rpg).
 
 ## Quick start
 
@@ -30,8 +30,8 @@ npm run dev        # http://localhost:4321/portfolio-app/
 | `npm run build` | Static build to `dist/` |
 | `npm run preview` | Serve `dist/` locally |
 | `npm run check` | `astro check` (types + templates) |
-| `npm run test:unit` | `node --test` on `tests/unit/**/*.test.ts` (engine, classifier, snapshot, avatar, pixel icon pure modules; 231 tests, no build) |
-| `npm run test:e2e` | Playwright: builds, runs `astro preview`, 94 tests |
+| `npm run test:unit` | `node --test` on `tests/unit/**/*.test.ts` (engine, classifier, snapshot, avatar, pixel icon, class-look pure modules; 261 tests, no build) |
+| `npm run test:e2e` | Playwright: builds, runs `astro preview`, 120 tests |
 | `npm run snapshot:fetch` | Refresh `src/data/github/github-snapshot.json` from GitHub GraphQL (needs `GITHUB_TOKEN` or `GH_SNAPSHOT_PAT`; no token = keeps file). Run `npm run test:unit` before committing |
 | `npm run character:explain` | Print class, job, gear and per-repo votes for the committed snapshot (or a path arg) |
 | `node scripts/render-avatar-sheet.ts [out.html] [--png out.png]` | Review sheet of every class x motif x gear tier set, both frames and themes |
@@ -42,6 +42,7 @@ First e2e run on a fresh machine: `npx playwright install chromium`.
 
 Derived vs hand-written:
 - **Derived from GitHub (do not edit by hand):** class, job, gear, quests, skill levels, XP, level, streak, HUD GitHub checks. Fix them at the source: GitHub repo description/topics/homepage, or the rules files below.
+- **Visitor choice (not content):** which class/job look is displayed. Saved per browser, never in the repo; the GitHub-derived pick stays the default.
 - **Hand-written:** name, bio, About, Experience, Contact, availability, optional case studies. Remaining `TODO(content)` markers: `grep -rn "TODO(content)" src`.
 
 | What | File |
@@ -59,6 +60,7 @@ Derived vs hand-written:
 | Experience timeline | `src/data/experience-data.ts` |
 | Changelog entries (dated build log on `/changelog/`; no longer feeds the streak) | `src/content/changelog/*.md` |
 | Avatar art (class poses, job props, gear tiers, palette) | `src/data/avatar/*`, colors `--avatar-*` in `src/styles/design-tokens.css`; see [code standards](docs/code-standards.md#avatar-sprites) |
+| Class/job switcher (the 10 selectable looks are derived from the class + job rules, so a new class/job appears automatically; labels, saved key, lazy chunk) | `src/utils/avatar/{class-looks,class-labels,look-avatar-model}.ts`, `src/scripts/{class-job-switcher,look-apply-model,switcher-body}.ts`, `src/components/avatar/class-job-switcher.astro`; see [code standards](docs/code-standards.md#classjob-switcher) |
 | Pixel icons: 8x8 grids (add one + a unit test; see [code standards](docs/code-standards.md#pixel-icons)) | `src/data/pixel-icons-{career,hud,gear}.ts`, mapping in `src/data/pixel-icon-map.ts` |
 | Credits page (fonts, libraries, licenses; icon + avatar galleries are automatic) | `src/data/credits-data.ts` |
 | Theme colors, fonts, frames | `src/styles/design-tokens.css`, [docs/design-guidelines.md](docs/design-guidelines.md) |
@@ -94,7 +96,8 @@ XP, level, title, attribute bars, skill-node levels, HUD % and streak are **comp
 - **Data:** the weekly workflow `refresh-github-snapshot.yml` reads the owner's public GitHub (GraphQL), keeps public non-fork repos only, commits a normalized snapshot, then dispatches the deploy. The build never calls GitHub. Page copy says "Based on public GitHub activity as of <date>".
 - **Class:** each public repo votes once (languages, keywords, recency, activity). Warrior = backend, Mage = data, Archer = frontend; Adventurer when there is too little signal. **Job** = class x secondary archetype (9 jobs). **Gear** tiers 0-3 from repo hygiene: armor = security, shield = testing, boots = automation, amulet = docs. A "Why" panel lists the ranked repo signals. Debug with `npm run character:explain`.
 - **Tuning rule:** change the rules files generically (a reason that holds for any developer), keep the fixture profiles in `tests/unit/classify-character.test.ts` on their expected classes. Never hardcode the owner.
-- **Avatar:** hand-authored 32x32 sprites composed at build time into one inline SVG (no client JS). Name = "Class · Job", gear in the description; a short two-frame action loop runs only when motion is allowed, then rests.
+- **Avatar:** hand-authored 32x32 sprites composed at build time into one inline SVG; the server render needs zero JS. Name = "Class · Job", gear in the description; a short two-frame action loop runs only when motion is allowed, then rests.
+- **Class/job switcher (v1.4):** the character sheet portrait panel has "Choose class & job": pick any of 10 looks (Warrior/Mage/Archer x Backend/Data/Frontend, or Adventurer, which has no job). Changes the hero and sheet avatar and name. Default and "Reset to GitHub pick" = the look derived from GitHub ("GitHub pick"). Gear tiers still come from GitHub stats only and are drawn on every look. Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep showing the GitHub-derived class (follow-ups). The choice is saved in this browser only (`localStorage` key `portfolio-look`). Switching re-composes the avatar in the browser from the same pure modules in a small lazy chunk fetched on first open (or on load when a choice is saved); without JS the control is hidden and the GitHub pick shows.
 - Routes: `/credits/` (fonts, icons, avatar gallery, licenses), `/#character` (portrait, gear legend, why, level, attributes, HUD, streak), `/#skills`, `/#projects` (quests + boss), `/speedrun/` (60s recruiter view with the avatar), `/changelog/`.
 - `CAREER_RPG_NOW=YYYY-MM-DD` pins the build date (end of that UTC day) to reproduce a past streak/HUD, e.g. `CAREER_RPG_NOW=2026-10-17 npm run build`. Unset = real time.
 - Streak = consecutive ISO weeks (UTC) with public GitHub contributions (from the snapshot).
@@ -112,7 +115,7 @@ Details, branch protection, optional PAT, schedule pause, custom domain, trouble
 | [docs/project-overview-pdr.md](docs/project-overview-pdr.md) | Goals, scope, requirements |
 | [docs/code-standards.md](docs/code-standards.md) | Conventions, a11y + motion rules |
 | [docs/codebase-summary.md](docs/codebase-summary.md) | Directory map |
-| [docs/system-architecture.md](docs/system-architecture.md) | Build pipeline, GitHub-derived pipeline, scoring, refresh + deploy, animation lifecycle |
+| [docs/system-architecture.md](docs/system-architecture.md) | Build pipeline, GitHub-derived pipeline, scoring, refresh + deploy, class/job switcher flow, animation lifecycle |
 | [docs/design-guidelines.md](docs/design-guidelines.md) | Themes, tokens, fonts, pixel frames + icons, avatar, motion policy |
 | [docs/deployment-guide.md](docs/deployment-guide.md) | Pages, CI/CD, snapshot refresh ops |
-| [docs/project-roadmap.md](docs/project-roadmap.md) | v1 to v1.3 status, open items, v2 ideas |
+| [docs/project-roadmap.md](docs/project-roadmap.md) | v1 to v1.4 status, open items, v2 ideas |

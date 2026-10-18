@@ -18,13 +18,15 @@ const evidenceLabel: Record<EvidenceType, string> = {
   article: 'Write-up',
   other: 'Link',
 };
-const { minBodyWords } = xpRules.quest;
+const { minBodyWords, minUniqueWords } = xpRules.quest;
 const statusNote =
   quest.status === 'case-study'
     ? 'case study bonus'
-    : quest.body.trim()
-      ? `case study has ${quest.wordCount} of ${minBodyWords} words for its bonus`
-      : 'from repo facts';
+    : !quest.body.trim()
+      ? 'from repo facts'
+      : quest.wordCount < minBodyWords
+        ? `case study has ${quest.wordCount} of ${minBodyWords} words for its bonus`
+        : `case study has ${quest.uniqueWordCount} of ${minUniqueWords} distinct words for its bonus`;
 ---
 
 <section class="quest-panel" aria-labelledby="quest-panel-title">

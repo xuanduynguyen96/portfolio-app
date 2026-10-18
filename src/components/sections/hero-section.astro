@@ -17,8 +17,7 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
       <CharacterAvatar profile={character} size={256} idPrefix="hero-avatar" animate class="hero-avatar" />
       <figcaption class="hero-character-caption">
         <CharacterNameplate character={character} level={level} />
-        <a class="hero-sheet-link hud-text" href="#character">See character sheet →</a>
-        <GithubDataNote asOf={snapshotAsOf} githubUrl={githubUrl} />
+        <a class="hero-sheet-link hud-text" href="#character">Character sheet →</a>
       </figcaption>
     </figure>
     <div class="hero-inner">
@@ -33,6 +32,8 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
         <NeonButton href="#contact" variant="ghost">Get in touch</NeonButton>
         <NeonButton href={withBasePath('/speedrun/')} variant="ghost">60s recruiter view</NeonButton>
       </div>
+      <!-- After the CTAs: its wrapping (late-loading body font) can't push anything in view. -->
+      <GithubDataNote asOf={snapshotAsOf} githubUrl={githubUrl} />
     </div>
   </div>
 </section>
@@ -64,9 +65,14 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
     gap: var(--space-4);
   }
 
-  /* Integer scales of the 36-unit sticker viewBox: 4 px/art px on phones, 8 on wide screens. */
+  /* Integer scales of the sticker viewBox: 4 px per art pixel on phones, 8 on wide screens. */
   .hero-character :global(.hero-avatar) {
-    width: calc(36 * 4px);
+    --hero-avatar-px: 4px;
+    width: calc(var(--avatar-viewbox) * var(--hero-avatar-px));
+  }
+
+  .hero-character :global(.character-avatar) {
+    --avatar-px: var(--hero-avatar-px); /* shadow follows the displayed scale */
   }
 
   .hero-character-caption {
@@ -76,18 +82,21 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
   }
 
   .hero-sheet-link {
+    display: inline-flex;
+    align-items: center;
     width: fit-content;
+    min-block-size: 2.75rem; /* 44px target */
     font-size: var(--text-sm);
   }
 
   @media (min-width: 48rem) {
+    /* Avatar on the left, text on the right: DOM, reading and tab order all match the layout. */
     .hero-layout {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: auto 1fr;
       align-items: center;
     }
 
     .hero-character {
-      order: 1;
       grid-template-columns: none;
       justify-items: center;
       max-width: 22rem;
@@ -99,7 +108,7 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
     }
 
     .hero-character :global(.hero-avatar) {
-      width: calc(36 * 8px);
+      --hero-avatar-px: 8px;
     }
   }
 

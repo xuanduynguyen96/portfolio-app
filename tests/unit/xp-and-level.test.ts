@@ -70,10 +70,12 @@ describe('computeAttributeXp', () => {
     assert.deepEqual(byId, { 'code-efficiency': 125, 'ui-polish': 125, communication: 40, reliability: 0 });
   });
 
-  it('a quest without skills adds no attribute XP', () => {
+  it('a quest without skills puts its XP on the fallback attribute', () => {
     const quests = scoreQuests([quest({ id: 'q', skills: [] })]);
     const nodes = flattenSkillTree(buildSkillTree(baseSkills, none, none));
-    assert.ok(computeAttributeXp(quests, nodes).every((item) => item.xp === 0));
+    const byId = Object.fromEntries(computeAttributeXp(quests, nodes).map((item) => [item.id, item.xp]));
+    assert.equal(byId[xpRules.quest.fallbackAttribute], xpRules.quest.baseXp.main);
+    assert.equal(Object.values(byId).reduce((a, b) => a + b, 0), xpRules.quest.baseXp.main);
   });
 
   it('clamps each attribute to the cap and returns integers', () => {

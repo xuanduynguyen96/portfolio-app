@@ -16,8 +16,8 @@ const unlocks = xpRules.skillEvidence.levelThresholds
   <div class="container">
     <SectionHeading index={3} label="Skills" title="Skill tree" id="skills-title" />
     <p class="skills-legend">
-      Skills level up only through evidence: public GitHub repos that use them and the projects below, counted as
-      pieces of evidence ({unlocks}). Branches also count their sub-skills' evidence.
+      Skills level up only through evidence: public GitHub repos that use them, counted once each ({unlocks}).
+      Branches also count their sub-skills' repos.
     </p>
     <ul class="skill-tree-roots" role="list" aria-label="Skill tree">
       {

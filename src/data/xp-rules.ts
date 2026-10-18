@@ -30,6 +30,12 @@ export interface XpRules {
   quest: {
     /** Repos shown as quests (plus every repo with an override). */
     max: number;
+    /** Skills / tags listed per quest; derived summary length (same caps as the override schema). */
+    maxSkills: number;
+    maxTags: number;
+    summaryMax: number;
+    /** Attribute that receives the XP of a quest whose repo matches no skill (else it would vanish). */
+    fallbackAttribute: AttributeId;
     /** Quest ranking = class vote + hygienic slots + pinned bonus. */
     selection: { hygieneBonus: number; pinnedBonus: number };
     /** A repo reaching either threshold gets the tier (owner commits / KiB of code). */
@@ -91,6 +97,10 @@ export const xpRules: XpRules = {
   attributeCap: 2500,
   quest: {
     max: 6,
+    maxSkills: 6,
+    maxTags: 6,
+    summaryMax: 160,
+    fallbackAttribute: 'code-efficiency',
     selection: { hygieneBonus: 0.1, pinnedBonus: 0.5 },
     difficulty: { main: { commits: 4, kib: 20 }, raid: { commits: 15, kib: 200 } },
     baseXp: { side: 100, main: 250, raid: 500 },

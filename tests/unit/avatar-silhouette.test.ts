@@ -27,7 +27,10 @@ function iou(a: Mask, b: Mask): number {
   }));
   return both / either;
 }
-const diff = (a: Mask, b: Mask) => a.flat().filter((on, i) => on !== b.flat()[i]).length;
+const diff = (a: Mask, b: Mask) => {
+  const flatB = b.flat();
+  return a.flat().filter((on, i) => on !== flatB[i]).length;
+};
 
 describe('avatar silhouettes', () => {
   for (const tiers of [[0, 0, 0, 0], [3, 3, 3, 3]] as const satisfies readonly Tiers[]) {

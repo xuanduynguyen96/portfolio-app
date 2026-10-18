@@ -4,9 +4,6 @@ import type { SkillMatch, SkillNodeInput } from '../career-rpg/career-types.ts';
 import type { SnapshotRepo } from './github-snapshot-types.ts';
 import { repoTokens } from './repo-tokens.ts';
 
-/** Max skills one quest lists (the projects schema allowed 6 hand-picked skills). */
-export const MAX_QUEST_SKILLS = 6;
-
 /** Languages making up at least `minLanguageShare` of the repo's bytes (same noise floor as the classifier). */
 export function significantLanguages(repo: SnapshotRepo, rules: ClassRules = classRules): Set<string> {
   const total = repo.languages.reduce((sum, language) => sum + language.bytes, 0);

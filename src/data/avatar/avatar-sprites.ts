@@ -11,7 +11,7 @@ import { armorTiers } from './avatar-gear-armor.ts';
 import { amuletTiers, bootTiers } from './avatar-gear-boots-amulet.ts';
 import { shieldTiers } from './avatar-gear-shield.ts';
 import { motifFrames } from './avatar-job-motifs.ts';
-import type { ClassPose, LayerSlot, SpriteRows, TieredRows } from './avatar-types.ts';
+import type { ClassPose, SpriteRows, TieredRows } from './avatar-types.ts';
 
 export const classSprites: Readonly<Record<ClassId, ClassPose>> = {
   warrior: warriorPose,
@@ -29,13 +29,6 @@ export const gearSprites: Readonly<Record<GearSlotId, TieredRows>> = {
   amulet: amuletTiers,
 };
 
-/** Layer slot each gear slot paints in (z-order lives in LAYER_Z). */
-export const GEAR_LAYER_SLOT: Readonly<Record<GearSlotId, LayerSlot>> = {
-  armor: 'armor',
-  shield: 'shield',
-  boots: 'boots',
-  amulet: 'amulet',
-};
 
 /** Material name per tier, shown in the legend and the SVG description. */
 export const GEAR_MATERIALS = ['Leather', 'Bronze', 'Iron', 'Gold'] as const;

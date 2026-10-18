@@ -2,6 +2,7 @@
 // Gear legend: each avatar slot as text (slot, skill axis, tier, how many repos prove it).
 import PixelIcon from '../pixel-icon.astro';
 import { gearSlotIcons } from '../../data/pixel-icon-map';
+import { gearRules } from '../../data/gear-rules';
 import type { GearSlotResult } from '../../utils/github-character/character-types';
 
 interface Props {
@@ -9,27 +10,29 @@ interface Props {
 }
 
 const { gear } = Astro.props;
-const MAX_TIER = 3;
+const maxTier = (slot: GearSlotResult['slot']) => gearRules.find((rule) => rule.slot === slot)?.thresholds.length ?? 0;
 const repos = (count: number) => `${count} ${count === 1 ? 'repo' : 'repos'}`;
 ---
 
-<dl class="gear-legend" aria-label="Gear">
+<div role="group" aria-label="Gear">
+<dl class="gear-legend">
   {
     gear.map((slot) => (
       <div class="gear-row" data-tier={slot.tier}>
         <dt>
           <PixelIcon name={gearSlotIcons[slot.slot]} />
-          <span class="gear-label">{slot.label}</span>
+          <span class="gear-label">{slot.label}</span>{' '}
           <span class="gear-axis">{slot.axis}</span>
         </dt>
         <dd class="hud-text">
-          {slot.tier === 0 ? 'Starter gear' : `Tier ${slot.tier} of ${MAX_TIER}`}
+          {slot.tier === 0 ? 'Starter gear' : `Tier ${slot.tier} of ${maxTier(slot.slot)}`}
           {slot.repos.length > 0 && <span class="gear-repos"> · {repos(slot.repos.length)}</span>}
         </dd>
       </div>
     ))
   }
 </dl>
+</div>
 
 <style>
   .gear-legend {

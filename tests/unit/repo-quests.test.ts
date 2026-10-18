@@ -40,6 +40,14 @@ describe('selectQuestRepos', () => {
     assert.ok(selected.some((r) => r.name === 'r0'));
   });
 
+  it('never selects a repo whose name has no letters or digits (no project URL)', () => {
+    assert.deepEqual(selectQuestRepos(snapshot([lang('---', 'Go', 99, { commits: 99 }), lang('ok', 'Go')]), []).map((r) => r.name), ['ok']);
+  });
+
+  it('ties break by repo name', () => {
+    assert.deepEqual(selectQuestRepos(snapshot([lang('b', 'Go'), lang('a', 'Go')]), []).map((r) => r.name), ['a', 'b']);
+  });
+
   it('pinned and hygienic repos rank higher', () => {
     const s = { ...snapshot([lang('plain', 'Go'), lang('pinned', 'Go')]), pinned: ['pinned'] };
     assert.equal(selectQuestRepos(s, [])[0].name, 'pinned');

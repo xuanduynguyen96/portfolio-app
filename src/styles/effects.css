@@ -178,7 +178,7 @@ html[data-motion='ok'] [data-caret]:is(:hover, :focus-visible)::before {
   align-items: center;
   gap: var(--space-2);
   width: fit-content;
-  min-block-size: 44px;
+  min-block-size: 2.75rem; /* 44px target */
   color: var(--color-accent-primary);
   font-size: var(--text-sm);
   list-style: none;

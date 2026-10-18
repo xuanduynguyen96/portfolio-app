@@ -55,7 +55,8 @@ export function skillNodeLevel(evidenceCount: number, rules: XpRules = xpRules):
 
 /**
  * Nested tree from a validated flat list. A node's XP comes from the public repos matching it
- * (decayed, capped); its level from distinct evidence (repos + quests) rolled up from descendants.
+ * (decayed, capped); its level from the distinct repos proving it or a descendant. Quests are
+ * repos too, so they add "Proven in" links but no extra evidence (no double counting).
  */
 export function buildSkillTree(
   nodes: readonly SkillNodeInput[],
@@ -76,7 +77,7 @@ export function buildSkillTree(
     const xp = decayedSum(repoUrls.map(() => xpPerRepo), decay, nodeCap);
 
     const questIds = [...(questIdsBySkill.get(node.id) ?? [])];
-    const evidence = new Set([...repoUrls, ...questIds.map((id) => `quest:${id}`)]);
+    const evidence = new Set(repoUrls);
     const children = (childrenOf.get(node.id) ?? []).map((child) => {
       const result = visit(child);
       result.evidence.forEach((item) => evidence.add(item));

@@ -6,6 +6,7 @@ import { AVATAR_PALETTE, STICKER_KEY, avatarCssVar, PALETTE_KEYS } from '../../s
 import { avatarPaths } from '../../src/utils/avatar/avatar-svg-paths.ts';
 import { avatarFrameGrid, avatarSvgMarkup } from '../../src/utils/avatar/avatar-svg-markup.ts';
 import { LOOK_KEYS, TIERS, avatarProfile, type Tiers } from './avatar-test-helpers.ts';
+import { gridCells, pathCells } from './path-raster-oracle.ts';
 
 /** Raw markup ceilings (regression guards; transfer size is the gzip budget). */
 const BUDGET = { staticRaw: 6 * 1024, animatedRaw: 11 * 1024, animatedGzip: 2.5 * 1024 };
@@ -18,24 +19,15 @@ const TIER_SAMPLES: readonly Tiers[] = [
 ];
 const SAMPLES = LOOK_KEYS.flatMap(([classId, motif]) => TIER_SAMPLES.map((tiers) => avatarProfile(classId, motif, tiers)));
 
-function cells(d: string): Set<string> {
-  const out = new Set<string>();
-  let pen = { x: 0, y: 0 };
-  for (const [, cmd, a, b, w, h] of d.matchAll(/([Mm])(-?\d+) (-?\d+)h(\d+)v(\d+)h-\d+z/g)) {
-    pen = cmd === 'M' ? { x: Number(a), y: Number(b) } : { x: pen.x + Number(a), y: pen.y + Number(b) };
-    for (let dy = 0; dy < Number(h); dy++) for (let dx = 0; dx < Number(w); dx++) out.add(`${pen.x + dx},${pen.y + dy}`);
-  }
-  return out;
-}
-
 describe('avatar svg paths', () => {
   it('one path per palette key present, covering exactly its cells', () => {
-    for (const profile of SAMPLES.filter((_, i) => i % 7 === 0)) {
-      const grid = avatarFrameGrid(profile, 0);
-      for (const { key, cssVar, d } of avatarPaths(grid)) {
-        const expected = new Set(grid.flatMap((row, y) => [...row].flatMap((c, x) => (c === key ? [`${x},${y}`] : []))));
-        assert.deepEqual(cells(d), expected, `${profile.classId} ${key}`);
-        assert.equal(cssVar, avatarCssVar(key));
+    for (const profile of SAMPLES) {
+      for (const frame of [0, 1] as const) {
+        const grid = avatarFrameGrid(profile, frame);
+        for (const { key, cssVar, d } of avatarPaths(grid)) {
+          assert.deepEqual(pathCells(d), gridCells(grid, key), `${profile.classId}/${profile.motif} frame ${frame} ${key}`);
+          assert.equal(cssVar, avatarCssVar(key));
+        }
       }
     }
   });

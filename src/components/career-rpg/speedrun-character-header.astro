@@ -2,6 +2,7 @@
 // /speedrun/ identity block: static avatar + name + role/level + class line.
 import CharacterAvatar from '../avatar/character-avatar.astro';
 import { siteConfig } from '../../data/site-config';
+import { characterTitle } from '../../utils/github-character/character-title';
 import type { CareerState } from '../../utils/career-rpg/career-types';
 
 interface Props {
@@ -16,7 +17,7 @@ const { character, level } = Astro.props.state;
   <div class="speedrun-character-text">
     <h1 class="speedrun-title">{siteConfig.name}</h1>
     <p class="speedrun-identity hud-text">{siteConfig.role} · Level {level.level} {level.title}</p>
-    <p class="speedrun-class hud-text">{character.className}{character.jobName && ` · ${character.jobName}`}</p>
+    <p class="speedrun-class hud-text">{characterTitle(character)}</p>
   </div>
 </div>
 

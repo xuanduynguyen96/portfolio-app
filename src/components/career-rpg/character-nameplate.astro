@@ -5,7 +5,8 @@ import type { LevelInfo } from '../../utils/career-rpg/career-types';
 
 interface Props {
   character: CharacterProfile;
-  level: LevelInfo;
+  /** Omit where the level is already shown (character sheet identity card). */
+  level?: LevelInfo;
   /** Heading level for the class line (the hero already has its h1). */
   as?: 'p' | 'h2' | 'h3';
 }
@@ -15,9 +16,9 @@ const { character, level, as: Tag = 'p' } = Astro.props;
 
 <div class="nameplate">
   <Tag class="nameplate-class hud-text">
-    <span>{character.className}</span>{character.jobName && <span class="nameplate-job"> · {character.jobName}</span>}
+    <span>{character.className}</span>{character.jobName && ' '}{character.jobName && <span class="nameplate-job">· {character.jobName}</span>}
   </Tag>
-  <p class="nameplate-level hud-text">Lv {level.level} · {level.title}</p>
+  {level && <p class="nameplate-level hud-text">Lv {level.level} · {level.title}</p>}
 </div>
 
 <style>
@@ -35,6 +36,7 @@ const { character, level, as: Tag = 'p' } = Astro.props;
 
   .nameplate-job {
     color: var(--color-text);
+    white-space: nowrap;
   }
 
   .nameplate-level {

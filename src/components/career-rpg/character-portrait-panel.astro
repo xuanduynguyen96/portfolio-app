@@ -12,13 +12,13 @@ interface Props {
   state: CareerState;
 }
 
-const { character, level, snapshotAsOf, githubUrl } = Astro.props.state;
+const { character, snapshotAsOf, githubUrl } = Astro.props.state;
 ---
 
 <GlassCard class="portrait" data-reveal>
   <div class="portrait-figure">
     <CharacterAvatar profile={character} size={192} idPrefix="sheet-avatar" />
-    <CharacterNameplate character={character} level={level} as="h3" />
+    <CharacterNameplate character={character} as="h3" />
   </div>
   <div class="portrait-details">
     <GearLegend gear={character.gear} />

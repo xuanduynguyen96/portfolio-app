@@ -1,10 +1,19 @@
 import { expect, test } from '@playwright/test';
+import { ARCHETYPE_IDS } from '../../src/data/character-class-rules.ts';
+import { gearRules } from '../../src/data/gear-rules.ts';
+import { AVATAR_VIEWBOX } from '../../src/utils/avatar/avatar-svg-markup.ts';
+import { characterTitle } from '../../src/utils/github-character/character-title.ts';
 import { classifyCharacter } from '../../src/utils/github-character/classify-character.ts';
 import { SNAPSHOT } from './career-mirror';
 
-// Expected character computed by the same pure classifier from the committed snapshot (no literals).
+// Wiring check: expected character from the same pure classifier over the committed snapshot
+// (the classifier itself is unit-tested against literal fixtures).
 const character = classifyCharacter(SNAPSHOT);
-const title = character.jobName ? `${character.className} · ${character.jobName}` : character.className;
+const title = characterTitle(character);
+const maxTier = (slot: string) => gearRules.find((rule) => rule.slot === slot)?.thresholds.length;
+/** Hero CSS: 4 px per art pixel below 48rem, 8 above (integer scales of the sticker viewBox). */
+const HERO_PX = { phone: 4, wide: 8 };
+const WIDE_MIN = 768;
 
 test.describe('character avatar', () => {
   test('hero avatar is an image named by class and job, with a matching visible nameplate', async ({ page }) => {
@@ -24,14 +33,16 @@ test.describe('character avatar', () => {
     const rows = portrait.locator('.gear-row');
     await expect(rows).toHaveCount(character.gear.length);
     for (const [index, slot] of character.gear.entries()) {
-      await expect(rows.nth(index).locator('dt')).toContainText(`${slot.label}${slot.axis}`);
-      await expect(rows.nth(index).locator('dd')).toContainText(slot.tier === 0 ? 'Starter gear' : `Tier ${slot.tier} of 3`);
+      await expect(rows.nth(index).locator('dt')).toHaveText(`${slot.label} ${slot.axis}`);
+      await expect(rows.nth(index).locator('dd')).toContainText(slot.tier === 0 ? 'Starter gear' : `Tier ${slot.tier} of ${maxTier(slot.slot)}`);
     }
     const why = portrait.locator('details.why');
     await why.locator('summary').focus();
     await page.keyboard.press('Enter');
     await expect(why).toHaveAttribute('open', '');
-    await expect(why.getByRole('listitem').first()).toBeVisible();
+    // An Adventurer has no class evidence yet: the panel explains that instead of listing signals.
+    if (character.primary) await expect(why.getByRole('listitem').first()).toBeVisible();
+    else await expect(why).toContainText('Not enough public signal yet');
   });
 
   test('frames swap only when motion is allowed', async ({ browser }) => {
@@ -56,7 +67,7 @@ test.describe('character avatar', () => {
       await expect(avatar).toBeVisible();
       await expect(page.locator('.hero .avatar-frame-b')).toHaveCSS('visibility', 'hidden');
       const box = await avatar.boundingBox();
-      expect(box?.width).toBe(width < 768 ? 144 : 288);
+      expect(box?.width).toBe(AVATAR_VIEWBOX * (width < WIDE_MIN ? HERO_PX.phone : HERO_PX.wide));
       expect(box?.height).toBe(box?.width);
       await context.close();
     }
@@ -66,7 +77,8 @@ test.describe('character avatar', () => {
     await page.goto('./speedrun/');
     await expect(page.getByRole('img', { name: title, exact: true })).toBeVisible();
     await page.goto('./credits/');
-    await expect(page.getByRole('list', { name: 'Avatar looks' }).getByRole('img')).toHaveCount(10);
-    await expect(page.getByRole('list', { name: 'Gear tiers' }).getByRole('img')).toHaveCount(4);
+    // Every class x job (3 x 3) plus the Adventurer; one avatar per gear tier 0..max.
+    await expect(page.getByRole('list', { name: 'Avatar looks' }).getByRole('img')).toHaveCount(ARCHETYPE_IDS.length ** 2 + 1);
+    await expect(page.getByRole('list', { name: 'Gear tiers' }).getByRole('img')).toHaveCount(gearRules[0].thresholds.length + 1);
   });
 });

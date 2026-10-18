@@ -106,6 +106,9 @@
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
+  /* Avatar action loop: 2 frames per cycle, a few cycles then rest on frame A (WCAG 2.2.2: under 5s). */
+  --avatar-frame-cycle: 900ms;
+  --avatar-loops: 5;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 

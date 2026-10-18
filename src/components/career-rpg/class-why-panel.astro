@@ -9,8 +9,12 @@ interface Props {
 
 const { character } = Astro.props;
 const { primary, secondary } = character;
-const primarySignals = character.signals.filter((signal) => signal.archetype === primary);
-const secondarySignals = character.signals.filter((signal) => signal.archetype === secondary);
+const lists = [
+  { label: `Evidence for ${character.className}`, archetype: primary },
+  { label: `Evidence for ${character.jobName ?? ''}`, archetype: secondary },
+]
+  .map((list) => ({ ...list, signals: character.signals.filter((signal) => list.archetype !== null && signal.archetype === list.archetype) }))
+  .filter((list) => list.signals.length > 0);
 const points = (value: number) => `+${value.toFixed(2)}`;
 ---
 
@@ -30,22 +34,15 @@ const points = (value: number) => `+${value.toFixed(2)}`;
           )}
           .
         </p>
-        <ul class="why-signals" role="list" aria-label={`Evidence for ${character.className}`}>
-          {primarySignals.map((signal) => (
-            <li>
-              <span class="why-repo">{signal.repo}</span> {signal.reason} <span class="why-points hud-text">{points(signal.points)}</span>
-            </li>
-          ))}
-        </ul>
-        {secondarySignals.length > 0 && (
-          <ul class="why-signals" role="list" aria-label={`Evidence for ${character.jobName}`}>
-            {secondarySignals.map((signal) => (
+        {lists.map((list) => (
+          <ul class="why-signals" role="list" aria-label={list.label}>
+            {list.signals.map((signal) => (
               <li>
                 <span class="why-repo">{signal.repo}</span> {signal.reason} <span class="why-points hud-text">{points(signal.points)}</span>
               </li>
             ))}
           </ul>
-        )}
+        ))}
       </div>
     )
   }

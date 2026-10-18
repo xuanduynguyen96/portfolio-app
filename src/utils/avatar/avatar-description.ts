@@ -3,10 +3,14 @@ import { MOTIF_PROP_NAMES } from '../../data/avatar/avatar-job-motifs.ts';
 import { classSprites, GEAR_MATERIALS } from '../../data/avatar/avatar-sprites.ts';
 import { ARCHETYPE_LABELS } from '../../data/character-job-rules.ts';
 import { gearRules, type GearSlotId } from '../../data/gear-rules.ts';
-import type { CharacterProfile, GearTier } from '../github-character/character-types.ts';
+import type { CharacterProfile, GearSlotResult, GearTier } from '../github-character/character-types.ts';
+import { characterTitle } from '../github-character/character-title.ts';
 import { gearTierOf } from './select-avatar-layers.ts';
 
-export type AvatarProfile = Pick<CharacterProfile, 'classId' | 'className' | 'jobName' | 'motif' | 'gear'>;
+/** What the avatar needs from a CharacterProfile (gear: slot + tier only). */
+export type AvatarProfile = Pick<CharacterProfile, 'classId' | 'className' | 'jobName' | 'motif'> & {
+  gear: readonly Pick<GearSlotResult, 'slot' | 'tier'>[];
+};
 
 export interface AvatarGearLine {
   slot: GearSlotId;
@@ -27,7 +31,7 @@ export interface AvatarDescription {
 }
 
 export function avatarDescription(profile: AvatarProfile): AvatarDescription {
-  const title = profile.jobName ? `${profile.className} · ${profile.jobName}` : profile.className;
+  const title = characterTitle(profile);
   const gear = gearRules.map(({ slot, label, axis, thresholds }): AvatarGearLine => {
     const tier = gearTierOf(profile, slot);
     const maxTier = thresholds.length;

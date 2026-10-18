@@ -6,8 +6,10 @@ import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS } from '../../data/character-job-
 import { GEAR_SLOT_IDS } from '../../data/gear-rules';
 import type { AvatarProfile } from '../../utils/avatar/avatar-description';
 import type { GearTier } from '../../utils/github-character/character-types';
+import { characterTitle } from '../../utils/github-character/character-title';
+import { gearRules } from '../../data/gear-rules';
 
-const gearAt = (tier: GearTier) => GEAR_SLOT_IDS.map((slot) => ({ slot, axis: slot, label: slot, tier, repos: [] }));
+const gearAt = (tier: GearTier) => GEAR_SLOT_IDS.map((slot) => ({ slot, tier }));
 const looks: AvatarProfile[] = [
   ...ARCHETYPE_IDS.flatMap((primary) => {
     const classId = CLASS_BY_ARCHETYPE[primary];
@@ -17,8 +19,8 @@ const looks: AvatarProfile[] = [
   }),
   { classId: 'adventurer', className: CLASS_NAMES.adventurer, jobName: null, motif: null, gear: gearAt(0) },
 ];
-const ramp: GearTier[] = [0, 1, 2, 3];
-const caption = (look: AvatarProfile) => (look.jobName ? `${look.className} · ${look.jobName}` : look.className);
+// Tier 0..max (every slot has the same number of tiers: its 3 thresholds).
+const ramp = Array.from({ length: gearRules[0].thresholds.length + 1 }, (_, tier) => tier as GearTier);
 ---
 
 <ul class="avatar-gallery" role="list" aria-label="Avatar looks">
@@ -26,7 +28,7 @@ const caption = (look: AvatarProfile) => (look.jobName ? `${look.className} · $
     looks.map((look, index) => (
       <li>
         <CharacterAvatar profile={look} size={128} idPrefix={`gallery-${index}`} />
-        <span class="hud-text">{caption(look)}</span>
+        <span class="hud-text">{characterTitle(look)}</span>
       </li>
     ))
   }

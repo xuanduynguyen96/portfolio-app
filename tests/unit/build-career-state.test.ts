@@ -53,15 +53,36 @@ describe('buildCareerState', () => {
     assert.deepEqual(state.achievements.map((a) => `${a.questId}:${a.label}`), ['web-app:Users', 'gopher:Commits', 'web-app:Commits']);
   });
 
-  it('skills level from matching repos and quests; XP adds up to the level', () => {
+  it('skills level from matching repos, counted once even when the repo is also a quest', () => {
     const state = buildCareerState(inputs());
     const languages = state.skillTree.find((node) => node.id === 'languages');
     const ts = languages?.children.find((node) => node.id === 'typescript');
     assert.deepEqual(ts?.evidence, [webApp.url]);
     assert.deepEqual(ts?.questIds, ['web-app']);
-    assert.equal(ts?.evidenceCount, 2);
-    assert.equal(state.level.totalXp, state.attributes.reduce((sum, a) => sum + a.xp, 0));
-    assert.ok(state.level.level > 1);
+    assert.equal(ts?.evidenceCount, 1);
+    assert.equal(languages?.evidenceCount, 2, 'typescript (WebApp) + go (gopher)');
+  });
+
+  it('attribute XP: boss XP split over its 3 skills, gopher to go, +1 matched repo per proven skill', () => {
+    const { bonus, baseXp } = xpRules.quest;
+    const boss = baseXp.raid * (1 + bonus.description + bonus.tests + bonus.ci + bonus.caseStudy + bonus.metrics + bonus.boss);
+    const repoXp = xpRules.skillEvidence.xpPerRepo;
+    const expected = {
+      'code-efficiency': Math.round(boss / 3 + baseXp.side + 2 * repoXp), // typescript share + gopher + ts/go nodes
+      'ui-polish': Math.round(boss / 3 + repoXp), // css share + css node
+      communication: Math.round(boss / 3 + repoXp), // writing share + writing node
+      reliability: 0,
+    };
+    const state = buildCareerState(inputs());
+    assert.deepEqual(Object.fromEntries(state.attributes.map((a) => [a.id, a.xp])), expected);
+    assert.equal(state.level.totalXp, Object.values(expected).reduce((sum, xp) => sum + xp, 0));
+  });
+
+  it('a quest matching no skill still adds its XP (to the fallback attribute)', () => {
+    const state = buildCareerState(inputs({ skills: [], overrides: [] }));
+    const xp = Object.fromEntries(state.attributes.map((a) => [a.id, a.xp]));
+    const questXp = Math.round(state.quests.reduce((sum, q) => sum + q.xp, 0));
+    assert.equal(xp[xpRules.quest.fallbackAttribute], questXp);
   });
 
   it('without an override the boss is the top-ranked repo and quests are derived', () => {

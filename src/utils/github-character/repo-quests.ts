@@ -6,18 +6,16 @@ import { repoHasGear } from './gear-tiers.ts';
 import type { GithubSnapshot, SnapshotRepo } from './github-snapshot-types.ts';
 import { ARCHETYPE_IDS } from '../../data/character-class-rules.ts';
 import { repoArchetypeVote } from './repo-archetype-vote.ts';
-import { MAX_QUEST_SKILLS, matchSkills } from './repo-skill-matches.ts';
+import { matchSkills } from './repo-skill-matches.ts';
 import { splitName } from './repo-tokens.ts';
-
-const SUMMARY_MAX = 160;
-const MAX_TAGS = 6;
 
 /** URL/file slug: `QrCodeScanner` -> `qr-code-scanner`, `aspnet_framework_docker_ex` -> `aspnet-framework-docker-ex`. */
 export function toRepoSlug(name: string): string {
   return splitName(name).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-const kib = (repo: SnapshotRepo) => Math.round(repo.languages.reduce((sum, language) => sum + language.bytes, 0) / 1024);
+const KIB = 1024;
+const codeBytes = (repo: SnapshotRepo) => repo.languages.reduce((sum, language) => sum + language.bytes, 0);
 
 /** Class vote total (recency + activity weighted) + hygiene slots + pinned bonus. */
 export function questScore(repo: SnapshotRepo, snapshot: GithubSnapshot, rules: XpRules = xpRules): number {
@@ -39,6 +37,7 @@ export function selectQuestRepos(
 ): SnapshotRepo[] {
   const overridden = new Set(overrides.map((override) => override.id));
   const ranked = snapshot.repos
+    .filter((repo) => toRepoSlug(repo.name) !== '') // no letters/digits: no project URL possible
     .map((repo) => ({ repo, score: questScore(repo, snapshot, rules) }))
     .sort((a, b) => b.score - a.score || (a.repo.name < b.repo.name ? -1 : a.repo.name > b.repo.name ? 1 : 0));
   return ranked
@@ -62,23 +61,26 @@ export function pickBossRepo(
 
 export function questDifficulty(repo: SnapshotRepo, rules: XpRules = xpRules): QuestDifficulty {
   const { raid, main } = rules.quest.difficulty;
-  if (repo.commits >= raid.commits || kib(repo) >= raid.kib) return 'raid';
-  if (repo.commits >= main.commits || kib(repo) >= main.kib) return 'main';
+  const bytes = codeBytes(repo);
+  if (repo.commits >= raid.commits || bytes >= raid.kib * KIB) return 'raid';
+  if (repo.commits >= main.commits || bytes >= main.kib * KIB) return 'main';
   return 'side';
 }
 
 export function repoMetrics(repo: SnapshotRepo): Metric[] {
+  const kib = Math.round(codeBytes(repo) / KIB);
   return [
     ...(repo.commits > 0 ? [{ label: 'Commits', value: repo.commits }] : []),
     ...(repo.languages.length > 0 ? [{ label: 'Languages', value: repo.languages.length }] : []),
-    ...(kib(repo) > 0 ? [{ label: 'Code', value: kib(repo), unit: 'KiB' }] : []),
+    ...(kib > 0 ? [{ label: 'Code', value: kib, unit: 'KiB' }] : []),
   ];
 }
 
-function derivedSummary(repo: SnapshotRepo): string {
+function derivedSummary(repo: SnapshotRepo, max: number): string {
   const languages = repo.languages.slice(0, 3).map((language) => language.name);
   const text = repo.description ?? (languages.length > 0 ? `Public repository in ${languages.join(', ')}.` : 'Public repository.');
-  return text.length > SUMMARY_MAX ? `${Array.from(text).slice(0, SUMMARY_MAX - 1).join('').trimEnd()}…` : text;
+  const chars = Array.from(text);
+  return chars.length > max ? `${chars.slice(0, max - 1).join('').trimEnd()}…` : text;
 }
 
 export interface QuestContext {
@@ -90,19 +92,19 @@ export interface QuestContext {
 }
 
 export function repoToQuestInput(repo: SnapshotRepo, override: QuestOverrideInput | undefined, context: QuestContext, rules: XpRules = xpRules): QuestInput {
-  const tags = [...new Set([...repo.languages.slice(0, 3).map((language) => language.name), ...repo.topics])].slice(0, MAX_TAGS);
+  const tags = [...new Set([...repo.languages.slice(0, 3).map((language) => language.name), ...repo.topics])].slice(0, rules.quest.maxTags);
   const shield = gearRules.find((rule) => rule.slot === 'shield');
   return {
     id: toRepoSlug(repo.name),
     repo: repo.name,
     title: override?.title ?? repo.name,
-    summary: override?.summary ?? derivedSummary(repo),
+    summary: override?.summary ?? derivedSummary(repo, rules.quest.summaryMax),
     tags: override?.tags ?? tags,
     difficulty: questDifficulty(repo, rules),
     isBoss: repo === context.boss,
     featured: override?.featured ?? context.snapshot.pinned.includes(repo.name),
     order: override?.order ?? context.rank,
-    skills: matchSkills(repo, context.skills).slice(0, MAX_QUEST_SKILLS),
+    skills: matchSkills(repo, context.skills).slice(0, rules.quest.maxSkills),
     obstacles: override?.obstacles ?? [],
     metrics: override?.metrics ?? [],
     repoMetrics: repoMetrics(repo),

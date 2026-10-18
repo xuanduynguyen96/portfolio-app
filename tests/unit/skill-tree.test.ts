@@ -64,15 +64,15 @@ describe('buildSkillTree', () => {
     assert.deepEqual(flattenSkillTree(roots).map((node) => node.id), baseSkills.map((node) => node.id));
   });
 
-  it('rolls matching repos and quests up to ancestors (distinct evidence)', () => {
+  it('rolls matching repos up to ancestors; quests add links, not evidence', () => {
     const nodes = [skill({ id: 'root' }), skill({ id: 'child', parent: 'root' }), skill({ id: 'sibling', parent: 'root' })];
     const repos = new Map([['child', ['https://github.com/u/a', 'https://github.com/u/b']], ['sibling', ['https://github.com/u/b']]]);
     const [root] = buildSkillTree(nodes, repos, new Map([['sibling', ['quest-1']]]));
     const [child, sibling] = root.children;
     assert.equal(child.evidenceCount, 2);
-    assert.equal(sibling.evidenceCount, 2); // repo b + quest-1
-    assert.equal(root.evidenceCount, 3); // a, b (deduped), quest-1
-    assert.equal(root.level, 2);
+    assert.equal(sibling.evidenceCount, 1); // repo b; quest-1 is a repo already counted
+    assert.equal(root.evidenceCount, 2); // a, b (deduped)
+    assert.equal(root.level, 1);
     assert.deepEqual(sibling.questIds, ['quest-1']);
     assert.deepEqual(child.evidence, ['https://github.com/u/a', 'https://github.com/u/b']);
   });

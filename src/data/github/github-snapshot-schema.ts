@@ -27,7 +27,8 @@ export const snapshotRepoSchema = z.strictObject({
 
 export const githubSnapshotSchema = z.strictObject({
   schemaVersion: z.literal(1),
-  login: name,
+  // GitHub login rules: interpolated into the profile URL.
+  login: z.string().regex(/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/, 'must be a GitHub login'),
   asOf: isoDay,
   accountCreated: isoDay,
   pinned: z.array(name).max(6),

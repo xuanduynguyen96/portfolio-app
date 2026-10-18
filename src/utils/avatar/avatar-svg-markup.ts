@@ -42,7 +42,7 @@ export function avatarSvgMarkup({ profile, size, idPrefix, animate = false }: Av
   return (
     `<svg class="character-avatar" viewBox="0 0 ${AVATAR_VIEWBOX} ${AVATAR_VIEWBOX}" width="${box}" height="${box}"` +
     ` role="img" aria-labelledby="${id}-title" aria-describedby="${id}-desc" shape-rendering="crispEdges" focusable="false"` +
-    ` style="--avatar-px:${scale}px"${animate ? ' data-animate=""' : ''}>` +
+    `${animate ? ' data-animate=""' : ''}>` +
     `<title id="${id}-title">${escapeXml(title)}</title><desc id="${id}-desc">${escapeXml(desc)}</desc>${frames}</svg>`
   );
 }

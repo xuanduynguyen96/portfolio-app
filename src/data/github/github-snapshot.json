@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "login": "xuanduynguyen96",
-  "asOf": "2026-10-12",
+  "asOf": "2026-10-19",
   "accountCreated": "2019-11-24",
   "pinned": [],
   "repos": [
@@ -140,33 +140,26 @@
       "languages": [
         {
           "name": "TypeScript",
-          "bytes": 166674
-        },
-        {
-          "name": "Python",
-          "bytes": 127664
+          "bytes": 404158
         },
         {
           "name": "Astro",
-          "bytes": 77526
-        },
-        {
-          "name": "JavaScript",
-          "bytes": 59806
-        },
-        {
-          "name": "Shell",
-          "bytes": 28563
+          "bytes": 98953
         },
         {
           "name": "CSS",
-          "bytes": 12695
+          "bytes": 14794
+        },
+        {
+          "name": "JavaScript",
+          "bytes": 386
         }
       ],
       "topics": [],
       "license": null,
       "rootEntries": [
         ".claude",
+        ".gitattributes",
         ".github",
         ".gitignore",
         ".nvmrc",
@@ -179,6 +172,7 @@
         "playwright.config.ts",
         "public",
         "README.md",
+        "scripts",
         "src",
         "tests",
         "tsconfig.json"
@@ -187,9 +181,10 @@
         "workflows"
       ],
       "workflowFiles": [
-        "deploy-to-github-pages.yml"
+        "deploy-to-github-pages.yml",
+        "refresh-github-snapshot.yml"
       ],
-      "commits": 6
+      "commits": 8
     },
     {
       "name": "QrCodeScanner",
@@ -371,12 +366,12 @@
       },
       {
         "start": "2026-10-12",
-        "count": 12
+        "count": 16
       }
     ],
     "totals": {
-      "commits": 23,
-      "pullRequests": 5,
+      "commits": 25,
+      "pullRequests": 7,
       "reviews": 0,
       "issues": 0
     }

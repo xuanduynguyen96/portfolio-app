@@ -1,6 +1,6 @@
 ---
-// "Why Warrior?": the ranked repo signals behind the class and job, so the result is explainable.
-import { ARCHETYPE_LABELS } from '../../data/character-job-rules';
+// "Why Warrior?": the ranked repo signals behind the class (domain) and job, so the result is explainable.
+import { DOMAIN_LABELS } from '../../data/character-job-rules';
 import type { CharacterProfile } from '../../utils/github-character/character-types';
 
 interface Props {
@@ -8,13 +8,11 @@ interface Props {
 }
 
 const { character } = Astro.props;
-const { primary, secondary } = character;
+const { primary } = character;
 const lists = [
-  { label: `Evidence for ${character.className}`, archetype: primary },
-  { label: `Evidence for ${character.jobName ?? ''}`, archetype: secondary },
-]
-  .map((list) => ({ ...list, signals: character.signals.filter((signal) => list.archetype !== null && signal.archetype === list.archetype) }))
-  .filter((list) => list.signals.length > 0);
+  { label: `Evidence for ${character.className}`, signals: character.signals },
+  { label: `Evidence for ${character.jobName ?? ''}`, signals: character.jobSignals },
+].filter((list) => list.signals.length > 0);
 const points = (value: number) => `+${value.toFixed(2)}`;
 ---
 
@@ -26,10 +24,10 @@ const points = (value: number) => `+${value.toFixed(2)}`;
     ) : (
       <div class="why-body">
         <p class="why-text">
-          Strongest area: <strong>{ARCHETYPE_LABELS[primary]}</strong>
-          {secondary && (
+          Strongest domain: <strong>{DOMAIN_LABELS[primary]}</strong>
+          {character.jobName && (
             <>
-              , with <strong>{ARCHETYPE_LABELS[secondary]}</strong> as the job ({character.jobName})
+              , job <strong>{character.jobName}</strong>
             </>
           )}
           .

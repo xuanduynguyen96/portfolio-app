@@ -1,43 +1,79 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { ARCHETYPE_IDS, classRules } from '../../src/data/character-class-rules.ts';
-import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS } from '../../src/data/character-job-rules.ts';
+import { classRules, DOMAIN_IDS } from '../../src/data/character-class-rules.ts';
+import { CLASS_BY_DOMAIN, CLASS_IDS, CLASS_NAMES, DOMAIN_LABELS, JOBS, MOTIF_IDS } from '../../src/data/character-job-rules.ts';
 import { gearRules, GEAR_SLOT_IDS } from '../../src/data/gear-rules.ts';
+import { skillNodes } from '../../src/data/skills-data.ts';
 
-describe('character rules', () => {
-  it('9 unique jobs: 3 per class, one pure job per class', () => {
-    const all = Object.values(JOBS).flatMap((byMotif) => Object.values(byMotif));
-    assert.equal(new Set(all.map((job) => job.id)).size, 9);
-    assert.equal(new Set(all.map((job) => job.name)).size, 9);
-    for (const archetype of ARCHETYPE_IDS) {
-      const classId = CLASS_BY_ARCHETYPE[archetype];
-      assert.equal(Object.keys(JOBS[classId]).length, 3);
-      assert.ok(JOBS[classId][archetype], `${classId} has a pure job`);
-      assert.ok(CLASS_NAMES[classId]);
+const COMBAT = Object.keys(JOBS) as (keyof typeof JOBS)[];
+const allJobs = Object.values(JOBS).flat();
+const skillIds = new Set(skillNodes.map((node) => node.id));
+
+describe('classes and jobs', () => {
+  it('each domain maps to its own combat class; Adventurer is the only fallback', () => {
+    assert.deepEqual(Object.keys(CLASS_BY_DOMAIN).sort(), [...DOMAIN_IDS].sort());
+    assert.equal(new Set(Object.values(CLASS_BY_DOMAIN)).size, DOMAIN_IDS.length);
+    assert.deepEqual([...CLASS_IDS].sort(), [...Object.values(CLASS_BY_DOMAIN), 'adventurer'].sort());
+    assert.deepEqual([...COMBAT].sort(), [...Object.values(CLASS_BY_DOMAIN)].sort());
+    for (const classId of CLASS_IDS) assert.ok(CLASS_NAMES[classId]);
+    for (const domain of DOMAIN_IDS) assert.ok(DOMAIN_LABELS[domain]);
+  });
+
+  it('9 unique jobs: 3 per class, one per job slot, ids and names unique', () => {
+    assert.equal(allJobs.length, 9);
+    assert.equal(new Set(allJobs.map((job) => job.id)).size, 9);
+    assert.equal(new Set(allJobs.map((job) => job.name)).size, 9);
+    for (const classId of COMBAT) {
+      assert.deepEqual(JOBS[classId].map((job) => job.motif).sort(), [...MOTIF_IDS].sort(), classId);
     }
-    assert.equal(new Set(Object.values(CLASS_BY_ARCHETYPE)).size, 3, 'each archetype maps to its own class');
   });
 
-  it('language weights sum to 1 and never overlap the ignore list', () => {
-    for (const [language, weights] of Object.entries(classRules.languages)) {
-      const sum = Object.values(weights).reduce((a, b) => a + b, 0);
-      assert.ok(Math.abs(sum - 1) < 1e-9, language);
-      assert.ok(!classRules.ignoredLanguages.includes(language), language);
+  it('every job has skills and a switcher hint', () => {
+    for (const job of allJobs) {
+      assert.ok(job.skills.length > 0 && job.specialty.length > 0, job.id);
+    }
+  });
+});
+
+describe('skill -> domain -> job table', () => {
+  const { skillDomains } = classRules;
+
+  it('every voting skill sits in exactly one job, of the class that owns its domain', () => {
+    for (const [skill, domain] of Object.entries(skillDomains)) {
+      const owners = COMBAT.flatMap((classId) => JOBS[classId].filter((job) => job.skills.includes(skill)).map((job) => ({ classId, job })));
+      assert.equal(owners.length, 1, `${skill} must be in exactly one job`);
+      assert.equal(owners[0].classId, CLASS_BY_DOMAIN[domain!], skill);
     }
   });
 
-  it('every languageWeight key is a known language; reason threshold is a real weight', () => {
-    for (const language of Object.keys(classRules.languageWeight)) assert.ok(classRules.languages[language], language);
-    assert.ok(classRules.reasonMinWeight > 0 && classRules.reasonMinWeight <= 1);
+  it('no job skill is outside skillDomains; every id is a real, non-group skill', () => {
+    for (const job of allJobs) {
+      for (const skill of job.skills) assert.ok(skill in skillDomains, `${job.id}: ${skill} votes for nothing`);
+    }
+    for (const skill of Object.keys(skillDomains)) {
+      assert.ok(skillIds.has(skill), `${skill} is not a skill`);
+      assert.ok(skillNodes.find((node) => node.id === skill)?.match, `${skill} is a group (no match rule)`);
+    }
   });
 
-  it('keywords are lowercase single words and unique', () => {
-    const matches = classRules.keywords.map((k) => k.match);
-    assert.equal(new Set(matches).size, matches.length);
-    for (const match of matches) assert.match(match, /^[a-z0-9#+]+$/);
+  it('every domain has at least one skill', () => {
+    for (const domain of DOMAIN_IDS) assert.ok(Object.values(skillDomains).includes(domain), domain);
   });
+});
 
-  it('gear: one rule per slot, thresholds ascending and positive', () => {
+describe('class rules numbers', () => {
+  it('are sane', () => {
+    assert.ok(classRules.minLanguageShare > 0 && classRules.minLanguageShare < 1);
+    assert.ok(classRules.recency.halfLifeMonths > 0 && classRules.recency.floor > 0 && classRules.recency.floor < 1);
+    assert.ok(classRules.activity.scale > 0 && classRules.activity.max > 0);
+    assert.ok(classRules.archivedFactor > 0 && classRules.archivedFactor < 1);
+    assert.ok(classRules.signals.domain > 0 && classRules.signals.job > 0);
+    assert.ok(classRules.fallback.minTotal > 0 && classRules.fallback.minRepos >= 1);
+  });
+});
+
+describe('gear rules', () => {
+  it('one rule per slot, thresholds ascending and positive', () => {
     assert.deepEqual(gearRules.map((r) => r.slot), [...GEAR_SLOT_IDS]);
     for (const rule of gearRules) {
       const [a, b, c] = rule.thresholds;

@@ -4,12 +4,14 @@ import { xpRules } from '../../src/data/xp-rules.ts';
 import {
   pickBossRepo,
   questDifficulty,
+  questScore,
   repoMetrics,
   repoToQuestInput,
   selectQuestRepos,
   toRepoSlug,
 } from '../../src/utils/github-character/repo-quests.ts';
 import { matchSkills, repoMatchesSkill } from '../../src/utils/github-character/repo-skill-matches.ts';
+import { repoWeight } from '../../src/utils/github-character/repo-domain-vote.ts';
 import { baseSkills, override } from './career-fixtures.ts';
 import { lang, repo, snapshot } from './github-snapshot-fixtures.ts';
 
@@ -53,6 +55,27 @@ describe('selectQuestRepos', () => {
     assert.equal(selectQuestRepos(s, [])[0].name, 'pinned');
     const tidy = snapshot([lang('plain', 'Go'), lang('tidy', 'Go', 20, { rootEntries: ['tests', 'SECURITY.md'] })]);
     assert.equal(selectQuestRepos(tidy, [])[0].name, 'tidy');
+  });
+});
+
+describe('questScore does not depend on the class', () => {
+  const fresh = { pushedWeek: '2026-09-07', commits: 10 };
+
+  it('repos that prove no skill (Python, empty) still rank by weight', () => {
+    const s = snapshot([lang('py-tool', 'Python', 20, fresh), repo({ name: 'notes', ...fresh, commits: 0 }), lang('svc', 'C#', 20, { ...fresh, commits: 0 })]);
+    assert.deepEqual(selectQuestRepos(s, []).map((r) => r.name), ['py-tool', 'notes', 'svc'], 'most active first, then by name');
+  });
+
+  it('score = repo weight + hygiene + pinned, whatever the repo proves', () => {
+    const plain = lang('plain', 'Python', 20, fresh);
+    const s = { ...snapshot([plain, { ...plain, name: 'pinned' }]), pinned: ['pinned'] };
+    assert.ok(Math.abs(questScore(plain, s) - repoWeight(plain, s.asOf)) < 1e-9);
+    assert.ok(Math.abs(questScore(s.repos[1], s) - repoWeight(s.repos[1], s.asOf) - xpRules.quest.selection.pinnedBonus) < 1e-9);
+  });
+
+  it('an old archived repo ranks below a fresh one of the same kind', () => {
+    const s = snapshot([lang('old', 'C#', 20, { pushedWeek: '2015-01-05', isArchived: true }), lang('new', 'C#', 20, fresh)]);
+    assert.deepEqual(selectQuestRepos(s, []).map((r) => r.name), ['new', 'old']);
   });
 });
 

@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { ARCHETYPE_IDS } from '../../src/data/character-class-rules.ts';
-import { CLASS_BY_ARCHETYPE } from '../../src/data/character-job-rules.ts';
+import { CLASS_IDS, MOTIF_IDS, type CombatClassId } from '../../src/data/character-job-rules.ts';
 import { composeAvatarGrid } from '../../src/utils/avatar/compose-avatar-grid.ts';
 import { outlineGrid, padGrid, STICKER_PAD } from '../../src/utils/avatar/avatar-sticker-outline.ts';
 import { selectAvatarLayers } from '../../src/utils/avatar/select-avatar-layers.ts';
@@ -11,6 +10,8 @@ import { avatarProfile, isOpaque, type Tiers } from './avatar-test-helpers.ts';
 // .80 / .85; the human blind-ID test in phase 06 is the real check).
 const MAX_IOU = { full: 0.8, pooled: 0.85 };
 const WITHIN_CLASS_MIN_DIFF = 12; // px: jobs of one class differ by their prop
+
+const COMBAT = CLASS_IDS.filter((id): id is CombatClassId => id !== 'adventurer');
 
 type Mask = boolean[][];
 const silhouette = (classId: Parameters<typeof avatarProfile>[0], motif: Parameters<typeof avatarProfile>[1], tiers: Tiers): Mask =>
@@ -34,24 +35,25 @@ const diff = (a: Mask, b: Mask) => {
 
 describe('avatar silhouettes', () => {
   for (const tiers of [[0, 0, 0, 0], [3, 3, 3, 3]] as const satisfies readonly Tiers[]) {
-    it(`pure jobs of different classes overlap <= ${MAX_IOU.full} (and ${MAX_IOU.pooled} at half size), tiers ${tiers.join('')}`, () => {
-      const pure = ARCHETYPE_IDS.map((archetype) => ({ archetype, mask: silhouette(CLASS_BY_ARCHETYPE[archetype], archetype, tiers) }));
-      for (let i = 0; i < pure.length; i++) {
-        for (let j = i + 1; j < pure.length; j++) {
-          const pair = `${pure[i].archetype}/${pure[j].archetype}`;
-          const full = iou(pure[i].mask, pure[j].mask);
-          const pooled = iou(pool(pure[i].mask), pool(pure[j].mask));
-          assert.ok(full <= MAX_IOU.full, `${pair}: ${full.toFixed(3)}`);
-          assert.ok(pooled <= MAX_IOU.pooled, `${pair} pooled: ${pooled.toFixed(3)}`);
+    it(`classes sharing a job slot overlap <= ${MAX_IOU.full} (and ${MAX_IOU.pooled} at half size), tiers ${tiers.join('')}`, () => {
+      for (const motif of MOTIF_IDS) {
+        const looks = COMBAT.map((classId) => ({ classId, mask: silhouette(classId, motif, tiers) }));
+        for (let i = 0; i < looks.length; i++) {
+          for (let j = i + 1; j < looks.length; j++) {
+            const pair = `${looks[i].classId}/${looks[j].classId} ${motif}`;
+            const full = iou(looks[i].mask, looks[j].mask);
+            const pooled = iou(pool(looks[i].mask), pool(looks[j].mask));
+            assert.ok(full <= MAX_IOU.full, `${pair}: ${full.toFixed(3)}`);
+            assert.ok(pooled <= MAX_IOU.pooled, `${pair} pooled: ${pooled.toFixed(3)}`);
+          }
         }
       }
     });
   }
 
   it(`jobs within a class differ by >= ${WITHIN_CLASS_MIN_DIFF} px`, () => {
-    for (const archetype of ARCHETYPE_IDS) {
-      const classId = CLASS_BY_ARCHETYPE[archetype];
-      const masks = ARCHETYPE_IDS.map((motif) => silhouette(classId, motif, [0, 0, 0, 0]));
+    for (const classId of COMBAT) {
+      const masks = MOTIF_IDS.map((motif) => silhouette(classId, motif, [0, 0, 0, 0]));
       for (let i = 0; i < masks.length; i++) {
         for (let j = i + 1; j < masks.length; j++) assert.ok(diff(masks[i], masks[j]) >= WITHIN_CLASS_MIN_DIFF, `${classId} ${i}/${j}`);
       }

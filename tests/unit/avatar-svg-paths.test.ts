@@ -58,13 +58,13 @@ describe('avatar svg paths', () => {
 });
 
 describe('avatar svg markup', () => {
-  const profile = avatarProfile('warrior', 'frontend', [0, 1, 2, 0]);
+  const profile = avatarProfile('warrior', 'banner', [0, 1, 2, 0]);
 
   it('is an accessible image named by class and job, with unique-prefixed ids', () => {
     const svg = avatarSvgMarkup({ profile, size: 192, idPrefix: 'hero' });
     assert.match(svg, /role="img"/);
     assert.match(svg, /aria-labelledby="hero-title" aria-describedby="hero-desc"/);
-    assert.match(svg, /<title id="hero-title">Warrior · Vanguard<\/title>/);
+    assert.match(svg, /<title id="hero-title">Warrior · Knight<\/title>/);
     assert.match(svg, /<desc id="hero-desc">[^<]*Shield tier 1 of 3[^<]*Boots tier 2 of 3[^<]*<\/desc>/);
   });
 

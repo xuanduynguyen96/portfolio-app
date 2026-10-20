@@ -2,12 +2,12 @@
 import { characterTitle } from '../github-character/character-title.ts';
 import { lookProfile, type ClassLook } from './class-looks.ts';
 
-/** e.g. 'Mage · Sorcerer', 'Adventurer'. */
+/** e.g. 'Archer · Ranger', 'Adventurer'. */
 export function lookTitle(look: ClassLook): string {
   return characterTitle(lookProfile(look, []));
 }
 
-/** Control line naming the derived look, e.g. 'GitHub pick: Warrior · Vanguard'. */
+/** Control line naming the derived look, e.g. 'GitHub pick: Warrior · Knight'. */
 export function suggestionLine(pickTitle: string): string {
   return `GitHub pick: ${pickTitle}`;
 }

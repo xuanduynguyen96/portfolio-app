@@ -1,6 +1,6 @@
 # Project Overview & PDR
 
-Last updated: 2026-10-18 · Version: v1.4 (0.1.0 in package.json)
+Last updated: 2026-10-20 · Version: v1.5 (0.1.0 in package.json)
 
 ## Vision
 
@@ -44,7 +44,7 @@ Restyle only; scoring and content model unchanged. Details: [design-guidelines.m
 Career data now comes from the owner's public GitHub instead of hand-written entries. Pipeline: [system-architecture.md](system-architecture.md#github-derived-pipeline); rules: `src/data/{character-class-rules,character-job-rules,gear-rules,xp-rules,skills-data}.ts`.
 
 - Weekly refresh workflow commits a normalized, public-only snapshot (`src/data/github/github-snapshot.json`); the build reads only that file. Failure keeps the old snapshot.
-- Class (Warrior/Mage/Archer/Adventurer), job (class x secondary archetype, 9 jobs) and gear tiers 0-3 (armor=security, shield=testing, boots=automation, amulet=docs), with a ranked "why" panel. Owner today: Warrior · Vanguard.
+- Class (Warrior/Archer/Mage/Adventurer), job and gear tiers 0-3 (armor=security, shield=testing, boots=automation, amulet=docs), with a "why" panel. Since v1.5 the class is the domain the repos' skill matches prove and the job is a specific skill group (see Scope v1.5).
 - Quests = top public repos; optional case-study override per repo (`src/content/projects/<repo-slug>.md`) adds words, obstacles, metrics, boss flag.
 - Skill tree via `match` rules over repos; streak from GitHub contributions; HUD gains snapshot-freshness and repo-description/topics checks.
 - Layered 32x32 pixel avatar (sticker style, hand-authored): hero, character sheet, `/speedrun/`, `/credits/` gallery; text equivalents everywhere.
@@ -54,12 +54,21 @@ Career data now comes from the owner's public GitHub instead of hand-written ent
 
 Visitor is not locked to the GitHub-derived class/job. Flow: [system-architecture.md](system-architecture.md#classjob-switcher); UI: [design-guidelines.md](design-guidelines.md#classjob-switcher-control).
 
-- Character sheet portrait panel: "Choose class & job" picks any of 10 looks (Warrior/Mage/Archer x Backend/Data/Frontend + Adventurer, no job). Changes the hero + sheet avatar and name.
+- Character sheet portrait panel: "Choose class & job" picks any of 10 looks (Warrior/Archer/Mage x 3 jobs + Adventurer, no job). Changes the hero + sheet avatar and name.
 - Default and "Reset to GitHub pick" = the look derived from the snapshot ("GitHub pick"). Class/job/gear/XP stay computed, never hand-set; the visitor only chooses the displayed look.
 - Gear tiers (armor=security, shield=testing, boots=automation, amulet=docs) come from GitHub stats only and are drawn on every look.
 - Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (follow-ups, see roadmap).
 - Choice saved in this browser (`localStorage` `portfolio-look`); nothing leaves the browser. No JS = control hidden, GitHub pick shown.
 - Delivery: server render stays zero-JS; switching re-composes in the browser from the same pure modules in a lazy chunk (first open, or on load when a choice is saved).
+
+## Scope v1.5: class = domain, job = skills (done)
+
+The class now follows what the code does. Model (single source): [system-architecture.md](system-architecture.md#github-derived-pipeline); rules: `src/data/{character-class-rules,character-job-rules}.ts`.
+
+- Class = domain from skill matches: Warrior = backend, Archer = frontend, Mage = DevOps, Adventurer when there is too little signal. Job = 3 per class, from specific skills.
+- Python, TypeScript, JavaScript, Go, Rust and Swift alone no longer vote; a repo must prove a domain skill.
+- Same 10 looks; job prop = job slot. Saved `portfolio-look` values from before v1.5 are invalid and reset once to the GitHub pick.
+- Why panel shows class evidence and job evidence. Quest ranking is class-independent (repo weight + hygiene + pinned).
 
 ## Non-goals (v1)
 
@@ -109,9 +118,9 @@ Visitor is not locked to the GitHub-derived class/job. Flow: [system-architectur
 | F12 | `/speedrun/` shows character header (avatar + class/job), availability (`siteConfig.availability`), top 3 verified achievements, contact; placeholder-sourced metrics labelled "Sample"; countdown decorative only |
 | F13 | Snapshot is the only build/test input for GitHub data; build never calls the network; identical builds for identical inputs + `CAREER_RPG_NOW` |
 | F14 | Refresh workflow (weekly + manual) never fails on API/token problems: keeps the old snapshot, warns, exits 0; validates the schema before committing; dispatches the deploy |
-| F15 | Class, job, gear deterministic (tie-breaks fixed) and explained (ranked "why" signals); rules generic, tested on fixture profiles |
+| F15 | Class (domain from skill matches), job (specific skills) and gear deterministic (tie-breaks fixed) and explained (class + job evidence in the "why" panel); rules generic, tested on fixture profiles; every voting skill belongs to exactly one job |
 | F16 | Avatar has text equivalents: `role="img"` named "Class · Job", gear in description, visible nameplate, gear legend, why panel; motion only with `html[data-motion=ok]`, <= ~4.5s then rests; reduced motion / no JS = static frame |
-| F17 | Class/job switcher: any of the 10 looks selectable in the character sheet; default and Reset = the GitHub-derived look, always labelled "GitHub pick"; gear tiers from stats only and drawn on every look; choice saved locally (allow-listed `portfolio-look`, invalid/blocked storage ignored); changes hero + sheet avatar and name; native radio groups, polite status; JS optional (no JS = control hidden, GitHub pick shown); lifecycle-safe across `ClientRouter` |
+| F17 | Class/job switcher: any of the 10 looks (key `class/motif`) selectable in the character sheet; default and Reset = the GitHub-derived look, always labelled "GitHub pick"; gear tiers from stats only and drawn on every look; choice saved locally (allow-listed `portfolio-look`, invalid/blocked storage ignored); changes hero + sheet avatar and name; native radio groups, polite status; JS optional (no JS = control hidden, GitHub pick shown); lifecycle-safe across `ClientRouter` |
 
 ## Non-functional requirements
 
@@ -129,7 +138,7 @@ Visitor is not locked to the GitHub-derived class/job. Flow: [system-architectur
 ## Success metrics
 
 - Lighthouse (local preview; `/`, boss project, `/speedrun/`, `/credits/`): mobile 99-100 all categories, desktop 100/100/100/100; CLS <= 0.002.
-- 261 unit + 120 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
+- 279 unit + 121 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
 - Home HTML gzip: v1.3 +3.4 KB (budget 6 KB); v1.4 13,790 B gz (+338 B vs 13,452 B). Client JS: unchanged until v1.4; the switcher adds an eager stub (2,826 B gz) and a lazy chunk (4,627 B gz) fetched on first open. Lighthouse mobile home 99/100/100/100, CLS 0.0016 (unchanged).
 - Blind-ID: >=80% of 5 testers name the class at 128px in <=2s (pending, human).
 - Deploy from `master` push with no manual steps after one-time Pages setup.
@@ -157,3 +166,4 @@ Visitor is not locked to the GitHub-derived class/job. Flow: [system-architectur
 | 2026-10-17 | v1.2 RPG theme + light theme, pixel icons, `/credits/` |
 | 2026-10-18 | v1.3 GitHub-derived character + layered pixel avatar: snapshot + weekly refresh, class/job/gear classifier, repo quests + case-study overrides, taxonomy skills, contribution streak, avatar UI; F6-F10 revised, F13-F16 added |
 | 2026-10-18 | v1.4 Class/job switcher: 10 selectable looks, "GitHub pick" default + Reset, stats-derived gear on every look, saved choice, lazy browser-side compose; F17 added, privacy/performance NFRs updated |
+| 2026-10-20 | v1.5 Class = domain from skill matches, job = specific skills, Mage = DevOps; saved looks reset once; F15, F17 revised |

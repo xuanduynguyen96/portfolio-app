@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ARCHETYPE_LABELS, CLASS_NAMES, JOBS } from '../../src/data/character-job-rules.ts';
+import { CLASS_NAMES, JOBS } from '../../src/data/character-job-rules.ts';
 import { gearRules } from '../../src/data/gear-rules.ts';
 import { lookKey, sameLook } from '../../src/utils/avatar/class-looks.ts';
 import { lookTitle } from '../../src/utils/avatar/class-labels.ts';
@@ -45,33 +45,35 @@ test.describe('class/job switcher', () => {
     await expect(root(page).getByRole('radio', { name: /GitHub pick/ })).toHaveCount(pick.motif ? 2 : 1);
     await expect(resetButton(page)).toBeDisabled();
 
-    for (const classId of ['warrior', 'mage', 'archer'] as const) {
+    for (const classId of ['warrior', 'archer', 'mage'] as const) {
       await classRadio(page, classId).check();
       const group = root(page).locator(`[data-look-jobs="${classId}"]`);
       await expect(group).toBeVisible();
-      await expect(group.locator('.switcher-label')).toHaveText(Object.values(JOBS[classId]).map((job) => new RegExp(`^${job.name}`)));
-      await expect(group.locator('.switcher-hint')).toHaveText(Object.values(ARCHETYPE_LABELS));
+      await expect(group.locator('.switcher-label')).toHaveText(JOBS[classId].map((job) => new RegExp(`^${job.name}`)));
+      await expect(group.locator('.switcher-hint')).toHaveText(JOBS[classId].map((job) => job.specialty));
     }
     await classRadio(page, 'adventurer').check();
     await expect(root(page).locator('[data-look-jobs="adventurer"]')).toBeVisible();
     await expect(root(page).locator('input[name^="switcher-job-"]:visible')).toHaveCount(0);
   });
 
-  test('changing class keeps the job; arrow keys move the selection', async ({ page }) => {
+  test('changing class keeps the job slot (prop); arrow keys move the selection', async ({ page }) => {
     await openSwitcher(page);
-    await chooseLook(page, { classId: 'warrior', motif: 'data' });
+    await chooseLook(page, { classId: 'warrior', motif: 'banner' });
     await classRadio(page, 'mage').check();
-    await expect(jobRadio(page, 'mage', 'data')).toBeChecked();
-    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle({ classId: 'mage', motif: 'data' }));
+    await expect(jobRadio(page, 'mage', 'banner')).toBeChecked();
+    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle({ classId: 'mage', motif: 'banner' }));
 
     await classRadio(page, 'warrior').focus();
     await page.keyboard.press('ArrowDown');
-    await expect(classRadio(page, 'mage')).toBeChecked();
-    await expect(status(page)).toContainText(lookTitle({ classId: 'mage', motif: 'data' }));
+    await expect(classRadio(page, 'archer')).toBeChecked();
+    await expect(status(page)).toContainText(lookTitle({ classId: 'archer', motif: 'banner' }));
   });
 
   test('all 10 looks: hero + sheet names, accessible names, status and pixels match the pure modules', async ({ page }) => {
     await openSwitcher(page);
+    // Re-selecting the checked look fires no change event (no status): start from a look that is not first.
+    await chooseLook(page, LOOKS[LOOKS.length - 1]);
     for (const look of LOOKS) {
       await chooseLook(page, look);
       const title = lookTitle(look);
@@ -164,6 +166,14 @@ test.describe('class/job switcher', () => {
     await page.goto('./');
     await closedSwitcherReady(page);
     expect(await page.evaluate(() => localStorage.getItem('unrelated'))).toBe('keep');
+    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(pickTitle);
+    expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+  });
+
+  test('a key saved by an older version (class/archetype motif) is ignored and removed', async ({ page }) => {
+    await page.addInitScript(([key]) => localStorage.setItem(key, 'mage/data'), [STORAGE_KEY]);
+    await page.goto('./');
+    await closedSwitcherReady(page);
     await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(pickTitle);
     expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
   });

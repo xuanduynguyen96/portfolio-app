@@ -1,7 +1,6 @@
 // Builds the class/job radio groups the first time the switcher opens (keeps ~7 KB of markup out of
 // the home HTML). DOM APIs only; every string comes from the class/job rules.
-import { ARCHETYPE_IDS } from '../data/character-class-rules';
-import { ARCHETYPE_LABELS, CLASS_IDS, CLASS_NAMES, JOBS } from '../data/character-job-rules';
+import { CLASS_IDS, CLASS_NAMES, JOBS } from '../data/character-job-rules';
 import { sameLook, type ClassLook } from '../utils/avatar/class-looks';
 
 function node<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -38,8 +37,8 @@ export function buildSwitcherBody(pick: ClassLook): DocumentFragment {
   const body = document.createDocumentFragment();
   body.append(group('Class', CLASS_IDS.map((id) => option('switcher-class', id, CLASS_NAMES[id], id === pick.classId))));
   for (const classId of CLASS_IDS.filter((id) => id !== 'adventurer')) {
-    const jobs = group('Job', ARCHETYPE_IDS.map((motif) =>
-      option(`switcher-job-${classId}`, motif, JOBS[classId][motif].name, sameLook({ classId, motif }, pick), ARCHETYPE_LABELS[motif])));
+    const jobs = group('Job', JOBS[classId].map(({ motif, name, specialty }) =>
+      option(`switcher-job-${classId}`, motif, name, sameLook({ classId, motif }, pick), specialty)));
     jobs.dataset.lookJobs = classId;
     jobs.hidden = true;
     body.append(jobs);

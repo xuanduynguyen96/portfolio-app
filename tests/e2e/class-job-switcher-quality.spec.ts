@@ -5,9 +5,9 @@ import { expectAllRevealsVisible } from './test-helpers';
 import { HERO, LOOKS, SHEET, STORAGE_KEY, chooseLook, closedSwitcherReady, openSwitcher, resetButton, root, status } from './switcher-helpers';
 import { lookTitle } from '../../src/utils/avatar/class-labels.ts';
 
-// Longest name ("Archer · Arcane Archer") is the worst case for a saved look rewrapping the hero caption.
+// The longest title (computed, not hardcoded) is the worst case for a saved look rewrapping the hero caption.
 const longest = LOOKS.reduce((a, b) => (lookTitle(b).length > lookTitle(a).length ? b : a));
-const other = LOOKS.find((look) => look.classId === 'mage' && look.motif === 'data')!;
+const other = LOOKS.find((look) => look.classId === 'mage' && look.motif === 'hawk')!;
 
 test.describe('motion', () => {
   for (const reducedMotion of ['no-preference', 'reduce'] as const) {

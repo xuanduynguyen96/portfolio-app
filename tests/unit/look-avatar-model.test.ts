@@ -8,13 +8,13 @@ import { lookAvatarModel, parseGear } from '../../src/utils/avatar/look-avatar-m
 import { selectAvatarLayers } from '../../src/utils/avatar/select-avatar-layers.ts';
 import { classifyCharacter } from '../../src/utils/github-character/classify-character.ts';
 import { avatarProfile, TIERS, type Tiers } from './avatar-test-helpers.ts';
-import { ownerLike } from './github-snapshot-fixtures.ts';
+import { hybridStack } from './github-snapshot-fixtures.ts';
 
 const LOOKS = allClassLooks();
-const OWNER_GEAR = classifyCharacter(ownerLike()).gear;
+const OWNER_GEAR = classifyCharacter(hybridStack()).gear;
 const pathMarkup = (paths: readonly { cssVar: string; d: string }[]) =>
   paths.map(({ cssVar, d }) => `<path style="fill:var(${cssVar})" d="${d}"/>`).join('');
-const gearOf = (tiers: Tiers) => avatarProfile('warrior', 'frontend', tiers).gear;
+const gearOf = (tiers: Tiers) => avatarProfile('warrior', 'banner', tiers).gear;
 const TIER_SETS: readonly Tiers[] = [[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [3, 2, 1, 0], [0, 1, 2, 3], [0, 1, 2, 0]];
 
 describe('lookAvatarModel', () => {
@@ -31,7 +31,7 @@ describe('lookAvatarModel', () => {
   });
 
   it('matches the server markup for the same look (title, desc, both frames)', () => {
-    const derived = classifyCharacter(ownerLike());
+    const derived = classifyCharacter(hybridStack());
     const svg = avatarSvgMarkup({ profile: derived, size: 256, idPrefix: 'x', animate: true });
     const model = lookAvatarModel({ classId: derived.classId, motif: derived.motif }, derived.gear);
     const unescape = (s: string) => s.replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { ARCHETYPE_IDS } from '../../src/data/character-class-rules.ts';
 import { gearRules } from '../../src/data/gear-rules.ts';
+import { allClassLooks } from '../../src/utils/avatar/class-looks.ts';
 import { AVATAR_VIEWBOX } from '../../src/utils/avatar/avatar-svg-markup.ts';
 import { characterTitle } from '../../src/utils/github-character/character-title.ts';
 import { classifyCharacter } from '../../src/utils/github-character/classify-character.ts';
@@ -41,8 +41,12 @@ test.describe('character avatar', () => {
     await page.keyboard.press('Enter');
     await expect(why).toHaveAttribute('open', '');
     // An Adventurer has no class evidence yet: the panel explains that instead of listing signals.
-    if (character.primary) await expect(why.getByRole('listitem').first()).toBeVisible();
-    else await expect(why).toContainText('Not enough public signal yet');
+    if (character.primary) {
+      await expect(why.getByRole('listitem').first()).toBeVisible();
+      // One evidence list for the class (domain) and one for the job, each only when it has repos.
+      const lists = [character.signals, character.jobSignals].filter((signals) => signals.length > 0);
+      await expect(why.getByRole('list')).toHaveCount(lists.length);
+    } else await expect(why).toContainText('Not enough public signal yet');
   });
 
   test('frames swap only when motion is allowed', async ({ browser }) => {
@@ -78,7 +82,7 @@ test.describe('character avatar', () => {
     await expect(page.getByRole('img', { name: title, exact: true })).toBeVisible();
     await page.goto('./credits/');
     // Every class x job (3 x 3) plus the Adventurer; one avatar per gear tier 0..max.
-    await expect(page.getByRole('list', { name: 'Avatar looks' }).getByRole('img')).toHaveCount(ARCHETYPE_IDS.length ** 2 + 1);
+    await expect(page.getByRole('list', { name: 'Avatar looks' }).getByRole('img')).toHaveCount(allClassLooks().length);
     await expect(page.getByRole('list', { name: 'Gear tiers' }).getByRole('img')).toHaveCount(gearRules[0].thresholds.length + 1);
   });
 });

@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { ARCHETYPE_IDS } from '../../src/data/character-class-rules.ts';
-import { CLASS_IDS } from '../../src/data/character-job-rules.ts';
+import { CLASS_IDS, MOTIF_IDS } from '../../src/data/character-job-rules.ts';
 import { GEAR_SLOT_IDS } from '../../src/data/gear-rules.ts';
 import { isPaletteKey, STICKER_KEY } from '../../src/data/avatar/avatar-palette.ts';
 import { classSprites, gearSprites, motifSprites } from '../../src/data/avatar/avatar-sprites.ts';
@@ -32,7 +31,7 @@ function placements(anchors: PoseAnchors, frame: 0 | 1) {
     out.push({ name: `boot near t${tier}`, rows: gearSprites.boots[tier], ...anchors.bootNear });
     out.push({ name: `boot far t${tier}`, rows: gearSprites.boots[tier], ...anchors.bootFar });
   }
-  for (const motif of ARCHETYPE_IDS) out.push({ name: `motif ${motif}`, rows: motifSprites[motif][frame], ...anchors.motif });
+  for (const motif of MOTIF_IDS) out.push({ name: `motif ${motif}`, rows: motifSprites[motif][frame], ...anchors.motif });
   return out;
 }
 
@@ -92,7 +91,7 @@ describe('avatar gear tiers', () => {
 });
 
 describe('avatar job motifs', () => {
-  for (const motif of ARCHETYPE_IDS) {
+  for (const motif of MOTIF_IDS) {
     it(`${motif}: two frames in the 6x11 motif box`, () => {
       const frames = motifSprites[motif];
       assert.equal(frames.length, 2);

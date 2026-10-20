@@ -81,6 +81,22 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
     min-width: 0;
   }
 
+  /* A short class title can fit on one line in the pixel font but wrap in the fallback font (and back when
+     a look is restored). Class and job get a line each and two lines are reserved, so the font swap never
+     moves the hero. Desktop is wide enough for one line. */
+  .hero-character-caption :global(.nameplate-class) {
+    min-block-size: 2lh;
+  }
+
+  .hero-character-caption :global(.nameplate-job) {
+    display: block;
+  }
+
+  /* The display rules above would otherwise override the `hidden` attribute (Adventurer has no job). */
+  .hero-character-caption :global(.nameplate-job[hidden]) {
+    display: none;
+  }
+
   .hero-sheet-link {
     display: inline-flex;
     align-items: center;
@@ -105,6 +121,14 @@ const { character, level, snapshotAsOf, githubUrl } = await loadCareerState();
 
     .hero-character-caption {
       justify-items: center;
+    }
+
+    .hero-character-caption :global(.nameplate-class) {
+      min-block-size: 0;
+    }
+
+    .hero-character-caption :global(.nameplate-job) {
+      display: inline;
     }
 
     .hero-character :global(.hero-avatar) {

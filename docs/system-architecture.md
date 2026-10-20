@@ -55,7 +55,7 @@ flowchart LR
   F --> N[normalize-snapshot.ts<br/>public non-fork only, ISO-week dates, sorted]
   N --> J[github-snapshot.json]
   J --> L[load-career-state.ts<br/>strict zod parse]
-  L --> K[classify-character<br/>class, job, gear tiers, why signals]
+  L --> K[classify-character<br/>class (domain), job, gear tiers, why signals]
   L --> Q[repo-quests + repo-skill-matches<br/>quests, skill evidence]
   L --> T[contribution streak]
   K --> V[select-avatar-layers<br/>compose 32x32 grid<br/>sticker ring, merged paths]
@@ -66,6 +66,23 @@ flowchart LR
   I --> U
 ```
 
+### Class and job model
+
+Single source of truth; other docs link here. Values live in `character-class-rules.ts` and `character-job-rules.ts`.
+
+- **Vote:** a repo proves skills (`repo-skill-matches.ts`: `match` rules in `skills-data.ts`: language share, topic, keyword, root file, workflow). Only skills in `skillDomains` vote, each for one domain. The repo splits its weight evenly across the domains of the voting skills it proves; weight = recency (half-life, floor) x owner activity x archived factor.
+- **Class = domain:** highest summed score wins, ties in order backend, frontend, devops. Backend = Warrior, Frontend = Archer, DevOps = Mage. Adventurer (no job) when the total vote or the number of voting repos is under the fallback minimum.
+- **Job = specific skills:** 3 per class; every voting skill is in exactly one job (unit-tested). Job credit = summed primary-domain vote of the voting repos that prove at least one job skill; highest wins, ties go to the earlier job. The job's prop is its slot (banner, crystal or hawk).
+- **Languages alone mostly don't vote:** Python, TypeScript, JavaScript, Go, Rust and Swift alone vote for nothing. A repo must prove a domain skill: keyword, topic, root file, workflow, or a listed language (C#, Java, HTML, CSS, Astro).
+- **Evidence:** `signals` = repos for the primary domain (max 5), `jobSignals` = repos for the job (max 2); the Why panel shows both lists.
+- **Quests are class-independent:** score = repo weight + hygiene + pinned, so Python-only repos still rank.
+
+| Class (domain) | Job: skills (prop slot) |
+|----------------|-------------------------|
+| Warrior (backend) | Knight: csharp, dotnet (banner) · Paladin: java, spring (crystal) · Sentinel: web-servers (hawk) |
+| Archer (frontend) | Ranger: react, astro (banner) · Skirmisher: mobile (crystal) · Herald: web-sites, html, css (hawk) |
+| Mage (devops) | Enchanter: github-actions, jenkins (banner) · Summoner: docker (crystal) · Seer: playwright (hawk) |
+
 ### Modules
 
 | Area | Where | Notes |
@@ -73,15 +90,15 @@ flowchart LR
 | Fetch | `scripts/fetch-github-snapshot.ts`, `scripts/github-snapshot/*` | GraphQL; `GITHUB_TOKEN`, then optional `GH_SNAPSHOT_PAT`; pages of 25 then 10 on non-auth failure; contribution windows of 365 days back to account creation (~8 points per run); >300 repos = refuse. Never fails the job: no token or any error keeps the file, warns, exits 0. Writes only on change; sets `changed` output |
 | Normalize | `src/utils/github-character/normalize-snapshot.ts` | Drops private/fork repos (also from pinned and activity), keeps only https URLs, rounds dates to ISO-week Monday, sorts; `asOf` = ISO-week Monday so unchanged data = identical bytes |
 | Schema | `src/data/github/github-snapshot-schema.ts` | Strict zod; validated in the workflow (separate step) and on every build |
-| Classifier | `src/utils/github-character/{classify-character,repo-archetype-vote,repo-tokens}.ts` | One vote per repo (language shares, primary-language bonus, keywords, recency half-life, owner-commit activity, archived factor). Primary archetype -> class; secondary (ratio + score + top-repo thresholds) -> job motif, else primary (pure). Below the fallback thresholds: Adventurer. Deterministic tie-break order; ranked "why" signals |
+| Classifier | `src/utils/github-character/{classify-character,repo-domain-vote,repo-tokens}.ts` | Model above. `repo-domain-vote` = one repo's weighted vote (also exports `repoWeight`); `classify-character` ranks domains, picks the job, builds `signals` + `jobSignals` (pure). Scores rounded to 3 decimals; deterministic tie-breaks |
 | Gear | `src/utils/github-character/gear-tiers.ts` | Per slot, repos showing the hygiene signal (root/`.github`/workflow file names) -> tier 0-3 by thresholds. Known blind spot: tests below the repo root |
-| Quests | `repo-quests.ts` | Score = class vote + hygiene bonus + pinned bonus; top `quest.max` plus override repos. Difficulty by owner commits or code KiB. Boss = override `isBoss`, else first pinned, else top-ranked |
-| Skills | `repo-skill-matches.ts`, `skills-data.ts` | A repo matches a node by language share, topic, keyword, root file or workflows. Evidence = distinct matching repos (no hand evidence) |
+| Quests | `repo-quests.ts` | Score = repo weight + hygiene bonus + pinned bonus (class-independent); top `quest.max` plus override repos. Difficulty by owner commits or code KiB. Boss = override `isBoss`, else first pinned, else top-ranked |
+| Skills | `repo-skill-matches.ts`, `skills-data.ts` | A repo matches a node by language share, topic, keyword, root file or workflows. Evidence = distinct matching repos (no hand evidence). The same matches decide the class |
 | Avatar | `src/data/avatar/*`, `src/utils/avatar/*` | See below |
 
 ### Avatar render
 
-- Data: hand-authored grids (`src/data/avatar/`): one 2-frame pose per class (4), 2-frame job motif per archetype (3), 4 tiers per gear slot (4). Registry `avatar-sprites.ts`; palette keys -> `--avatar-*` tokens (`avatar-palette.ts`).
+- Data: hand-authored grids (`src/data/avatar/`): one 2-frame pose per class (4: Warrior, Archer, Mage, Adventurer), 2-frame job prop per job slot (3: banner, crystal, hawk), 4 tiers per gear slot (4). Registry `avatar-sprites.ts`; palette keys -> `--avatar-*` tokens (`avatar-palette.ts`).
 - `select-avatar-layers.ts` places sprites at per-frame pose anchors in slots `base < class < armor < amulet < boots < shield < job < fx` (`LAYER_Z`).
 - `compose-avatar-grid.ts` (pure): last opaque pixel wins, outside pixels clipped. `avatar-sticker-outline.ts` pads, adds outline then sticker ring. `avatarPaths` (+ `gridToMergedPathData` in `pixel-icon-path.ts`) emits one rect-merged `<path>` per palette key.
 - `character-avatar.astro` inlines the SVG (`role=img`, name "Class · Job", desc = gear). Animated variant holds both frames; CSS toggles them, 5 loops x 900ms (~4.5s) then rests on frame A, only under `html[data-motion=ok]` and no reduced motion. `forced-color-adjust: none` on the art.
@@ -91,7 +108,7 @@ flowchart LR
 
 ### Class/job switcher
 
-Visitor may display any of 10 looks (Warrior/Mage/Archer x Backend/Data/Frontend jobs, plus Adventurer, which has no job). Changes the hero + character-sheet avatar and name only. Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (roadmap follow-ups). Server HTML stays zero-JS for the avatar; switching re-composes in the browser from the SAME pure modules (`select-avatar-layers`, `compose-avatar-grid`, `avatar-svg-paths`), so output cannot drift from the build.
+Visitor may display any of 10 looks (Warrior/Archer/Mage x the 3 job slots banner/crystal/hawk, plus Adventurer, which has no job). A look key is `class/motif` (e.g. `mage/hawk`); picking another class keeps the slot, not the job (Warrior · Knight, banner -> Archer · Ranger). Changes the hero + character-sheet avatar and name only. Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (roadmap follow-ups). Server HTML stays zero-JS for the avatar; switching re-composes in the browser from the SAME pure modules (`select-avatar-layers`, `compose-avatar-grid`, `avatar-svg-paths`), so output cannot drift from the build.
 
 | Piece | Where | Loaded |
 |-------|-------|--------|
@@ -126,7 +143,7 @@ sequenceDiagram
 ```
 
 - Lifecycle: bind on `astro:page-load`, abort (`AbortController`) on `astro:before-swap`; a stale in-flight import is ignored via a token. Rule list: [code-standards.md](code-standards.md#classjob-switcher).
-- Saved choice: `localStorage` key `portfolio-look`, value = allow-listed look key (e.g. `mage/data`). Removed on Reset and when it equals the GitHub pick; invalid value or blocked storage is ignored (the choice then lasts for the page). Per browser only; nothing is sent anywhere.
+- Saved choice: `localStorage` key `portfolio-look`, value = allow-listed look key (e.g. `mage/hawk`). Removed on Reset and when it equals the GitHub pick; invalid value (including keys from before v1.5 such as `mage/data`: no `data` slot) or blocked storage is ignored, so a visitor with an old saved look falls back to the GitHub pick once (the choice then lasts for the page). Per browser only; nothing is sent anywhere.
 - Progressive enhancement: control markup is in the server HTML but hidden until the stub sets `data-ready` on it (a control-local attribute, not a root flag), and `@media (scripting: none)` removes it. No JS or a failed bundle = GitHub pick only, nothing broken.
 - Motion: the replacement frame `<g>` elements restart the CSS loop on the new frames under the same gating (`data-motion=ok`, no reduced motion).
 - Measured (v1.4): no chunk request before first open (or load with a saved look); eager stub 6,457 B raw / 2,826 B gzip; lazy chunk 18,120 B raw / 4,627 B gzip; home HTML 112,855 B raw / 13,790 B gzip (v1.3 baseline 111,740 / 13,452, +338 B gzip); compose + apply 10-14 ms warm at 4x CPU throttle.
@@ -198,7 +215,7 @@ Unknown/hand-set keys in overrides, skill nodes or snapshot (`xp`, `level`, `dif
 
 ### Anti-gaming and honesty
 
-- XP comes from public repo facts and the rules file, not from claims. Class and gear rules are generic and tested on fixture profiles; per-owner hardcodes are not allowed. Each repo votes once and recency-weights, so one big or recently pushed repo can't decide the class alone.
+- XP comes from public repo facts and the rules file, not from claims. Class and gear rules are generic and tested on fixture profiles; per-owner hardcodes are not allowed. Each repo votes once and recency-weights, and a repo must prove a domain skill to vote (a language like Python or TypeScript alone doesn't), so one big or recently pushed repo can't decide the class alone.
 - Linguist noise (agent tooling, docs) is excluded in the repo via `.gitattributes` (`.claude/**` vendored, `plans/**` and `docs/**` documentation), so the character reflects the site code.
 - Case-study word minimum counts prose only (code, URLs, hidden elements, link definitions excluded) plus a distinct-word minimum.
 - Tier decay + caps and the attribute cap make many small repos worth less than a few real ones.
@@ -313,6 +330,7 @@ See [deployment-guide.md](deployment-guide.md).
 | Token step runs only our no-dependency script | Write token never shares a job with third-party npm code |
 | Refresh never fails the run | Stale data beats a broken weekly deploy; the HUD flags a stale snapshot |
 | Data-driven, generic classifier + fixtures | Honesty rule: no per-owner hardcode; rule changes must keep other profiles' classes |
+| Class from skill matches, job from skills | The class follows what the code does (backend/frontend/devops), reusing the skill tree's evidence instead of a second language/keyword table. Python/TypeScript alone don't vote; each voting skill is in exactly one job, so any vote can name a job. Mage = DevOps (no data skills exist to earn a Data class) |
 | Hand-authored sprites composed to inline SVG | Server render is zero-JS, no asset requests, token-driven palette (themeable ring), unit-testable layers |
 | CSS-only bounded action loop | Meets WCAG 2.2.2 (stops), honours reduced motion, no JS |
 | Switcher composes in the browser on demand | Inlining 10 looks costs ~7.8 KB gzip on every home load; per-look files cost more in total. A lazy chunk (4.6 KB gzip) is fetched only on first open or with a saved look, and reuses the build's pure modules, so no drift |

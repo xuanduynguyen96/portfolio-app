@@ -52,7 +52,7 @@ describe('composeAvatarGrid', () => {
   });
 
   it('does not mutate its input', () => {
-    const layers = deepFreeze(selectAvatarLayers(avatarProfile('warrior', 'frontend', [0, 1, 2, 0]), 0));
+    const layers = deepFreeze(selectAvatarLayers(avatarProfile('warrior', 'banner', [0, 1, 2, 0]), 0));
     const before = JSON.stringify(layers);
     composeAvatarGrid(layers);
     composeAvatarSprite(layers);
@@ -76,7 +76,7 @@ describe('sticker outline + ring', () => {
   });
 
   it('every art pixel of a real avatar is wrapped by outline, then ring; 36x36', () => {
-    const sprite = composeAvatarSprite(selectAvatarLayers(avatarProfile('archer', 'data', [3, 3, 3, 3]), 1));
+    const sprite = composeAvatarSprite(selectAvatarLayers(avatarProfile('archer', 'hawk', [3, 3, 3, 3]), 1));
     assert.equal(sprite.length, 36);
     assert.ok(sprite.every((row) => row.length === 36));
     sprite.forEach((row, y) => [...row].forEach((char, x) => {
@@ -91,7 +91,7 @@ describe('sticker outline + ring', () => {
 
 describe('selectAvatarLayers', () => {
   it('places class pose + 4 gear slots (both boots) at the frame anchors, motif last', () => {
-    const profile = avatarProfile('warrior', 'backend', [0, 1, 2, 3]);
+    const profile = avatarProfile('warrior', 'crystal', [0, 1, 2, 3]);
     for (const frame of [0, 1] as const) {
       const layers = selectAvatarLayers(profile, frame);
       const anchors = classSprites.warrior.frames[frame].anchors;

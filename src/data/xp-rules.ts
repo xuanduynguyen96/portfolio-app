@@ -36,7 +36,7 @@ export interface XpRules {
     summaryMax: number;
     /** Attribute that receives the XP of a quest whose repo matches no skill (else it would vanish). */
     fallbackAttribute: AttributeId;
-    /** Quest ranking = class vote + hygienic slots + pinned bonus. */
+    /** Quest ranking = repo weight + hygienic slots + pinned bonus. */
     selection: { hygieneBonus: number; pinnedBonus: number };
     /** A repo reaching either threshold gets the tier (owner commits / KiB of code). */
     difficulty: Record<Exclude<QuestDifficulty, 'side'>, { commits: number; kib: number }>;

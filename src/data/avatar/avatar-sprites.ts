@@ -1,7 +1,6 @@
-// Avatar sprite registry: one 2-frame pose per class, one 2-frame prop per job motif, 4 tiers per
-// gear slot. Gear + motif sprites are drawn once and placed at each pose's per-frame anchors.
-import type { ArchetypeId } from '../character-class-rules.ts';
-import type { ClassId } from '../character-job-rules.ts';
+// Avatar sprite registry: one 2-frame pose per class, one 2-frame prop per job slot, 4 tiers per
+// gear slot. Gear + prop sprites are drawn once and placed at each pose's per-frame anchors.
+import type { ClassId, MotifId } from '../character-job-rules.ts';
 import type { GearSlotId } from '../gear-rules.ts';
 import { adventurerPose } from './avatar-class-adventurer.ts';
 import { archerPose } from './avatar-class-archer.ts';
@@ -15,12 +14,12 @@ import type { ClassPose, SpriteRows, TieredRows } from './avatar-types.ts';
 
 export const classSprites: Readonly<Record<ClassId, ClassPose>> = {
   warrior: warriorPose,
-  mage: magePose,
   archer: archerPose,
+  mage: magePose,
   adventurer: adventurerPose,
 };
 
-export const motifSprites: Readonly<Record<ArchetypeId, readonly [SpriteRows, SpriteRows]>> = motifFrames;
+export const motifSprites: Readonly<Record<MotifId, readonly [SpriteRows, SpriteRows]>> = motifFrames;
 
 export const gearSprites: Readonly<Record<GearSlotId, TieredRows>> = {
   armor: armorTiers,

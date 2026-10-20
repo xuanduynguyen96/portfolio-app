@@ -2,10 +2,9 @@
 // Usage: node --disable-warning=ExperimentalWarning plans/20261018-0541-class-job-switcher/reports/assets/measure-variant-sizes.ts
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
-import { ARCHETYPE_IDS } from '../../../../src/data/character-class-rules.ts';
-import { CLASS_BY_ARCHETYPE, CLASS_NAMES, JOBS } from '../../../../src/data/character-job-rules.ts';
-import { avatarDescription, type AvatarProfile } from '../../../../src/utils/avatar/avatar-description.ts';
+import { avatarDescription } from '../../../../src/utils/avatar/avatar-description.ts';
 import { avatarFrameGrid, avatarFramePaths, avatarSvgMarkup } from '../../../../src/utils/avatar/avatar-svg-markup.ts';
+import { allClassLooks, lookProfile } from '../../../../src/utils/avatar/class-looks.ts';
 import { classifyCharacter } from '../../../../src/utils/github-character/classify-character.ts';
 import type { GithubSnapshot } from '../../../../src/utils/github-character/github-snapshot-types.ts';
 
@@ -13,13 +12,8 @@ const snapshot = JSON.parse(readFileSync('src/data/github/github-snapshot.json',
 const owner = classifyCharacter(snapshot);
 console.log('owner', owner.classId, owner.jobName, owner.motif, owner.gear.map((g) => `${g.slot}:${g.tier}`).join(' '));
 
-const looks: AvatarProfile[] = [
-  ...ARCHETYPE_IDS.flatMap((primary) => {
-    const classId = CLASS_BY_ARCHETYPE[primary];
-    return ARCHETYPE_IDS.map((motif) => ({ classId, className: CLASS_NAMES[classId], jobName: JOBS[classId][motif].name, motif, gear: owner.gear }));
-  }),
-  { classId: 'adventurer', className: CLASS_NAMES.adventurer, jobName: null, motif: null, gear: owner.gear },
-];
+// Updated for v1.5 (class = domain): every class x job slot look plus the Adventurer, via the shared look list.
+const looks = allClassLooks().map((look) => lookProfile(look, owner.gear));
 const gz = (text: string) => gzipSync(text, { level: 9 }).length;
 let framesAndDesc = '';
 const rows = looks.map((profile) => {

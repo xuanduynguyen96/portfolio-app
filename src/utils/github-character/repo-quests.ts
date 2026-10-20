@@ -4,8 +4,7 @@ import { gearRules } from '../../data/gear-rules.ts';
 import type { Metric, QuestInput, QuestOverrideInput, SkillNodeInput } from '../career-rpg/career-types.ts';
 import { repoHasGear } from './gear-tiers.ts';
 import type { GithubSnapshot, SnapshotRepo } from './github-snapshot-types.ts';
-import { ARCHETYPE_IDS } from '../../data/character-class-rules.ts';
-import { repoArchetypeVote } from './repo-archetype-vote.ts';
+import { repoWeight } from './repo-domain-vote.ts';
 import { matchSkills } from './repo-skill-matches.ts';
 import { splitName } from './repo-tokens.ts';
 
@@ -17,13 +16,11 @@ export function toRepoSlug(name: string): string {
 const KIB = 1024;
 const codeBytes = (repo: SnapshotRepo) => repo.languages.reduce((sum, language) => sum + language.bytes, 0);
 
-/** Class vote total (recency + activity weighted) + hygiene slots + pinned bonus. */
+/** Repo weight (recency + activity) + hygiene slots + pinned bonus. Not class-dependent: any repo can be a quest. */
 export function questScore(repo: SnapshotRepo, snapshot: GithubSnapshot, rules: XpRules = xpRules): number {
-  const { vote } = repoArchetypeVote(repo, snapshot.asOf);
-  const voteTotal = ARCHETYPE_IDS.reduce((sum, archetype) => sum + vote[archetype], 0);
   const hygiene = gearRules.filter((rule) => repoHasGear(repo, rule)).length;
   const pinned = snapshot.pinned.includes(repo.name) ? 1 : 0;
-  return voteTotal + hygiene * rules.quest.selection.hygieneBonus + pinned * rules.quest.selection.pinnedBonus;
+  return repoWeight(repo, snapshot.asOf) + hygiene * rules.quest.selection.hygieneBonus + pinned * rules.quest.selection.pinnedBonus;
 }
 
 /**

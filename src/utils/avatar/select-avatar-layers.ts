@@ -1,7 +1,6 @@
 // Character profile -> avatar layers for one frame: class pose, then each gear slot at its tier and
 // the job motif prop, placed at the pose's anchors for that frame (so gear follows moving parts).
-import type { ArchetypeId } from '../../data/character-class-rules.ts';
-import type { ClassId } from '../../data/character-job-rules.ts';
+import type { ClassId, MotifId } from '../../data/character-job-rules.ts';
 import type { GearSlotId } from '../../data/gear-rules.ts';
 import { classSprites, gearSprites, motifSprites } from '../../data/avatar/avatar-sprites.ts';
 import type { AvatarFrame, Point, SpriteLayer, SpriteRows } from '../../data/avatar/avatar-types.ts';
@@ -10,7 +9,7 @@ import type { GearTier } from '../github-character/character-types.ts';
 /** The parts of a CharacterProfile the avatar depends on. */
 export interface AvatarLook {
   classId: ClassId;
-  motif: ArchetypeId | null;
+  motif: MotifId | null;
   gear: readonly { slot: GearSlotId; tier: GearTier }[];
 }
 

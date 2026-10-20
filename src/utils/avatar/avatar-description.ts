@@ -1,7 +1,5 @@
 // Accessible name + description for the avatar, shared by the SVG <title>/<desc> and the legend.
-import { MOTIF_PROP_NAMES } from '../../data/avatar/avatar-job-motifs.ts';
 import { classSprites, GEAR_MATERIALS } from '../../data/avatar/avatar-sprites.ts';
-import { ARCHETYPE_LABELS } from '../../data/character-job-rules.ts';
 import { gearRules, type GearSlotId } from '../../data/gear-rules.ts';
 import type { CharacterProfile, GearSlotResult, GearTier } from '../github-character/character-types.ts';
 import { characterTitle } from '../github-character/character-title.ts';
@@ -24,7 +22,7 @@ export interface AvatarGearLine {
 }
 
 export interface AvatarDescription {
-  /** e.g. "Warrior · Vanguard" (class only for an Adventurer). */
+  /** e.g. "Warrior · Knight" (class only for an Adventurer). */
   title: string;
   desc: string;
   gear: AvatarGearLine[];
@@ -38,9 +36,7 @@ export function avatarDescription(profile: AvatarProfile): AvatarDescription {
     const material = GEAR_MATERIALS[tier];
     return { slot, label, axis, tier, maxTier, material, text: `${label} tier ${tier} of ${maxTier}, ${material} (${axis})` };
   });
-  const prop = profile.motif
-    ? ` Job prop: ${MOTIF_PROP_NAMES[profile.motif]} (${ARCHETYPE_LABELS[profile.motif]}).`
-    : '';
+  const prop = profile.motif ? ` Job prop: ${profile.motif}.` : '';
   const desc = `Pixel art of ${classSprites[profile.classId].look}.${prop} Gear: ${gear.map((line) => line.text).join('; ')}.`;
   return { title, desc, gear };
 }

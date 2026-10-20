@@ -10,7 +10,7 @@ import { lookProfile, type ClassLook } from './class-looks.ts';
 export interface LookAvatarModel {
   className: string;
   jobName: string | null;
-  /** SVG <title> and visible name, e.g. 'Mage · Sorcerer'. */
+  /** SVG <title> and visible name, e.g. 'Archer · Ranger'. */
   title: string;
   /** SVG <desc>: pose, job prop and the gear tiers earned from the GitHub stats. */
   desc: string;

@@ -3,8 +3,7 @@
 // Usage: node scripts/render-avatar-sheet.ts [out.html] [--png out.png]
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { ARCHETYPE_IDS, type ArchetypeId } from '../src/data/character-class-rules.ts';
-import { CLASS_BY_ARCHETYPE, type ClassId } from '../src/data/character-job-rules.ts';
+import { CLASS_BY_DOMAIN, MOTIF_IDS, type ClassId, type MotifId } from '../src/data/character-job-rules.ts';
 import { GEAR_SLOT_IDS } from '../src/data/gear-rules.ts';
 import type { AvatarFrame } from '../src/data/avatar/avatar-types.ts';
 import type { AvatarProfile } from '../src/utils/avatar/avatar-description.ts';
@@ -28,12 +27,12 @@ const TIER_SETS: readonly [string, Tiers][] = [
   ['mixed 3·2·1·0', [3, 2, 1, 0]],
 ];
 
-function profileOf(classId: ClassId, motif: ArchetypeId | null, tiers: Tiers): AvatarProfile {
+function profileOf(classId: ClassId, motif: MotifId | null, tiers: Tiers): AvatarProfile {
   return lookProfile({ classId, motif }, GEAR_SLOT_IDS.map((slot, i) => ({ slot, tier: tiers[i] })));
 }
 
 const LOOKS: AvatarProfile[] = allClassLooks().map(({ classId, motif }) => profileOf(classId, motif, [0, 0, 0, 0]));
-const PURE = [...ARCHETYPE_IDS.map((a) => profileOf(CLASS_BY_ARCHETYPE[a], a, [0, 0, 0, 0])), profileOf('adventurer', null, [0, 0, 0, 0])];
+const PURE = [...Object.values(CLASS_BY_DOMAIN).map((classId) => profileOf(classId, MOTIF_IDS[0], [0, 0, 0, 0])), profileOf('adventurer', null, [0, 0, 0, 0])];
 
 /** One static frame (frame B included) at `art` px per 32-grid. */
 function frameSvg(profile: AvatarProfile, frame: AvatarFrame, art: number): string {
@@ -56,7 +55,7 @@ function themeBand(theme: 'light' | 'dark'): string {
   const grid = LOOKS.map((p) =>
     `<tr><th>${label(p)}</th>${TIER_SETS.map(([, t]) => `<td>${frameSvg(withTiers(p, t), 0, 64)}${frameSvg(withTiers(p, t), 1, 64)}</td>`).join('')}</tr>`).join('');
   const head = `<tr><th></th>${TIER_SETS.map(([name]) => `<th>${name} (A | B)</th>`).join('')}</tr>`;
-  const hero = avatarSvgMarkup({ profile: profileOf('warrior', 'frontend', [0, 1, 2, 0]), size: 192, idPrefix: `hero-${theme}`, animate: true });
+  const hero = avatarSvgMarkup({ profile: profileOf('warrior', 'banner', [0, 1, 2, 0]), size: 192, idPrefix: `hero-${theme}`, animate: true });
   return `<section class="band ${theme}"><h2>${theme} theme</h2>
 <div class="wrap">${cell('owner, animated (hero, 192)', hero)}${big}</div><div class="wrap">${bigT3}</div>
 <div class="wrap">${ladder}</div><table>${head}${grid}</table></section>`;

@@ -1,6 +1,6 @@
 // Plain-data outputs of the character classifier (no Astro types).
 import type { DomainId } from '../../data/character-class-rules.ts';
-import type { ClassId, MotifId } from '../../data/character-job-rules.ts';
+import type { ClassId, JobId } from '../../data/character-job-rules.ts';
 import type { GearSlotId } from '../../data/gear-rules.ts';
 
 export type GearTier = 0 | 1 | 2 | 3;
@@ -26,10 +26,9 @@ export interface GearSlotResult {
 export interface CharacterProfile {
   classId: ClassId;
   className: string;
-  jobId: string | null;
+  /** Also keys the job prop on the avatar. */
+  jobId: JobId | null;
   jobName: string | null;
-  /** Job prop on the avatar (the job's slot). */
-  motif: MotifId | null;
   scores: Record<DomainId, number>;
   /** Strongest domain; the class follows it. */
   primary: DomainId | null;

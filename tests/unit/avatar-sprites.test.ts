@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { CLASS_IDS, MOTIF_IDS } from '../../src/data/character-job-rules.ts';
+import { CLASS_IDS, JOB_IDS, JOBS, type ClassId } from '../../src/data/character-job-rules.ts';
 import { GEAR_SLOT_IDS } from '../../src/data/gear-rules.ts';
 import { isPaletteKey, STICKER_KEY } from '../../src/data/avatar/avatar-palette.ts';
-import { classSprites, gearSprites, motifSprites } from '../../src/data/avatar/avatar-sprites.ts';
+import { classSprites, gearSprites, jobPropSprites } from '../../src/data/avatar/avatar-sprites.ts';
 import type { Box, PoseAnchors, SpriteRows } from '../../src/data/avatar/avatar-types.ts';
 import { isOpaque, TIERS } from './avatar-test-helpers.ts';
 
@@ -21,8 +21,8 @@ const opaqueCells = (rows: SpriteRows, x0 = 0, y0 = 0) =>
   rows.flatMap((row, y) => [...row].flatMap((char, x) => (isOpaque(char) ? [[x0 + x, y0 + y] as const] : [])));
 const inBox = ([x, y]: readonly [number, number], box: Box) => x >= box.x0 && x <= box.x1 && y >= box.y0 && y <= box.y1;
 
-/** Every (sprite, anchor) a pose can place: all gear tiers on both feet + every motif. */
-function placements(anchors: PoseAnchors, frame: 0 | 1) {
+/** Every (sprite, anchor) a pose can place: all gear tiers on both feet + the class's job props. */
+function placements(classId: ClassId, anchors: PoseAnchors, frame: 0 | 1) {
   const out: { name: string; rows: SpriteRows; x: number; y: number }[] = [];
   for (const tier of TIERS) {
     out.push({ name: `armor t${tier}`, rows: gearSprites.armor[tier], ...anchors.armor });
@@ -31,7 +31,7 @@ function placements(anchors: PoseAnchors, frame: 0 | 1) {
     out.push({ name: `boot near t${tier}`, rows: gearSprites.boots[tier], ...anchors.bootNear });
     out.push({ name: `boot far t${tier}`, rows: gearSprites.boots[tier], ...anchors.bootFar });
   }
-  for (const motif of MOTIF_IDS) out.push({ name: `motif ${motif}`, rows: motifSprites[motif][frame], ...anchors.motif });
+  for (const { id } of classId === 'adventurer' ? [] : JOBS[classId]) out.push({ name: `prop ${id}`, ...jobPropSprites[id][frame] });
   return out;
 }
 
@@ -51,10 +51,10 @@ describe('avatar class poses', () => {
       });
     });
 
-    it(`${classId}: gear + motifs stay on canvas and out of head / held-item boxes on both frames`, () => {
+    it(`${classId}: gear + job props stay on canvas and out of head / held-item boxes on both frames`, () => {
       classSprites[classId].frames.forEach((frame, f) => {
         const boxes = [frame.identity.head, ...frame.identity.held];
-        for (const { name, rows, x, y } of placements(frame.anchors, f as 0 | 1)) {
+        for (const { name, rows, x, y } of placements(classId, frame.anchors, f as 0 | 1)) {
           for (const cell of opaqueCells(rows, x, y)) {
             assert.ok(cell[0] >= 0 && cell[1] >= 0 && cell[0] < 32 && cell[1] < 32, `${classId} f${f} ${name} off canvas at ${cell}`);
             assert.ok(!boxes.some((box) => inBox(cell, box)), `${classId} f${f} ${name} covers identity pixel ${cell}`);
@@ -90,13 +90,13 @@ describe('avatar gear tiers', () => {
   }
 });
 
-describe('avatar job motifs', () => {
-  for (const motif of MOTIF_IDS) {
-    it(`${motif}: two frames in the 6x11 motif box`, () => {
-      const frames = motifSprites[motif];
+describe('avatar job props', () => {
+  for (const jobId of JOB_IDS) {
+    it(`${jobId}: two differing frames in palette, same width on both`, () => {
+      const frames = jobPropSprites[jobId];
       assert.equal(frames.length, 2);
-      frames.forEach((rows, f) => assertSpriteShape(rows, `${motif} f${f}`, 6, 11));
-      assert.notDeepEqual(frames[0], frames[1]);
+      frames.forEach(({ rows }, f) => assertSpriteShape(rows, `${jobId} f${f}`, frames[0].rows[0].length));
+      assert.notDeepEqual(frames[0].rows, frames[1].rows);
     });
   }
 });

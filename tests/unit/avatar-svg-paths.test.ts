@@ -5,7 +5,7 @@ import { gzipSync } from 'node:zlib';
 import { AVATAR_PALETTE, STICKER_KEY, avatarCssVar, PALETTE_KEYS } from '../../src/data/avatar/avatar-palette.ts';
 import { avatarPaths } from '../../src/utils/avatar/avatar-svg-paths.ts';
 import { avatarFrameGrid, avatarSvgMarkup } from '../../src/utils/avatar/avatar-svg-markup.ts';
-import { LOOK_KEYS, TIERS, avatarProfile, type Tiers } from './avatar-test-helpers.ts';
+import { ALL_TIER_SETS, LOOK_KEYS, TIERS, avatarProfile, type Tiers } from './avatar-test-helpers.ts';
 import { gridCells, pathCells } from './path-raster-oracle.ts';
 
 /** Raw markup ceilings (regression guards; transfer size is the gzip budget). */
@@ -17,7 +17,7 @@ const TIER_SAMPLES: readonly Tiers[] = [
   ...TIERS.map((t): Tiers => [t, t, t, t]),
   ...[0, 1, 2, 3].map((slot): Tiers => [0, 1, 2, 3].map((i) => (i === slot ? 3 : 0)) as unknown as Tiers),
 ];
-const SAMPLES = LOOK_KEYS.flatMap(([classId, motif]) => TIER_SAMPLES.map((tiers) => avatarProfile(classId, motif, tiers)));
+const SAMPLES = LOOK_KEYS.flatMap(([classId, jobId]) => TIER_SAMPLES.map((tiers) => avatarProfile(classId, jobId, tiers)));
 
 describe('avatar svg paths', () => {
   it('one path per palette key present, covering exactly its cells', () => {
@@ -25,7 +25,7 @@ describe('avatar svg paths', () => {
       for (const frame of [0, 1] as const) {
         const grid = avatarFrameGrid(profile, frame);
         for (const { key, cssVar, d } of avatarPaths(grid)) {
-          assert.deepEqual(pathCells(d), gridCells(grid, key), `${profile.classId}/${profile.motif} frame ${frame} ${key}`);
+          assert.deepEqual(pathCells(d), gridCells(grid, key), `${profile.classId}/${profile.jobId} frame ${frame} ${key}`);
           assert.equal(cssVar, avatarCssVar(key));
         }
       }
@@ -36,12 +36,19 @@ describe('avatar svg paths', () => {
     assert.throws(() => avatarPaths(['.Z.']), /Unknown avatar palette key "Z"/);
   });
 
-  it(`every look stays within ${MAX_COLORS} colors and the size budgets`, () => {
-    for (const profile of SAMPLES) {
-      for (const frame of [0, 1] as const) {
-        const keys = new Set(avatarFrameGrid(profile, frame).join('').replace(/[.#]/g, ''));
-        assert.ok(keys.size <= MAX_COLORS, `${profile.classId}/${profile.motif}: ${keys.size} colors`);
+  it(`every look stays within ${MAX_COLORS} colors at all 256 gear tier sets`, () => {
+    for (const [classId, jobId] of LOOK_KEYS) {
+      for (const tiers of ALL_TIER_SETS) {
+        for (const frame of [0, 1] as const) {
+          const keys = new Set(avatarFrameGrid(avatarProfile(classId, jobId, tiers), frame).join('').replace(/[.#]/g, ''));
+          assert.ok(keys.size <= MAX_COLORS, `${classId}/${jobId} ${tiers.join('')}: ${keys.size} colors`);
+        }
       }
+    }
+  });
+
+  it('every look stays within the size budgets', () => {
+    for (const profile of SAMPLES) {
       const still = avatarSvgMarkup({ profile, size: 192, idPrefix: 'x' });
       const animated = avatarSvgMarkup({ profile, size: 192, idPrefix: 'x', animate: true });
       assert.ok(still.length <= BUDGET.staticRaw, `static ${still.length} B`);
@@ -58,7 +65,7 @@ describe('avatar svg paths', () => {
 });
 
 describe('avatar svg markup', () => {
-  const profile = avatarProfile('warrior', 'banner', [0, 1, 2, 0]);
+  const profile = avatarProfile('warrior', 'knight', [0, 1, 2, 0]);
 
   it('is an accessible image named by class and job, with unique-prefixed ids', () => {
     const svg = avatarSvgMarkup({ profile, size: 192, idPrefix: 'hero' });

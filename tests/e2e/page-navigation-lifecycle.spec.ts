@@ -64,12 +64,12 @@ test('mobile menu still works after a soft navigation', async ({ page }) => {
 
 test('class/job switcher re-binds across soft navigations and keeps the saved look', async ({ page }) => {
   const errors = trackPageErrors(page);
-  const other = LOOKS.find((look) => look.classId !== pick.classId && look.motif !== null)!;
+  const other = LOOKS.find((look) => look.classId !== pick.classId && look.jobId !== null)!;
   await page.goto('./');
   await closedSwitcherReady(page);
   await root(page).locator('summary').click();
   await classRadio(page, other.classId).check();
-  await jobRadio(page, other.classId, other.motif!).check();
+  await jobRadio(page, other.classId, other.jobId!).check();
   await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
   await page.evaluate(() => Object.assign(window, { __softNavMarker: true }));
 
@@ -95,7 +95,7 @@ test('class/job switcher re-binds across soft navigations and keeps the saved lo
     expect(await page.evaluate(() => (window as unknown as { __log: string[] }).__log.length)).toBe(1);
     await classRadio(page, other.classId).check();
     await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle(other));
-    await jobRadio(page, other.classId, other.motif!).check();
+    await jobRadio(page, other.classId, other.jobId!).check();
     expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).not.toBeNull();
   }
 

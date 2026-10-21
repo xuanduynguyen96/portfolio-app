@@ -73,7 +73,7 @@ export function classifyCharacter(
   const total = DOMAIN_IDS.reduce((sum, domain) => sum + scores[domain], 0);
   if (total < rules.fallback.minTotal || voters.length < rules.fallback.minRepos) {
     return {
-      classId: 'adventurer', className: CLASS_NAMES.adventurer, jobId: null, jobName: null, motif: null,
+      classId: 'adventurer', className: CLASS_NAMES.adventurer, jobId: null, jobName: null,
       scores, primary: null, signals: signals.sort(bySignal).slice(0, rules.signals.domain), jobSignals: [], gear,
     };
   }
@@ -87,7 +87,6 @@ export function classifyCharacter(
     className: CLASS_NAMES[classId],
     jobId: job.id,
     jobName: job.name,
-    motif: job.motif,
     scores,
     primary,
     signals: signals.filter((signal) => signal.domain === primary).sort(bySignal).slice(0, rules.signals.domain),

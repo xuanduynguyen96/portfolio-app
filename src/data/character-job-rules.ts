@@ -1,6 +1,6 @@
 // Class + job names. Class = domain (backend, frontend, devops); job = the specialty the character's
 // skills prove most within that class. Every domain skill belongs to exactly one job (unit-tested), so
-// any domain vote can name a job. Each class has 3 jobs; `motif` is the job's avatar prop.
+// any domain vote can name a job. Each class has 3 jobs; the job id also keys its avatar prop (art is lazy).
 import type { DomainId } from './character-class-rules.ts';
 
 export const CLASS_IDS = ['warrior', 'archer', 'mage', 'adventurer'] as const;
@@ -20,9 +20,9 @@ export const CLASS_NAMES: Record<ClassId, string> = {
   adventurer: 'Adventurer',
 };
 
-/** Job props: one per job slot, so the 3 jobs of a class look different. */
-export const MOTIF_IDS = ['banner', 'crystal', 'hawk'] as const;
-export type MotifId = (typeof MOTIF_IDS)[number];
+/** Every job id, class by class (3 each). Also the switcher radio value and the avatar prop key. */
+export const JOB_IDS = ['knight', 'paladin', 'sentinel', 'ranger', 'skirmisher', 'herald', 'enchanter', 'summoner', 'seer'] as const;
+export type JobId = (typeof JOB_IDS)[number];
 
 /** What each domain means, shown in the "why" panel. */
 export const DOMAIN_LABELS: Record<DomainId, string> = {
@@ -32,9 +32,8 @@ export const DOMAIN_LABELS: Record<DomainId, string> = {
 };
 
 export interface JobDefinition {
-  id: string;
+  id: JobId;
   name: string;
-  motif: MotifId;
   /** Skill ids that prove this job. */
   skills: readonly string[];
   /** Short label for the switcher hint. */
@@ -43,18 +42,28 @@ export interface JobDefinition {
 
 export const JOBS: Record<CombatClassId, readonly JobDefinition[]> = {
   warrior: [
-    { id: 'knight', name: 'Knight', motif: 'banner', skills: ['csharp', 'dotnet'], specialty: '.NET / C#' },
-    { id: 'paladin', name: 'Paladin', motif: 'crystal', skills: ['java', 'spring'], specialty: 'Spring Boot / Java' },
-    { id: 'sentinel', name: 'Sentinel', motif: 'hawk', skills: ['web-servers'], specialty: 'Web servers & APIs' },
+    { id: 'knight', name: 'Knight', skills: ['csharp', 'dotnet'], specialty: '.NET / C#' },
+    { id: 'paladin', name: 'Paladin', skills: ['java', 'spring'], specialty: 'Spring Boot / Java' },
+    { id: 'sentinel', name: 'Sentinel', skills: ['web-servers'], specialty: 'Web servers & APIs' },
   ],
   archer: [
-    { id: 'ranger', name: 'Ranger', motif: 'banner', skills: ['react', 'astro'], specialty: 'React & Astro' },
-    { id: 'skirmisher', name: 'Skirmisher', motif: 'crystal', skills: ['mobile'], specialty: 'Mobile (Xamarin)' },
-    { id: 'herald', name: 'Herald', motif: 'hawk', skills: ['web-sites', 'html', 'css'], specialty: 'Websites & markup' },
+    { id: 'ranger', name: 'Ranger', skills: ['react', 'astro'], specialty: 'React & Astro' },
+    { id: 'skirmisher', name: 'Skirmisher', skills: ['mobile'], specialty: 'Mobile (Xamarin)' },
+    { id: 'herald', name: 'Herald', skills: ['web-sites', 'html', 'css'], specialty: 'Websites & markup' },
   ],
   mage: [
-    { id: 'enchanter', name: 'Enchanter', motif: 'banner', skills: ['github-actions', 'jenkins'], specialty: 'CI/CD pipelines' },
-    { id: 'summoner', name: 'Summoner', motif: 'crystal', skills: ['docker'], specialty: 'Containers' },
-    { id: 'seer', name: 'Seer', motif: 'hawk', skills: ['playwright'], specialty: 'Test automation' },
+    { id: 'enchanter', name: 'Enchanter', skills: ['github-actions', 'jenkins'], specialty: 'CI/CD pipelines' },
+    { id: 'summoner', name: 'Summoner', skills: ['docker'], specialty: 'Containers' },
+    { id: 'seer', name: 'Seer', skills: ['playwright'], specialty: 'Test automation' },
   ],
 };
+
+/** Position of a job in its class (0-2), or -1 when the job is not one of the class's. */
+export function jobSlot(classId: ClassId, jobId: JobId | null): number {
+  return classId === 'adventurer' ? -1 : JOBS[classId].findIndex((job) => job.id === jobId);
+}
+
+/** The class's job at a slot; the first job for a slot it does not have. */
+export function jobAtSlot(classId: CombatClassId, slot: number): JobId {
+  return (JOBS[classId][slot] ?? JOBS[classId][0]).id;
+}

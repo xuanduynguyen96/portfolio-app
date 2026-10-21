@@ -3,7 +3,7 @@
 // controls; the sprite composer is a lazy chunk fetched on first open, or on load for a saved look.
 import { buildSwitcherBody } from './switcher-body';
 import { SWITCH_FAILED_MESSAGE, lookTitle, statusMessage } from '../utils/avatar/class-labels';
-import { changeClass, changeMotif, lookKey, parseClassId, parseLookKey, parseMotif, parseStoredLook, sameLook, type ClassLook } from '../utils/avatar/class-looks';
+import { changeClass, changeJob, lookKey, parseClassId, parseJobId, parseLookKey, parseStoredLook, sameLook, type ClassLook } from '../utils/avatar/class-looks';
 
 const STORAGE_KEY = 'portfolio-look';
 const JOB_PREFIX = 'switcher-job-';
@@ -58,7 +58,7 @@ function bind(): void {
 
   const sync = () => {
     classRadios.forEach((radio) => (radio.checked = radio.value === look.classId));
-    jobRadios.forEach((radio) => (radio.checked = radio.value === look.motif));
+    jobRadios.forEach((radio) => (radio.checked = radio.value === look.jobId));
     jobGroups.forEach((group) => (group.hidden = group.dataset.lookJobs !== look.classId));
     reset.disabled = sameLook(look, pick);
   };
@@ -104,8 +104,8 @@ function bind(): void {
       const classId = parseClassId(input.value);
       if (classId) void show(changeClass(look, classId, pick));
     } else if (input.name === `${JOB_PREFIX}${look.classId}`) {
-      const motif = parseMotif(input.value);
-      if (motif) void show(changeMotif(look, motif));
+      const jobId = parseJobId(input.value);
+      if (jobId) void show(changeJob(look, jobId));
     }
   }, { signal });
   reset.addEventListener('click', () => {

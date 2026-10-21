@@ -1,6 +1,6 @@
 # Codebase Summary
 
-Static Astro 7 site plus the GitHub-derived Career RPG layer and pixel avatar (see [system-architecture.md](system-architecture.md#github-derived-pipeline)). Hand-maintained from the actual tree (not repomix). Last updated 2026-10-20 (v1.5).
+Static Astro 7 site plus the GitHub-derived Career RPG layer and pixel avatar (see [system-architecture.md](system-architecture.md#github-derived-pipeline)). Hand-maintained from the actual tree (not repomix). Last updated 2026-10-21 (v1.6).
 
 ## Root
 
@@ -53,10 +53,10 @@ src/
 │   ├── site-config.ts               name, role, bio, email, socials, SEO, `availability`
 │   ├── skills-data.ts               flat `skillNodes` (parent links + `match` rules; evidence is derived)
 │   ├── character-class-rules.ts     class rules: `DOMAIN_IDS`, `skillDomains` (skill -> backend/frontend/devops), language share floor, recency, activity, evidence counts, Adventurer fallback
-│   ├── character-job-rules.ts       class ids/names, `CLASS_BY_DOMAIN`, domain labels, 3 jobs per class (skills + prop slot `MOTIF_IDS`)
+│   ├── character-job-rules.ts       class ids/names, `CLASS_BY_DOMAIN`, domain labels, 3 jobs per class (skills), `JOB_IDS` / `JobId` (9 ids), `jobSlot` / `jobAtSlot`
 │   ├── gear-rules.ts                4 gear slots: file/keyword patterns + tier thresholds
 │   ├── github/                      `github-snapshot.json` (committed, workflow-written), `github-snapshot-schema.ts` (strict zod), `github-login.ts`
-│   ├── avatar/                      hand-authored sprites: `avatar-class-{warrior,archer,mage,adventurer}` (Mage = the DevOps class), `avatar-gear-{armor,shield,boots-amulet}`, `avatar-job-motifs`, `avatar-palette`, `avatar-types`, registry `avatar-sprites`
+│   ├── avatar/                      hand-authored sprites: `avatar-class-{warrior,archer,mage,adventurer}` (Mage = the DevOps class), `avatar-gear-{armor,shield,boots-amulet}`, `avatar-job-props-{warrior,archer,mage}` (3 props each, 2 `PlacedSprite` frames), `avatar-job-style` (`JOB_PROP_ZONES`, `JOB_ACCENT`, `JOB_PROP_NAMES`), `avatar-class-trim` (accent trim masks), `avatar-palette`, `avatar-types`, registry `avatar-sprites`
 │   ├── credits-data.ts              fonts, icons, libraries + licenses for /credits/
 │   ├── pixel-icons.ts               registry (`pixelIcons`, `PixelIconName`, sizes, grid legend)
 │   ├── pixel-icons-career.ts        8x8 grids: attributes, tiers, boss
@@ -87,7 +87,7 @@ src/
 │       ├── scroll-reveals.ts        [data-reveal] batch fade-up
 │       └── card-spotlight.ts        --spot-x/--spot-y on .glass[data-spotlight]
 ├── styles/
-│   ├── design-tokens.css            :root tokens: `light-dark()` colors, fonts, pixel units
+│   ├── design-tokens.css            :root tokens: `light-dark()` colors, `--avatar-*` (incl. 9 `--avatar-accent-<job>`), fonts, pixel units
 │   ├── global-styles.css            reset, base, focus, `.hud-text`, `.h2-compact`, pre-hide rule
 │   └── effects.css                  dither bg, pixel frames (.glass/.pixel-frame), .neon-text, .eyebrow, .status-dot, [data-caret], `.pixel-details` disclosure
 └── utils/
@@ -99,7 +99,7 @@ src/
     │   ├── github-snapshot-types.ts / character-types.ts   snapshot + raw API shapes / profile, signals, gear types
     │   ├── normalize-snapshot.ts    raw GraphQL -> public-only normalized snapshot (+ `serializeSnapshot`)
     │   ├── repo-tokens.ts / repo-domain-vote.ts   name/keyword tokens; one weighted domain vote per repo (+ `repoWeight`, shared with quests)
-    │   ├── classify-character.ts    domain scores -> class, job, motif, `signals` + `jobSignals`, gear
+    │   ├── classify-character.ts    domain scores -> class, job, `signals` + `jobSignals`, gear
     │   ├── gear-tiers.ts / character-title.ts   slot tiers 0-3; "Class · Job" string
     │   └── repo-quests.ts / repo-skill-matches.ts   repo -> quest selection (weight + hygiene + pinned), difficulty, boss; skill `match` rules
     ├── avatar/                      sprite composition (pure)
@@ -107,7 +107,7 @@ src/
     │   ├── compose-avatar-grid.ts   z-ordered 32x32 grid; `avatar-sticker-outline.ts` pad + outline + ring
     │   ├── avatar-svg-paths.ts / avatar-svg-markup.ts   merged paths per palette key; accessible SVG string, sizes 128/192/256
     │   ├── avatar-description.ts    `AvatarProfile`, gear/look text for `<desc>`
-    │   ├── class-looks.ts           the 10 selectable looks (`allClassLooks`), keys (`mage/hawk`), allow-list parsers, `changeClass`/`changeMotif`, `defaultLook`, `lookProfile`
+    │   ├── class-looks.ts           the 10 selectable looks (`allClassLooks`), keys (`class/jobId`, e.g. `mage/seer`), allow-list parsers (`parseLookKey`, `parseClassId`, `parseJobId`), `jobsFor`, `changeClass` (keeps the job slot)/`changeJob`, `defaultLook`, `lookProfile`
     │   ├── class-labels.ts          switcher strings: `lookTitle`, GitHub pick line, status + failure messages
     │   └── look-avatar-model.ts     look + stats gear -> frames, title, desc (`lookAvatarModel`, `parseGear`); same modules as the build
     └── career-rpg/                  Career RPG engine (pure except load-career-state.ts)
@@ -129,11 +129,11 @@ src/
 
 `favicon.svg` (literal colors), `og-image.png` (generated; command in README; still old palette, not the avatar).
 
-## `tests/unit/` (`node --test`, 279 tests)
+## `tests/unit/` (`node --test`, 329 tests)
 
-`npm run test:unit` runs `tests/unit/**/*.test.ts` through Node type stripping (no build, no Astro). One test file per pure module in `src/utils/{career-rpg,github-character,avatar}/` (plus `career-schemas`, `character-rules`, `github-snapshot-schema`, `fetch-github-data` for the script, `format-date-range`, `pixel-icons`, `pixel-icon-path`, `to-roman-numeral`). Notable: `classify-character.test.ts` (fixture profiles per class and job, Adventurer fallback, tie-breaks, purity), `repo-domain-vote.test.ts` (even split, weights, non-voting languages), `character-rules.test.ts` (every voting skill in exactly one job), `avatar-sprites.test.ts` (shape, tier superset, identity boxes), `avatar-silhouette.test.ts` (class IoU), `avatar-svg-paths.test.ts` (color/size budgets, `--avatar-*` tokens defined). Switcher: `class-looks.test.ts` (10 valid looks, parsers, moves), `class-labels.test.ts`, `look-avatar-model.test.ts` (matches server markup, gear on every look, `parseGear`), `switcher-eager-imports.test.ts` (eager graph never reaches sprites/composer/gear rules). Shared builders: `career-fixtures.ts`, `github-snapshot-fixtures.ts`, `github-raw-fixtures.ts`, `avatar-test-helpers.ts`, `path-raster-oracle.ts`. `load-career-state.ts` is not unit-tested (needs `astro:content`); e2e covers it.
+`npm run test:unit` runs `tests/unit/**/*.test.ts` through Node type stripping (no build, no Astro). One test file per pure module in `src/utils/{career-rpg,github-character,avatar}/` (plus `career-schemas`, `character-rules`, `github-snapshot-schema`, `fetch-github-data` for the script, `format-date-range`, `pixel-icons`, `pixel-icon-path`, `to-roman-numeral`). Notable: `classify-character.test.ts` (fixture profiles per class and job, Adventurer fallback, tie-breaks, purity), `repo-domain-vote.test.ts` (even split, weights, non-voting languages), `character-rules.test.ts` (every voting skill in exactly one job), `avatar-sprites.test.ts` (shape, tier superset, identity boxes), `avatar-silhouette.test.ts` (class IoU), `avatar-job-props.test.ts` (class zone, 1 px clearance from body + all gear tiers, identity boxes, colours = class/gear keys + own accent, accent share, frame B >= 4 px change, props of a class differ >= 20 px, accent tokens, trim validity + visibility, Adventurer no accent), `avatar-svg-paths.test.ts` (color/size budgets, `--avatar-*` tokens defined). Switcher: `class-looks.test.ts` (10 valid looks, parsers, moves), `class-labels.test.ts`, `look-avatar-model.test.ts` (matches server markup, gear on every look, `parseGear`), `switcher-eager-imports.test.ts` (eager graph never reaches sprites/composer/gear rules). Shared builders: `career-fixtures.ts`, `github-snapshot-fixtures.ts`, `github-raw-fixtures.ts`, `avatar-test-helpers.ts`, `path-raster-oracle.ts`. `load-career-state.ts` is not unit-tested (needs `astro:content`); e2e covers it.
 
-## `tests/e2e/` (Playwright, 121 tests)
+## `tests/e2e/` (Playwright, 122 tests)
 
 | Spec | Covers |
 |------|--------|
@@ -154,7 +154,7 @@ src/
 | `pixel-icons.spec.ts` | Icons crisp (16/24/32/48, `crispEdges`) and decorative/labelled on home, project, speedrun, credits |
 | `forced-colors.spec.ts` | Frames fall back to a real border under `forced-colors: active` |
 | `character-avatar.spec.ts` | Hero avatar role/name matches nameplate; sheet legend per slot + keyboard-openable why panel (class + job evidence lists); frames swap only when motion allowed; no-JS fixed integer size (no layout shift); speedrun header + credits gallery |
-| `class-job-switcher.spec.ts` | No-JS: control absent; no chunk request before first open; GitHub pick marked, valid jobs per class; arrow keys; changing class keeps the job slot; all 10 looks (names, status, pixels vs pure modules); gear legend + Why panel stay GitHub-derived; Reset (focus); one status per change; saved/restored/cleared choice; invalid + blocked storage, key from an older version ignored; `/speedrun/` + `/credits/` unchanged; failed chunk load; only hero + sheet are targets |
+| `class-job-switcher.spec.ts` | No-JS: control absent; no chunk request before first open; GitHub pick marked, valid jobs per class; arrow keys; changing class keeps the job slot; all 10 looks (names, status, pixels vs pure modules); gear legend + Why panel stay GitHub-derived; Reset (focus); one status per change; saved/restored/cleared choice; invalid + blocked storage, key from an older version ignored (incl. legacy `mage/hawk`); `/speedrun/` + `/credits/` unchanged; failed chunk load; only hero + sheet are targets |
 | `class-job-switcher-quality.spec.ts` | Motion (hero loop follows preference, sheet static), layout shift with a saved look (longest title), 360px + 44px targets, forced colors, axe open/chosen in both themes, keyboard |
 | `switcher-helpers.ts` | Not a spec: shared helpers for the two switcher specs |
 | `credits-page.spec.ts` | `/credits/` groups, entries, license links, icon + avatar gallery, footer link on every page |

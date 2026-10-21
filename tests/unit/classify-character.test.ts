@@ -105,7 +105,6 @@ describe('classifyCharacter: job = the skills the repos prove', () => {
         const profile = classifyCharacter(snapshot(repos));
         assert.equal(profile.classId, classId, job.id);
         assert.equal(profile.jobId, job.id, job.id);
-        assert.equal(profile.motif, job.motif, job.id);
       }
     }
   });
@@ -118,12 +117,11 @@ describe('classifyCharacter: job = the skills the repos prove', () => {
 });
 
 describe('classifyCharacter: Adventurer fallback', () => {
-  it('too little evidence -> no job, no motif', () => {
+  it('too little evidence -> no job', () => {
     for (const snap of [sparse(), snapshot([]), snapshot([repo({ name: 'empty' }), repo({ name: 'notes' }), provingRepo('x', 'csharp')])]) {
       const profile = classifyCharacter(snap);
       assert.equal(profile.classId, 'adventurer');
       assert.equal(profile.jobId, null);
-      assert.equal(profile.motif, null);
       assert.equal(profile.primary, null);
     }
   });

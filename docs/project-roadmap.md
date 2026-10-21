@@ -1,6 +1,6 @@
 # Project Roadmap
 
-Last updated: 2026-10-20 (v1.5)
+Last updated: 2026-10-21 (v1.6)
 
 ## v1: shipped to repo (pending first deploy + real content)
 
@@ -126,7 +126,7 @@ Plan: `plans/20261020-1801-domain-class-skill-jobs/` (phases 01-06, reports in `
 | 05 | Docs + changelog entry (`2026-10-20-domain-classes.md`) | Done |
 | 06 | Final gate, review, commit | Pending |
 
-What shipped: class = domain from skill matches (backend Warrior, frontend Archer, DevOps Mage), 3 skill-based jobs per class, prop = job slot, class and job evidence lists in the Why panel, quest ranking independent of class. Mobile hero caption puts class and job on separate lines and reserves 2 lines: CLS 0.085 before the fix, 0 now.
+What shipped: class = domain from skill matches (backend Warrior, frontend Archer, DevOps Mage), 3 skill-based jobs per class, prop = job slot (per-job props since v1.6), class and job evidence lists in the Why panel, quest ranking independent of class. Mobile hero caption puts class and job on separate lines and reserves 2 lines: CLS 0.085 before the fix, 0 now.
 
 Behaviour changes:
 - Python, TypeScript, JavaScript, Go, Rust and Swift alone no longer vote; a repo must prove a domain skill.
@@ -141,6 +141,29 @@ Dated example (2026-10-19 snapshot, not a rule): Warrior · Knight (then: Warrio
 - [ ] Re-check the class after the next snapshot refresh.
 - [ ] Tighten generic whole-word keywords (`rest`, `server`, `api`, `mobile`) in `skills-data.ts` if they mis-vote (also changes skill levels).
 - [ ] Human blind-ID of the Mage silhouette next to the current Warrior/Archer art.
+
+## v1.6: distinct art per job (done, branch `feat/distinct-job-art`)
+
+Plan: `plans/20261021-0208-distinct-job-art-per-job-props/` (phases 00-07, reports in `reports/`). Art rules: [code-standards](code-standards.md#avatar-sprites); design: [design-guidelines](design-guidelines.md#character-avatar). Art only; no new library, font or asset.
+
+| Phase | Scope | Status |
+|-------|-------|--------|
+| 00 | Spike: class prop zones, overlap policy, byte budget | Done |
+| 01 | Job-keyed data model refactor (`JOB_IDS`/`JobId`, look key `class/jobId`; commit b3c36ca) | Done |
+| 02 | Palette tokens (9 `--avatar-accent-<job>`), accent + trim layer, prop invariants | Done |
+| 03-05 | Art: Warrior, Archer, Mage props (3 each, 2 frames) + uniqueness checks (commit bab21ba) | Done |
+| 06 | Verification: 329 unit, 122 e2e; lazy chunk 5,421 B gz (was 4,580; budget <= 6,000); eager stub 3,034 B gz (was 2,992; <= +100); home HTML 13,629 B gz (was 13,515; <= +1,000); animated markup max 10,886 B raw / 1,979 B gz; colors max 15 | Done |
+| 07 | Docs + changelog entry (`2026-10-21-distinct-job-art.md`) | Done |
+
+What shipped: 9 props keyed by job id (replace 3 shared slot props), each with a frame B motion; per-job accent colour (prop main hue + outfit trim via the `trim` layer, z 15); Adventurer unchanged (no prop, no trim). Accent contrast vs the outline 4.07-8.75:1 (gate >= 3:1); pairwise dE >= 25 (>= 33 within a class).
+
+Behaviour changes:
+- Look key = `class/jobId` (e.g. `mage/seer`); radio value = job id. Legacy keys (`mage/hawk`, `warrior/banner`, `mage/data`) are invalid and reset once to the GitHub pick. Changing class still keeps the job slot (Warrior · Sentinel -> Archer · Herald -> Mage · Seer).
+- Removed: `MOTIF_IDS`, `MotifId`, `JobDefinition.motif`, `CharacterProfile.motif`, `PoseAnchors.motif`, `avatar-job-motifs.ts`, `parseMotif`, `changeMotif`, `motifsFor`. New: `jobSlot`, `jobAtSlot`, `jobsFor`, `parseJobId`, `changeJob`.
+
+### Follow-ups (v1.6, not built)
+
+- [ ] Human check that each of the 9 props reads at 128px (tests cover geometry and colour, not recognisability).
 
 ## v2 ideas (unscheduled)
 
@@ -171,7 +194,7 @@ Dated example (2026-10-19 snapshot, not a rule): Warrior · Knight (then: Warrio
 - Class accuracy depends on skill matches (`skills-data.ts`): generic whole-word keywords can mis-vote, HTML/CSS/C#/Java also count by language share (linguist: vendored/generated files skew it; `.gitattributes` keeps agent tooling and docs out of this repo), and any CI workflow matches `github-actions`, so a CI-heavy frontend repo leaks some DevOps share. Profiles whose repos prove no domain skill (e.g. Python-only) are Adventurer. Sparse public history makes the class sensitive to a few repos (recency half-life 48 months in `character-class-rules.ts`).
 - Gear hygiene signals read root, `.github/` and workflow file names only (tests below the root are missed).
 - Quests are repo facts plus the owner's case-study text; override text, metrics and changelog dates are self-attested (backdating not verified). Repos can be created to inflate counts; caps and decay limit the effect.
-- Class art readability is unit-tested by silhouette overlap only; human blind-ID still pending.
+- Class art readability is unit-tested by silhouette overlap only; human blind-ID still pending. Job props are unit-tested for zone, clearance, colour and difference, not for recognisability.
 - Class/job choice is client-only, per browser (`localStorage`), sprite + name only, hero and character sheet only. Attributes and the `Why <Class>?` panel describe the GitHub-derived class, and `/speedrun/` + `/credits/` always show it. Gear is the same stats-derived tiers on every look. If the lazy chunk fails to load, the control reverts and stays unavailable until reload.
 - Tests hardcode `SITE_NAME` and the base path (see deployment guide); project expectations are computed from the snapshot (`career-mirror.ts`).
 - e2e does not pin `CAREER_RPG_NOW`, so streak assertions accept any valid state.
@@ -189,3 +212,4 @@ Dated example (2026-10-19 snapshot, not a rule): Warrior · Knight (then: Warrio
 | 2026-10-18 | v1.3 GitHub-derived character + layered pixel avatar implemented (phases 00-07); live refresh run, blind-ID, OG image pending; docs updated |
 | 2026-10-18 | v1.4 Class/job switcher implemented (phases 00-06): 10 selectable looks, "GitHub pick" default + Reset, stats-derived gear on every look, saved choice, lazy browser-side compose; follow-ups listed above; docs updated |
 | 2026-10-20 | v1.5 Class = domain from skill matches, job = specific skills, Mage = DevOps (phases 01-05; 279 unit, 121 e2e; final gate pending); mobile hero caption CLS 0.085 -> 0; saved looks reset once; changelog entry added; docs updated |
+| 2026-10-21 | v1.6 Distinct art per job (phases 00-07; 329 unit, 122 e2e): 9 job-keyed props with own motion, per-job accent + outfit trim; look keys `class/jobId`, legacy keys reset once; lazy chunk 5,421 B gz; changelog entry added; docs updated |

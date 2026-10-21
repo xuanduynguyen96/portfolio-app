@@ -1,6 +1,8 @@
 // Avatar palette: single-char grid key -> CSS custom property `--avatar-<slug>` (design-tokens.css).
 // Ramps share keys across roles to keep any one avatar <= 16 colors (e.g. leather = wood = hair,
 // steel-light = beard, bronze = gold shade). `.` is transparent; `#` is the sticker ring (composer only).
+// Capitals A..M are the per-job accents (prop main hue + outfit trim); one per look, so letters, not digits
+// (digit keys would sort first in Object.keys and reorder PALETTE_KEYS).
 
 export const AVATAR_PALETTE = {
   '#': 'sticker',
@@ -25,6 +27,15 @@ export const AVATAR_PALETTE = {
   N: 'teal-dark',
   a: 'arcane',
   x: 'sparkle',
+  A: 'accent-knight',
+  B: 'accent-paladin',
+  C: 'accent-sentinel',
+  D: 'accent-ranger',
+  E: 'accent-skirmisher',
+  F: 'accent-herald',
+  H: 'accent-enchanter',
+  J: 'accent-summoner',
+  M: 'accent-seer',
 } as const;
 
 export type PaletteKey = keyof typeof AVATAR_PALETTE;

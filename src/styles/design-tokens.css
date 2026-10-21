@@ -96,6 +96,18 @@
   --avatar-teal-dark: #3f6b63;
   --avatar-arcane: #7fd3e0;
   --avatar-sparkle: #ffffff;
+  /* Per-job accents (prop + outfit trim), identical in both themes. Their neighbour is the outline:
+     4.07-8.75:1 vs --avatar-outline (gate >= 3:1); vs the ring 1.00-2.15 light / 1.71-3.68 dark
+     (outline sits between). Pairwise CIE76 dE >= 25 overall, >= 33 inside a class. */
+  --avatar-accent-knight: #8b6fd6;
+  --avatar-accent-paladin: #5aae5c;
+  --avatar-accent-sentinel: #4a8fd9;
+  --avatar-accent-ranger: #2fb8d4;
+  --avatar-accent-skirmisher: #d9559b;
+  --avatar-accent-herald: #ee7c36;
+  --avatar-accent-enchanter: #b9c93a;
+  --avatar-accent-summoner: #c4694a;
+  --avatar-accent-seer: #c74bd0;
 
   /* Layers */
   --z-bg: -1;

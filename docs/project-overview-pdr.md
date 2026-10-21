@@ -1,6 +1,6 @@
 # Project Overview & PDR
 
-Last updated: 2026-10-20 · Version: v1.5 (0.1.0 in package.json)
+Last updated: 2026-10-21 · Version: v1.6 (0.1.0 in package.json)
 
 ## Vision
 
@@ -67,8 +67,16 @@ The class now follows what the code does. Model (single source): [system-archite
 
 - Class = domain from skill matches: Warrior = backend, Archer = frontend, Mage = DevOps, Adventurer when there is too little signal. Job = 3 per class, from specific skills.
 - Python, TypeScript, JavaScript, Go, Rust and Swift alone no longer vote; a repo must prove a domain skill.
-- Same 10 looks; job prop = job slot. Saved `portfolio-look` values from before v1.5 are invalid and reset once to the GitHub pick.
+- Same 10 looks. Saved `portfolio-look` values from before v1.5 are invalid and reset once to the GitHub pick.
 - Why panel shows class evidence and job evidence. Quest ranking is class-independent (repo weight + hygiene + pinned).
+
+## Scope v1.6: distinct art per job (done)
+
+Each of the 9 jobs now looks different. Art rules: [code-standards.md](code-standards.md#avatar-sprites); design: [design-guidelines.md](design-guidelines.md#character-avatar).
+
+- Job props are keyed by job id (not 3 shared slot props): own 2-frame prop, short motion, accent colour (also the outfit trim). Adventurer unchanged (no prop, no trim).
+- Look key = `class/jobId` (e.g. `mage/seer`). Saved looks from earlier versions (`mage/hawk`, `warrior/banner`) are invalid and reset once to the GitHub pick; switching class still keeps the job slot.
+- Same budgets (<= 16 colors, animated markup <= 11 KB / 2.5 KB gz); accents pass contrast >= 3:1 vs the outline in both themes. No new library, font or asset.
 
 ## Non-goals (v1)
 
@@ -120,13 +128,13 @@ The class now follows what the code does. Model (single source): [system-archite
 | F14 | Refresh workflow (weekly + manual) never fails on API/token problems: keeps the old snapshot, warns, exits 0; validates the schema before committing; dispatches the deploy |
 | F15 | Class (domain from skill matches), job (specific skills) and gear deterministic (tie-breaks fixed) and explained (class + job evidence in the "why" panel); rules generic, tested on fixture profiles; every voting skill belongs to exactly one job |
 | F16 | Avatar has text equivalents: `role="img"` named "Class · Job", gear in description, visible nameplate, gear legend, why panel; motion only with `html[data-motion=ok]`, <= ~4.5s then rests; reduced motion / no JS = static frame |
-| F17 | Class/job switcher: any of the 10 looks (key `class/motif`) selectable in the character sheet; default and Reset = the GitHub-derived look, always labelled "GitHub pick"; gear tiers from stats only and drawn on every look; choice saved locally (allow-listed `portfolio-look`, invalid/blocked storage ignored); changes hero + sheet avatar and name; native radio groups, polite status; JS optional (no JS = control hidden, GitHub pick shown); lifecycle-safe across `ClientRouter` |
+| F17 | Class/job switcher: any of the 10 looks (key `class/jobId`) selectable in the character sheet; default and Reset = the GitHub-derived look, always labelled "GitHub pick"; gear tiers from stats only and drawn on every look; choice saved locally (allow-listed `portfolio-look`, invalid/blocked storage ignored); changes hero + sheet avatar and name; native radio groups, polite status; JS optional (no JS = control hidden, GitHub pick shown); lifecycle-safe across `ClientRouter` |
 
 ## Non-functional requirements
 
 | Area | Target |
 |------|--------|
-| Performance | Lighthouse >=95 all categories; CLS 0; static-first, minimal JS. Switcher (v1.4): no chunk request for a fresh visitor before first open; lazy chunk <= 5 KB gz. Measured: home HTML 13,790 B gz (+338 B), eager stub 2,826 B gz, lazy chunk 4,627 B gz, compose + apply 10-14 ms warm at 4x CPU throttle |
+| Performance | Lighthouse >=95 all categories; CLS 0; static-first, minimal JS. Switcher (v1.4): no chunk request for a fresh visitor before first open; lazy chunk <= 6 KB gz. Measured (v1.6): home HTML 13,629 B gz, eager stub 3,034 B gz, lazy chunk 5,421 B gz (v1.6 budgets: lazy <= 6,000 gz, stub <= +100 gz, home <= +1,000 gz vs v1.5); v1.4 compose + apply 10-14 ms warm at 4x CPU throttle |
 | Accessibility | no serious/critical axe-core violations (wcag2a/2aa/21aa + best-practice tags) on home, project, 404, `/speedrun/`, `/changelog/`, `/credits/`, in both themes; visible focus, skip link, semantic landmarks; avatar meaning never color/shape-only; keeps colors under forced-colors |
 | Resilience | Works with no JS, JS failure, or `prefers-reduced-motion: reduce`: content never stays hidden |
 | Browsers | Evergreen Chromium tested in CI; Firefox/WebKit untested (see roadmap) |
@@ -138,8 +146,8 @@ The class now follows what the code does. Model (single source): [system-archite
 ## Success metrics
 
 - Lighthouse (local preview; `/`, boss project, `/speedrun/`, `/credits/`): mobile 99-100 all categories, desktop 100/100/100/100; CLS <= 0.002.
-- 279 unit + 121 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
-- Home HTML gzip: v1.3 +3.4 KB (budget 6 KB); v1.4 13,790 B gz (+338 B vs 13,452 B). Client JS: unchanged until v1.4; the switcher adds an eager stub (2,826 B gz) and a lazy chunk (4,627 B gz) fetched on first open. Lighthouse mobile home 99/100/100/100, CLS 0.0016 (unchanged).
+- 329 unit + 122 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
+- Home HTML gzip: v1.3 +3.4 KB (budget 6 KB); v1.4 13,790 B gz (+338 B vs 13,452 B); v1.6 13,629 B gz (v1.5: 13,515). Client JS: unchanged until v1.4; the switcher adds an eager stub (3,034 B gz) and a lazy chunk (5,421 B gz) fetched on first open. Lighthouse mobile home 99/100/100/100, CLS 0.0016 (v1.4; not re-run in v1.6, no Lighthouse in the build env; v1.6 Playwright CLS 0.0028 at 360 px, 0.0010 at 1280 px, same with a saved look).
 - Blind-ID: >=80% of 5 testers name the class at 128px in <=2s (pending, human).
 - Deploy from `master` push with no manual steps after one-time Pages setup.
 

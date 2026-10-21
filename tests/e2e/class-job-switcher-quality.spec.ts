@@ -7,7 +7,7 @@ import { lookTitle } from '../../src/utils/avatar/class-labels.ts';
 
 // The longest title (computed, not hardcoded) is the worst case for a saved look rewrapping the hero caption.
 const longest = LOOKS.reduce((a, b) => (lookTitle(b).length > lookTitle(a).length ? b : a));
-const other = LOOKS.find((look) => look.classId === 'mage' && look.motif === 'hawk')!;
+const other = LOOKS.find((look) => look.classId === 'mage' && look.jobId === 'seer')!;
 
 test.describe('motion', () => {
   for (const reducedMotion of ['no-preference', 'reduce'] as const) {

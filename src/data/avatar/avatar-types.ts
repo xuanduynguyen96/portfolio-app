@@ -1,12 +1,13 @@
 // Shapes for the layered 32x32 pixel avatar. Grids are rows of single-char palette keys
 // (`.` = transparent); a layer is a sub-rect placed at (x, y) on the 32x32 canvas.
 
-export type LayerSlot = 'base' | 'class' | 'armor' | 'amulet' | 'boots' | 'shield' | 'job' | 'fx';
+export type LayerSlot = 'base' | 'class' | 'trim' | 'armor' | 'amulet' | 'boots' | 'shield' | 'job' | 'fx';
 
 /** Paint order: higher z draws later; within a slot, list order. Last opaque pixel wins. */
 export const LAYER_Z: Readonly<Record<LayerSlot, number>> = {
   base: 0,
   class: 10,
+  trim: 15,
   armor: 20,
   amulet: 25,
   boots: 30,
@@ -42,17 +43,24 @@ export interface Box {
 /** Unplaced sprite rows; every row has the same width. */
 export type SpriteRows = readonly string[];
 
+/** A sprite that carries its own top-left position on the 32x32 canvas. */
+export interface PlacedSprite extends Point {
+  rows: SpriteRows;
+}
+
+/** A job prop: frame A (rest, static pose) and frame B, each placed independently. */
+export type JobPropFrames = readonly [PlacedSprite, PlacedSprite];
+
 /** One sprite per tier 0-3, all the same size; tier n+1 only adds opaque pixels. */
 export type TieredRows = readonly [SpriteRows, SpriteRows, SpriteRows, SpriteRows];
 
-/** Where gear + job prop attach on one frame of a class pose (top-left of each sprite). */
+/** Where gear attaches on one frame of a class pose (top-left of each sprite). */
 export interface PoseAnchors {
   armor: Point;
   amulet: Point;
   shield: Point;
   bootNear: Point;
   bootFar: Point;
-  motif: Point;
 }
 
 /** Pixels that carry class identity (headgear, held items); gear + job art must stay out. */

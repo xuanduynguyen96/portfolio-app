@@ -72,16 +72,16 @@ Single source of truth; other docs link here. Values live in `character-class-ru
 
 - **Vote:** a repo proves skills (`repo-skill-matches.ts`: `match` rules in `skills-data.ts`: language share, topic, keyword, root file, workflow). Only skills in `skillDomains` vote, each for one domain. The repo splits its weight evenly across the domains of the voting skills it proves; weight = recency (half-life, floor) x owner activity x archived factor.
 - **Class = domain:** highest summed score wins, ties in order backend, frontend, devops. Backend = Warrior, Frontend = Archer, DevOps = Mage. Adventurer (no job) when the total vote or the number of voting repos is under the fallback minimum.
-- **Job = specific skills:** 3 per class; every voting skill is in exactly one job (unit-tested). Job credit = summed primary-domain vote of the voting repos that prove at least one job skill; highest wins, ties go to the earlier job. The job's prop is its slot (banner, crystal or hawk).
+- **Job = specific skills:** 3 per class; every voting skill is in exactly one job (unit-tested). Job credit = summed primary-domain vote of the voting repos that prove at least one job skill; highest wins, ties go to the earlier job. Each job has its own prop, accent colour and motion (keyed by job id).
 - **Languages alone mostly don't vote:** Python, TypeScript, JavaScript, Go, Rust and Swift alone vote for nothing. A repo must prove a domain skill: keyword, topic, root file, workflow, or a listed language (C#, Java, HTML, CSS, Astro).
 - **Evidence:** `signals` = repos for the primary domain (max 5), `jobSignals` = repos for the job (max 2); the Why panel shows both lists.
 - **Quests are class-independent:** score = repo weight + hygiene + pinned, so Python-only repos still rank.
 
-| Class (domain) | Job: skills (prop slot) |
+| Class (domain) | Job: skills (prop) |
 |----------------|-------------------------|
-| Warrior (backend) | Knight: csharp, dotnet (banner) · Paladin: java, spring (crystal) · Sentinel: web-servers (hawk) |
-| Archer (frontend) | Ranger: react, astro (banner) · Skirmisher: mobile (crystal) · Herald: web-sites, html, css (hawk) |
-| Mage (devops) | Enchanter: github-actions, jenkins (banner) · Summoner: docker (crystal) · Seer: playwright (hawk) |
+| Warrior (backend) | Knight: csharp, dotnet (crest shield) · Paladin: java, spring (sword + spring leaves) · Sentinel: web-servers (server watchtower) |
+| Archer (frontend) | Ranger: react, astro (two-orbit atom) · Skirmisher: mobile (winged phone) · Herald: web-sites, html, css (horn + code pennant) |
+| Mage (devops) | Enchanter: github-actions, jenkins (rune pipeline) · Summoner: docker (container crate) · Seer: playwright (floating eye) |
 
 ### Modules
 
@@ -98,17 +98,17 @@ Single source of truth; other docs link here. Values live in `character-class-ru
 
 ### Avatar render
 
-- Data: hand-authored grids (`src/data/avatar/`): one 2-frame pose per class (4: Warrior, Archer, Mage, Adventurer), 2-frame job prop per job slot (3: banner, crystal, hawk), 4 tiers per gear slot (4). Registry `avatar-sprites.ts`; palette keys -> `--avatar-*` tokens (`avatar-palette.ts`).
-- `select-avatar-layers.ts` places sprites at per-frame pose anchors in slots `base < class < armor < amulet < boots < shield < job < fx` (`LAYER_Z`).
+- Data: hand-authored grids (`src/data/avatar/`): one 2-frame pose per class (4: Warrior, Archer, Mage, Adventurer), 2-frame job prop per job id (9: `avatar-job-props-{warrior,archer,mage}.ts`, each inside its class zone `JOB_PROP_ZONES`), outfit trim masks per class (`avatar-class-trim.ts`), 4 tiers per gear slot (4). Registry `avatar-sprites.ts`; palette keys -> `--avatar-*` tokens (`avatar-palette.ts`); the 9 job accents (keys A B C D E F H J M, `JOB_ACCENT`) are `--avatar-accent-<job>` tokens, same hex in both themes.
+- `select-avatar-layers.ts` places sprites at per-frame pose anchors in slots `base < class < trim < armor < amulet < boots < shield < job < fx` (`LAYER_Z`). Props sit at fixed coordinates in the class zone; `trim` repaints part of the outfit in the job's accent (Adventurer: no trim, no prop).
 - `compose-avatar-grid.ts` (pure): last opaque pixel wins, outside pixels clipped. `avatar-sticker-outline.ts` pads, adds outline then sticker ring. `avatarPaths` (+ `gridToMergedPathData` in `pixel-icon-path.ts`) emits one rect-merged `<path>` per palette key.
 - `character-avatar.astro` inlines the SVG (`role=img`, name "Class · Job", desc = gear). Animated variant holds both frames; CSS toggles them, 5 loops x 900ms (~4.5s) then rests on frame A, only under `html[data-motion=ok]` and no reduced motion. `forced-color-adjust: none` on the art.
 - Sizes: art box 128 / 192 / 256 px (4/6/8 px per art pixel) plus 2px sticker margin. Used: hero 256, sheet 192, speedrun 128, `/credits/` gallery 128.
-- Budgets (unit-tested): <= 16 colors + ring; static <= 6 KB raw; animated <= 11 KB raw, <= 2.5 KB gzip.
+- Budgets (unit-tested): <= 16 colors + ring; static <= 6 KB raw; animated <= 11 KB raw, <= 2.5 KB gzip. Measured v1.6 max: 15 colors, 10,886 B raw (Archer · Ranger tier 3), 1,979 B gzip.
 - The server render always shows the look derived from GitHub ("GitHub pick"). Gear tiers are a function of the snapshot only (`gear = f(snapshot)`); the displayed class/job is a function of the visitor (`look = f(visitor)`, default = GitHub pick). Gear is drawn on every look.
 
 ### Class/job switcher
 
-Visitor may display any of 10 looks (Warrior/Archer/Mage x the 3 job slots banner/crystal/hawk, plus Adventurer, which has no job). A look key is `class/motif` (e.g. `mage/hawk`); picking another class keeps the slot, not the job (Warrior · Knight, banner -> Archer · Ranger). Changes the hero + character-sheet avatar and name only. Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (roadmap follow-ups). Server HTML stays zero-JS for the avatar; switching re-composes in the browser from the SAME pure modules (`select-avatar-layers`, `compose-avatar-grid`, `avatar-svg-paths`), so output cannot drift from the build.
+Visitor may display any of 10 looks (Warrior/Archer/Mage x their 3 jobs, plus Adventurer, which has no job). A look key is `class/jobId` (e.g. `mage/seer`, `adventurer`); the radio value is the job id. Picking another class keeps the job slot (1st/2nd/3rd), not the job (Warrior · Sentinel -> Archer · Herald -> Mage · Seer; helpers `jobSlot`/`jobAtSlot`, `changeClass`). Changes the hero + character-sheet avatar and name only. Attributes, the `Why <Class>?` panel, `/speedrun/` and `/credits/` keep the GitHub-derived class (roadmap follow-ups). Server HTML stays zero-JS for the avatar; switching re-composes in the browser from the SAME pure modules (`select-avatar-layers`, `compose-avatar-grid`, `avatar-svg-paths`), so output cannot drift from the build.
 
 | Piece | Where | Loaded |
 |-------|-------|--------|
@@ -143,10 +143,10 @@ sequenceDiagram
 ```
 
 - Lifecycle: bind on `astro:page-load`, abort (`AbortController`) on `astro:before-swap`; a stale in-flight import is ignored via a token. Rule list: [code-standards.md](code-standards.md#classjob-switcher).
-- Saved choice: `localStorage` key `portfolio-look`, value = allow-listed look key (e.g. `mage/hawk`). Removed on Reset and when it equals the GitHub pick; invalid value (including keys from before v1.5 such as `mage/data`: no `data` slot) or blocked storage is ignored, so a visitor with an old saved look falls back to the GitHub pick once (the choice then lasts for the page). Per browser only; nothing is sent anywhere.
+- Saved choice: `localStorage` key `portfolio-look`, value = allow-listed look key (e.g. `mage/seer`). Removed on Reset and when it equals the GitHub pick; invalid value (including keys from before v1.6 such as `mage/hawk`, `warrior/banner`, or v1.4 `mage/data`) or blocked storage is ignored, so a visitor with an old saved look falls back to the GitHub pick once (the choice then lasts for the page). Per browser only; nothing is sent anywhere.
 - Progressive enhancement: control markup is in the server HTML but hidden until the stub sets `data-ready` on it (a control-local attribute, not a root flag), and `@media (scripting: none)` removes it. No JS or a failed bundle = GitHub pick only, nothing broken.
 - Motion: the replacement frame `<g>` elements restart the CSS loop on the new frames under the same gating (`data-motion=ok`, no reduced motion).
-- Measured (v1.4): no chunk request before first open (or load with a saved look); eager stub 6,457 B raw / 2,826 B gzip; lazy chunk 18,120 B raw / 4,627 B gzip; home HTML 112,855 B raw / 13,790 B gzip (v1.3 baseline 111,740 / 13,452, +338 B gzip); compose + apply 10-14 ms warm at 4x CPU throttle.
+- Measured (v1.6): no chunk request before first open (or load with a saved look); eager stub 7,010 B raw / 3,034 B gzip (v1.5: 6,944 / 2,992; budget <= +100 gz); lazy chunk 20,913 B raw / 5,421 B gzip (v1.5: 18,040 / 4,580; budget <= 23,000 / 6,000); home HTML 112,667 B raw / 13,629 B gzip (v1.5: 111,756 / 13,515; budget <= +1,000 gz); `/credits/` HTML 102,661 B raw / 13,391 B gzip (v1.5: 99,691 / 12,832). v1.4 compose + apply was 10-14 ms warm at 4x CPU throttle (not re-measured).
 
 ### Refresh and deploy sequence
 
@@ -333,6 +333,6 @@ See [deployment-guide.md](deployment-guide.md).
 | Class from skill matches, job from skills | The class follows what the code does (backend/frontend/devops), reusing the skill tree's evidence instead of a second language/keyword table. Python/TypeScript alone don't vote; each voting skill is in exactly one job, so any vote can name a job. Mage = DevOps (no data skills exist to earn a Data class) |
 | Hand-authored sprites composed to inline SVG | Server render is zero-JS, no asset requests, token-driven palette (themeable ring), unit-testable layers |
 | CSS-only bounded action loop | Meets WCAG 2.2.2 (stops), honours reduced motion, no JS |
-| Switcher composes in the browser on demand | Inlining 10 looks costs ~7.8 KB gzip on every home load; per-look files cost more in total. A lazy chunk (4.6 KB gzip) is fetched only on first open or with a saved look, and reuses the build's pure modules, so no drift |
+| Switcher composes in the browser on demand | Inlining 10 looks costs ~7.8 KB gzip on every home load; per-look files cost more in total. A lazy chunk (5.4 KB gzip) is fetched only on first open or with a saved look, and reuses the build's pure modules, so no drift |
 | Choice persisted per browser, derived pick is the default | `localStorage` only (no server, no tracking); fresh and no-JS visitors see the GitHub pick; Reset clears the key |
 | Gear independent of class/job | Gear tiers stay a function of the GitHub snapshot; a visitor picks a look, never gear, and class/job/gear/XP are still never hand-set |

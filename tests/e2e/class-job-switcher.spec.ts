@@ -9,7 +9,7 @@ import {
   pick, pickTitle, resetButton, root, status, svgState,
 } from './switcher-helpers';
 
-const other = LOOKS.find((look) => look.classId !== pick.classId && look.motif !== null)!;
+const other = LOOKS.find((look) => look.classId !== pick.classId && look.jobId !== null)!;
 const classRadioByName = (page: Page, name: string) => root(page).getByRole('radio', { name, exact: true });
 const chunkRequests = (requests: string[]) => requests.filter((url) => url.includes('look-apply-model'));
 
@@ -42,7 +42,7 @@ test.describe('class/job switcher', () => {
     await openSwitcher(page);
     await expect(root(page).locator('.switcher-pick')).toHaveText(`GitHub pick: ${pickTitle}`);
     await expect(classRadioByName(page, `${CLASS_NAMES[pick.classId]} GitHub pick`)).toBeChecked();
-    await expect(root(page).getByRole('radio', { name: /GitHub pick/ })).toHaveCount(pick.motif ? 2 : 1);
+    await expect(root(page).getByRole('radio', { name: /GitHub pick/ })).toHaveCount(pick.jobId ? 2 : 1);
     await expect(resetButton(page)).toBeDisabled();
 
     for (const classId of ['warrior', 'archer', 'mage'] as const) {
@@ -57,17 +57,17 @@ test.describe('class/job switcher', () => {
     await expect(root(page).locator('input[name^="switcher-job-"]:visible')).toHaveCount(0);
   });
 
-  test('changing class keeps the job slot (prop); arrow keys move the selection', async ({ page }) => {
+  test('changing class keeps the job slot; arrow keys move the selection', async ({ page }) => {
     await openSwitcher(page);
-    await chooseLook(page, { classId: 'warrior', motif: 'banner' });
+    await chooseLook(page, { classId: 'warrior', jobId: 'sentinel' });
     await classRadio(page, 'mage').check();
-    await expect(jobRadio(page, 'mage', 'banner')).toBeChecked();
-    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle({ classId: 'mage', motif: 'banner' }));
+    await expect(jobRadio(page, 'mage', 'seer')).toBeChecked();
+    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(lookTitle({ classId: 'mage', jobId: 'seer' }));
 
     await classRadio(page, 'warrior').focus();
     await page.keyboard.press('ArrowDown');
     await expect(classRadio(page, 'archer')).toBeChecked();
-    await expect(status(page)).toContainText(lookTitle({ classId: 'archer', motif: 'banner' }));
+    await expect(status(page)).toContainText(lookTitle({ classId: 'archer', jobId: 'herald' }));
   });
 
   test('all 10 looks: hero + sheet names, accessible names, status and pixels match the pure modules', async ({ page }) => {
@@ -170,13 +170,15 @@ test.describe('class/job switcher', () => {
     expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
   });
 
-  test('a key saved by an older version (class/archetype motif) is ignored and removed', async ({ page }) => {
-    await page.addInitScript(([key]) => localStorage.setItem(key, 'mage/data'), [STORAGE_KEY]);
-    await page.goto('./');
-    await closedSwitcherReady(page);
-    await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(pickTitle);
-    expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
-  });
+  for (const legacy of ['mage/data', 'mage/hawk']) {
+    test(`a key saved by an older version (${legacy}) is ignored and removed`, async ({ page }) => {
+      await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [STORAGE_KEY, legacy]);
+      await page.goto('./');
+      await closedSwitcherReady(page);
+      await expect(page.locator(`${HERO} .nameplate-class`)).toHaveText(pickTitle);
+      expect(await page.evaluate((key) => localStorage.getItem(key), STORAGE_KEY)).toBeNull();
+    });
+  }
 
   test('blocked storage: switching still works for the page, no errors', async ({ page }) => {
     const errors = trackPageErrors(page);

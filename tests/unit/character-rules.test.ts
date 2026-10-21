@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { classRules, DOMAIN_IDS } from '../../src/data/character-class-rules.ts';
-import { CLASS_BY_DOMAIN, CLASS_IDS, CLASS_NAMES, DOMAIN_LABELS, JOBS, MOTIF_IDS } from '../../src/data/character-job-rules.ts';
+import { CLASS_BY_DOMAIN, CLASS_IDS, CLASS_NAMES, DOMAIN_LABELS, JOB_IDS, JOBS, jobAtSlot, jobSlot } from '../../src/data/character-job-rules.ts';
 import { gearRules, GEAR_SLOT_IDS } from '../../src/data/gear-rules.ts';
 import { skillNodes } from '../../src/data/skills-data.ts';
 
@@ -19,13 +19,25 @@ describe('classes and jobs', () => {
     for (const domain of DOMAIN_IDS) assert.ok(DOMAIN_LABELS[domain]);
   });
 
-  it('9 unique jobs: 3 per class, one per job slot, ids and names unique', () => {
+  it('9 unique jobs: 3 per class, ids are JOB_IDS in order, names unique', () => {
     assert.equal(allJobs.length, 9);
-    assert.equal(new Set(allJobs.map((job) => job.id)).size, 9);
+    assert.deepEqual(allJobs.map((job) => job.id), [...JOB_IDS]);
     assert.equal(new Set(allJobs.map((job) => job.name)).size, 9);
+    for (const classId of COMBAT) assert.equal(JOBS[classId].length, 3, classId);
+  });
+
+  it('jobSlot / jobAtSlot map a job to its slot and back', () => {
     for (const classId of COMBAT) {
-      assert.deepEqual(JOBS[classId].map((job) => job.motif).sort(), [...MOTIF_IDS].sort(), classId);
+      JOBS[classId].forEach((job, slot) => {
+        assert.equal(jobSlot(classId, job.id), slot);
+        assert.equal(jobAtSlot(classId, slot), job.id);
+      });
+      assert.equal(jobAtSlot(classId, 7), JOBS[classId][0].id);
+      assert.equal(jobAtSlot(classId, -1), JOBS[classId][0].id);
     }
+    assert.equal(jobSlot('mage', 'knight'), -1);
+    assert.equal(jobSlot('mage', null), -1);
+    assert.equal(jobSlot('adventurer', 'knight'), -1);
   });
 
   it('every job has skills and a switcher hint', () => {

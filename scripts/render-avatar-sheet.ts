@@ -1,9 +1,9 @@
-// Review sheet for the layered avatar: every class x motif x a few gear tier sets, both frames, on
+// Review sheet for the layered avatar: every class x job x a few gear tier sets, both frames, on
 // both theme backgrounds, rendered through the production markup path + real design tokens.
 // Usage: node scripts/render-avatar-sheet.ts [out.html] [--png out.png]
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { CLASS_BY_DOMAIN, MOTIF_IDS, type ClassId, type MotifId } from '../src/data/character-job-rules.ts';
+import { CLASS_BY_DOMAIN, JOBS, type ClassId, type JobId } from '../src/data/character-job-rules.ts';
 import { GEAR_SLOT_IDS } from '../src/data/gear-rules.ts';
 import type { AvatarFrame } from '../src/data/avatar/avatar-types.ts';
 import type { AvatarProfile } from '../src/utils/avatar/avatar-description.ts';
@@ -27,19 +27,19 @@ const TIER_SETS: readonly [string, Tiers][] = [
   ['mixed 3·2·1·0', [3, 2, 1, 0]],
 ];
 
-function profileOf(classId: ClassId, motif: MotifId | null, tiers: Tiers): AvatarProfile {
-  return lookProfile({ classId, motif }, GEAR_SLOT_IDS.map((slot, i) => ({ slot, tier: tiers[i] })));
+function profileOf(classId: ClassId, jobId: JobId | null, tiers: Tiers): AvatarProfile {
+  return lookProfile({ classId, jobId }, GEAR_SLOT_IDS.map((slot, i) => ({ slot, tier: tiers[i] })));
 }
 
-const LOOKS: AvatarProfile[] = allClassLooks().map(({ classId, motif }) => profileOf(classId, motif, [0, 0, 0, 0]));
-const PURE = [...Object.values(CLASS_BY_DOMAIN).map((classId) => profileOf(classId, MOTIF_IDS[0], [0, 0, 0, 0])), profileOf('adventurer', null, [0, 0, 0, 0])];
+const LOOKS: AvatarProfile[] = allClassLooks().map(({ classId, jobId }) => profileOf(classId, jobId, [0, 0, 0, 0]));
+const PURE = [...Object.values(CLASS_BY_DOMAIN).map((classId) => profileOf(classId, JOBS[classId][0].id, [0, 0, 0, 0])), profileOf('adventurer', null, [0, 0, 0, 0])];
 
 /** One static frame (frame B included) at `art` px per 32-grid. */
 function frameSvg(profile: AvatarProfile, frame: AvatarFrame, art: number): string {
   const box = (art * AVATAR_VIEWBOX) / 32;
   return `<svg class="character-avatar" viewBox="0 0 ${AVATAR_VIEWBOX} ${AVATAR_VIEWBOX}" width="${box}" height="${box}" shape-rendering="crispEdges" style="--avatar-px:${art / 32}px">${avatarFramePaths(avatarFrameGrid(profile, frame))}</svg>`;
 }
-const withTiers = (p: AvatarProfile, tiers: Tiers) => profileOf(p.classId, p.motif, tiers);
+const withTiers = (p: AvatarProfile, tiers: Tiers) => profileOf(p.classId, p.jobId, tiers);
 const label = (p: AvatarProfile) => (p.jobName ? `${p.className} · ${p.jobName}` : p.className);
 const cell = (caption: string, body: string) => `<figure><div class="row">${body}</div><figcaption>${caption}</figcaption></figure>`;
 
@@ -55,7 +55,7 @@ function themeBand(theme: 'light' | 'dark'): string {
   const grid = LOOKS.map((p) =>
     `<tr><th>${label(p)}</th>${TIER_SETS.map(([, t]) => `<td>${frameSvg(withTiers(p, t), 0, 64)}${frameSvg(withTiers(p, t), 1, 64)}</td>`).join('')}</tr>`).join('');
   const head = `<tr><th></th>${TIER_SETS.map(([name]) => `<th>${name} (A | B)</th>`).join('')}</tr>`;
-  const hero = avatarSvgMarkup({ profile: profileOf('warrior', 'banner', [0, 1, 2, 0]), size: 192, idPrefix: `hero-${theme}`, animate: true });
+  const hero = avatarSvgMarkup({ profile: profileOf('warrior', 'knight', [0, 1, 2, 0]), size: 192, idPrefix: `hero-${theme}`, animate: true });
   return `<section class="band ${theme}"><h2>${theme} theme</h2>
 <div class="wrap">${cell('owner, animated (hero, 192)', hero)}${big}</div><div class="wrap">${bigT3}</div>
 <div class="wrap">${ladder}</div><table>${head}${grid}</table></section>`;

@@ -1,15 +1,16 @@
 // Character profile -> avatar layers for one frame: class pose, then each gear slot at its tier and
-// the job motif prop, placed at the pose's anchors for that frame (so gear follows moving parts).
-import type { ClassId, MotifId } from '../../data/character-job-rules.ts';
+// the job prop. Gear sits at the pose's anchors for that frame (so it follows moving parts); the prop
+// carries its own position per frame.
+import { jobSlot, type ClassId, type JobId } from '../../data/character-job-rules.ts';
 import type { GearSlotId } from '../../data/gear-rules.ts';
-import { classSprites, gearSprites, motifSprites } from '../../data/avatar/avatar-sprites.ts';
+import { classSprites, gearSprites, jobPropSprites } from '../../data/avatar/avatar-sprites.ts';
 import type { AvatarFrame, Point, SpriteLayer, SpriteRows } from '../../data/avatar/avatar-types.ts';
 import type { GearTier } from '../github-character/character-types.ts';
 
 /** The parts of a CharacterProfile the avatar depends on. */
 export interface AvatarLook {
   classId: ClassId;
-  motif: MotifId | null;
+  jobId: JobId | null;
   gear: readonly { slot: GearSlotId; tier: GearTier }[];
 }
 
@@ -34,6 +35,9 @@ export function selectAvatarLayers(look: AvatarLook, frame: AvatarFrame): Sprite
     at('boots', anchors.bootNear, gear('boots')),
     at('shield', anchors.shield, gear('shield')),
   ];
-  if (look.motif) layers.push(at('job', anchors.motif, motifSprites[look.motif][frame]));
+  if (look.jobId && jobSlot(look.classId, look.jobId) >= 0) {
+    const prop = jobPropSprites[look.jobId][frame];
+    layers.push(at('job', prop, prop.rows));
+  }
   return layers;
 }

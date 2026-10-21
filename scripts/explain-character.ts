@@ -14,7 +14,7 @@ const fixed = (value: number) => value.toFixed(3);
 
 console.log(`${snapshot.login} as of ${snapshot.asOf}: ${profile.className}${profile.jobName ? ` · ${profile.jobName}` : ''}`);
 console.log(`scores ${DOMAIN_IDS.map((d) => `${d} ${fixed(profile.scores[d])}`).join(' | ')}`);
-console.log(`primary ${profile.primary ?? '-'}, motif ${profile.motif ?? '-'}\n`);
+console.log(`primary ${profile.primary ?? '-'}, job ${profile.jobId ?? '-'}\n`);
 console.log('Per repo (weighted vote):');
 for (const repo of snapshot.repos) {
   const proven = skillNodes.filter((node) => repoMatchesSkill(repo, node.match));

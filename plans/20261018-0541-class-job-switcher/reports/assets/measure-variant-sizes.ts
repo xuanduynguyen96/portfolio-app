@@ -10,7 +10,7 @@ import type { GithubSnapshot } from '../../../../src/utils/github-character/gith
 
 const snapshot = JSON.parse(readFileSync('src/data/github/github-snapshot.json', 'utf8')) as GithubSnapshot;
 const owner = classifyCharacter(snapshot);
-console.log('owner', owner.classId, owner.jobName, owner.motif, owner.gear.map((g) => `${g.slot}:${g.tier}`).join(' '));
+console.log('owner', owner.classId, owner.jobName, owner.jobId, owner.gear.map((g) => `${g.slot}:${g.tier}`).join(' '));
 
 // Updated for v1.5 (class = domain): every class x job slot look plus the Adventurer, via the shared look list.
 const looks = allClassLooks().map((look) => lookProfile(look, owner.gear));

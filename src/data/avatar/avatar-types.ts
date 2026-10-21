@@ -42,17 +42,24 @@ export interface Box {
 /** Unplaced sprite rows; every row has the same width. */
 export type SpriteRows = readonly string[];
 
+/** A sprite that carries its own top-left position on the 32x32 canvas. */
+export interface PlacedSprite extends Point {
+  rows: SpriteRows;
+}
+
+/** A job prop: frame A (rest, static pose) and frame B, each placed independently. */
+export type JobPropFrames = readonly [PlacedSprite, PlacedSprite];
+
 /** One sprite per tier 0-3, all the same size; tier n+1 only adds opaque pixels. */
 export type TieredRows = readonly [SpriteRows, SpriteRows, SpriteRows, SpriteRows];
 
-/** Where gear + job prop attach on one frame of a class pose (top-left of each sprite). */
+/** Where gear attaches on one frame of a class pose (top-left of each sprite). */
 export interface PoseAnchors {
   armor: Point;
   amulet: Point;
   shield: Point;
   bootNear: Point;
   bootFar: Point;
-  motif: Point;
 }
 
 /** Pixels that carry class identity (headgear, held items); gear + job art must stay out. */

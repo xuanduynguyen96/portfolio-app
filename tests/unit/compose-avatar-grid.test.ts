@@ -4,7 +4,7 @@ import type { SpriteLayer } from '../../src/data/avatar/avatar-types.ts';
 import { AVATAR_SIZE, composeAvatarGrid, sortLayers } from '../../src/utils/avatar/compose-avatar-grid.ts';
 import { composeAvatarSprite, outlineGrid, padGrid, stickerRing } from '../../src/utils/avatar/avatar-sticker-outline.ts';
 import { selectAvatarLayers } from '../../src/utils/avatar/select-avatar-layers.ts';
-import { classSprites, gearSprites } from '../../src/data/avatar/avatar-sprites.ts';
+import { classSprites, gearSprites, jobPropSprites } from '../../src/data/avatar/avatar-sprites.ts';
 import { avatarProfile, isOpaque } from './avatar-test-helpers.ts';
 
 const layer = (slot: SpriteLayer['slot'], x: number, y: number, rows: string[]): SpriteLayer => ({ slot, x, y, rows });
@@ -52,7 +52,7 @@ describe('composeAvatarGrid', () => {
   });
 
   it('does not mutate its input', () => {
-    const layers = deepFreeze(selectAvatarLayers(avatarProfile('warrior', 'banner', [0, 1, 2, 0]), 0));
+    const layers = deepFreeze(selectAvatarLayers(avatarProfile('warrior', 'knight', [0, 1, 2, 0]), 0));
     const before = JSON.stringify(layers);
     composeAvatarGrid(layers);
     composeAvatarSprite(layers);
@@ -76,7 +76,7 @@ describe('sticker outline + ring', () => {
   });
 
   it('every art pixel of a real avatar is wrapped by outline, then ring; 36x36', () => {
-    const sprite = composeAvatarSprite(selectAvatarLayers(avatarProfile('archer', 'hawk', [3, 3, 3, 3]), 1));
+    const sprite = composeAvatarSprite(selectAvatarLayers(avatarProfile('archer', 'herald', [3, 3, 3, 3]), 1));
     assert.equal(sprite.length, 36);
     assert.ok(sprite.every((row) => row.length === 36));
     sprite.forEach((row, y) => [...row].forEach((char, x) => {
@@ -90,8 +90,8 @@ describe('sticker outline + ring', () => {
 });
 
 describe('selectAvatarLayers', () => {
-  it('places class pose + 4 gear slots (both boots) at the frame anchors, motif last', () => {
-    const profile = avatarProfile('warrior', 'crystal', [0, 1, 2, 3]);
+  it('places class pose + 4 gear slots (both boots) at the frame anchors, job prop last at its own place', () => {
+    const profile = avatarProfile('warrior', 'paladin', [0, 1, 2, 3]);
     for (const frame of [0, 1] as const) {
       const layers = selectAvatarLayers(profile, frame);
       const anchors = classSprites.warrior.frames[frame].anchors;
@@ -101,13 +101,21 @@ describe('selectAvatarLayers', () => {
       assert.equal(layers[2].rows, gearSprites.amulet[3]);
       assert.equal(layers[5].rows, gearSprites.shield[1]);
       assert.deepEqual([layers[4].x, layers[4].y], [anchors.bootNear.x, anchors.bootNear.y]);
+      const prop = jobPropSprites.paladin[frame];
+      assert.deepEqual([layers[6].x, layers[6].y, layers[6].rows], [prop.x, prop.y, prop.rows]);
     }
   });
 
-  it('omits the job layer without a motif and defaults missing gear to tier 0', () => {
-    const layers = selectAvatarLayers({ classId: 'adventurer', motif: null, gear: [] }, 0);
+  it('omits the job layer without a job and defaults missing gear to tier 0', () => {
+    const layers = selectAvatarLayers({ classId: 'adventurer', jobId: null, gear: [] }, 0);
     assert.ok(!layers.some((l) => l.slot === 'job'));
     assert.equal(layers.find((l) => l.slot === 'shield')?.rows, gearSprites.shield[0]);
+  });
+
+  it('draws no prop for a job that is not one of the class\'s', () => {
+    for (const [classId, jobId] of [['adventurer', 'seer'], ['mage', 'knight']] as const) {
+      assert.ok(!selectAvatarLayers({ classId, jobId, gear: [] }, 0).some((l) => l.slot === 'job'), `${classId}/${jobId}`);
+    }
   });
 
   it('frames differ and gear on the moving torso follows it (warrior dips 1px on frame B)', () => {

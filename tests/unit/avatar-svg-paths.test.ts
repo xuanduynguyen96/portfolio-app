@@ -17,7 +17,7 @@ const TIER_SAMPLES: readonly Tiers[] = [
   ...TIERS.map((t): Tiers => [t, t, t, t]),
   ...[0, 1, 2, 3].map((slot): Tiers => [0, 1, 2, 3].map((i) => (i === slot ? 3 : 0)) as unknown as Tiers),
 ];
-const SAMPLES = LOOK_KEYS.flatMap(([classId, motif]) => TIER_SAMPLES.map((tiers) => avatarProfile(classId, motif, tiers)));
+const SAMPLES = LOOK_KEYS.flatMap(([classId, jobId]) => TIER_SAMPLES.map((tiers) => avatarProfile(classId, jobId, tiers)));
 
 describe('avatar svg paths', () => {
   it('one path per palette key present, covering exactly its cells', () => {
@@ -25,7 +25,7 @@ describe('avatar svg paths', () => {
       for (const frame of [0, 1] as const) {
         const grid = avatarFrameGrid(profile, frame);
         for (const { key, cssVar, d } of avatarPaths(grid)) {
-          assert.deepEqual(pathCells(d), gridCells(grid, key), `${profile.classId}/${profile.motif} frame ${frame} ${key}`);
+          assert.deepEqual(pathCells(d), gridCells(grid, key), `${profile.classId}/${profile.jobId} frame ${frame} ${key}`);
           assert.equal(cssVar, avatarCssVar(key));
         }
       }
@@ -40,7 +40,7 @@ describe('avatar svg paths', () => {
     for (const profile of SAMPLES) {
       for (const frame of [0, 1] as const) {
         const keys = new Set(avatarFrameGrid(profile, frame).join('').replace(/[.#]/g, ''));
-        assert.ok(keys.size <= MAX_COLORS, `${profile.classId}/${profile.motif}: ${keys.size} colors`);
+        assert.ok(keys.size <= MAX_COLORS, `${profile.classId}/${profile.jobId}: ${keys.size} colors`);
       }
       const still = avatarSvgMarkup({ profile, size: 192, idPrefix: 'x' });
       const animated = avatarSvgMarkup({ profile, size: 192, idPrefix: 'x', animate: true });
@@ -58,7 +58,7 @@ describe('avatar svg paths', () => {
 });
 
 describe('avatar svg markup', () => {
-  const profile = avatarProfile('warrior', 'banner', [0, 1, 2, 0]);
+  const profile = avatarProfile('warrior', 'knight', [0, 1, 2, 0]);
 
   it('is an accessible image named by class and job, with unique-prefixed ids', () => {
     const svg = avatarSvgMarkup({ profile, size: 192, idPrefix: 'hero' });

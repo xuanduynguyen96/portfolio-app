@@ -37,8 +37,8 @@ export function buildSwitcherBody(pick: ClassLook): DocumentFragment {
   const body = document.createDocumentFragment();
   body.append(group('Class', CLASS_IDS.map((id) => option('switcher-class', id, CLASS_NAMES[id], id === pick.classId))));
   for (const classId of CLASS_IDS.filter((id) => id !== 'adventurer')) {
-    const jobs = group('Job', JOBS[classId].map(({ motif, name, specialty }) =>
-      option(`switcher-job-${classId}`, motif, name, sameLook({ classId, motif }, pick), specialty)));
+    const jobs = group('Job', JOBS[classId].map(({ id, name, specialty }) =>
+      option(`switcher-job-${classId}`, id, name, sameLook({ classId, jobId: id }, pick), specialty)));
     jobs.dataset.lookJobs = classId;
     jobs.hidden = true;
     body.append(jobs);

@@ -14,7 +14,7 @@ const LOOKS = allClassLooks();
 const OWNER_GEAR = classifyCharacter(hybridStack()).gear;
 const pathMarkup = (paths: readonly { cssVar: string; d: string }[]) =>
   paths.map(({ cssVar, d }) => `<path style="fill:var(${cssVar})" d="${d}"/>`).join('');
-const gearOf = (tiers: Tiers) => avatarProfile('warrior', 'banner', tiers).gear;
+const gearOf = (tiers: Tiers) => avatarProfile('warrior', 'knight', tiers).gear;
 const TIER_SETS: readonly Tiers[] = [[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3], [3, 2, 1, 0], [0, 1, 2, 3], [0, 1, 2, 0]];
 
 describe('lookAvatarModel', () => {
@@ -30,10 +30,16 @@ describe('lookAvatarModel', () => {
     }
   });
 
+  it('names the job prop in the description; Adventurer has none', () => {
+    assert.match(lookAvatarModel({ classId: 'warrior', jobId: 'knight' }, OWNER_GEAR).desc, /Job prop: crest shield\./);
+    assert.match(lookAvatarModel({ classId: 'mage', jobId: 'seer' }, OWNER_GEAR).desc, /Job prop: floating eye\./);
+    assert.doesNotMatch(lookAvatarModel({ classId: 'adventurer', jobId: null }, OWNER_GEAR).desc, /Job prop/);
+  });
+
   it('matches the server markup for the same look (title, desc, both frames)', () => {
     const derived = classifyCharacter(hybridStack());
     const svg = avatarSvgMarkup({ profile: derived, size: 256, idPrefix: 'x', animate: true });
-    const model = lookAvatarModel({ classId: derived.classId, motif: derived.motif }, derived.gear);
+    const model = lookAvatarModel({ classId: derived.classId, jobId: derived.jobId }, derived.gear);
     const unescape = (s: string) => s.replace(/&quot;/g, '"').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
     assert.equal(unescape(/<title[^>]*>(.*?)<\/title>/.exec(svg)![1]), model.title);
     assert.equal(unescape(/<desc[^>]*>(.*?)<\/desc>/.exec(svg)![1]), model.desc);

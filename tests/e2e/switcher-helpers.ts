@@ -19,7 +19,7 @@ export const SHEET = '#character .portrait';
 export const root = (page: Page) => page.locator('[data-look]');
 export const status = (page: Page) => page.locator('[data-look-status]');
 export const classRadio = (page: Page, classId: string) => root(page).locator(`input[name="switcher-class"][value="${classId}"]`);
-export const jobRadio = (page: Page, classId: string, motif: string) => root(page).locator(`input[name="switcher-job-${classId}"][value="${motif}"]`);
+export const jobRadio = (page: Page, classId: string, jobId: string) => root(page).locator(`input[name="switcher-job-${classId}"][value="${jobId}"]`);
 export const resetButton = (page: Page) => page.getByRole('button', { name: 'Reset to GitHub pick' });
 
 /** Loads home, waits for the control to bind and opens it. */
@@ -37,7 +37,7 @@ export async function closedSwitcherReady(page: Page): Promise<void> {
 
 export async function chooseLook(page: Page, look: ClassLook): Promise<void> {
   await classRadio(page, look.classId).check();
-  if (look.motif) await jobRadio(page, look.classId, look.motif).check();
+  if (look.jobId) await jobRadio(page, look.classId, look.jobId).check();
 }
 
 export interface SvgState {

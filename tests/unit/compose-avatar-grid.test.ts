@@ -5,6 +5,8 @@ import { AVATAR_SIZE, composeAvatarGrid, sortLayers } from '../../src/utils/avat
 import { composeAvatarSprite, outlineGrid, padGrid, stickerRing } from '../../src/utils/avatar/avatar-sticker-outline.ts';
 import { selectAvatarLayers } from '../../src/utils/avatar/select-avatar-layers.ts';
 import { classSprites, gearSprites, jobPropSprites } from '../../src/data/avatar/avatar-sprites.ts';
+import { classTrim } from '../../src/data/avatar/avatar-class-trim.ts';
+import { JOB_ACCENT } from '../../src/data/avatar/avatar-job-style.ts';
 import { avatarProfile, isOpaque } from './avatar-test-helpers.ts';
 
 const layer = (slot: SpriteLayer['slot'], x: number, y: number, rows: string[]): SpriteLayer => ({ slot, x, y, rows });
@@ -90,19 +92,22 @@ describe('sticker outline + ring', () => {
 });
 
 describe('selectAvatarLayers', () => {
-  it('places class pose + 4 gear slots (both boots) at the frame anchors, job prop last at its own place', () => {
+  it('places class pose, job trim, 4 gear slots (both boots) at the frame anchors, job prop last at its own place', () => {
     const profile = avatarProfile('warrior', 'paladin', [0, 1, 2, 3]);
     for (const frame of [0, 1] as const) {
       const layers = selectAvatarLayers(profile, frame);
       const anchors = classSprites.warrior.frames[frame].anchors;
-      assert.deepEqual(layers.map((l) => l.slot), ['class', 'armor', 'amulet', 'boots', 'boots', 'shield', 'job']);
+      assert.deepEqual(layers.map((l) => l.slot), ['class', 'trim', 'armor', 'amulet', 'boots', 'boots', 'shield', 'job']);
       assert.equal(layers[0].rows, classSprites.warrior.frames[frame].rows);
-      assert.deepEqual([layers[1].x, layers[1].y, layers[1].rows], [anchors.armor.x, anchors.armor.y, gearSprites.armor[0]]);
-      assert.equal(layers[2].rows, gearSprites.amulet[3]);
-      assert.equal(layers[5].rows, gearSprites.shield[1]);
-      assert.deepEqual([layers[4].x, layers[4].y], [anchors.bootNear.x, anchors.bootNear.y]);
+      const trim = classTrim.warrior[frame];
+      assert.deepEqual([layers[1].x, layers[1].y], [trim.x, trim.y]);
+      assert.deepEqual(layers[1].rows, trim.rows.map((row) => row.replaceAll('*', JOB_ACCENT.paladin)));
+      assert.deepEqual([layers[2].x, layers[2].y, layers[2].rows], [anchors.armor.x, anchors.armor.y, gearSprites.armor[0]]);
+      assert.equal(layers[3].rows, gearSprites.amulet[3]);
+      assert.equal(layers[6].rows, gearSprites.shield[1]);
+      assert.deepEqual([layers[5].x, layers[5].y], [anchors.bootNear.x, anchors.bootNear.y]);
       const prop = jobPropSprites.paladin[frame];
-      assert.deepEqual([layers[6].x, layers[6].y, layers[6].rows], [prop.x, prop.y, prop.rows]);
+      assert.deepEqual([layers[7].x, layers[7].y, layers[7].rows], [prop.x, prop.y, prop.rows]);
     }
   });
 
@@ -112,9 +117,10 @@ describe('selectAvatarLayers', () => {
     assert.equal(layers.find((l) => l.slot === 'shield')?.rows, gearSprites.shield[0]);
   });
 
-  it('draws no prop for a job that is not one of the class\'s', () => {
+  it('draws no trim or prop for a job that is not one of the class\'s', () => {
     for (const [classId, jobId] of [['adventurer', 'seer'], ['mage', 'knight']] as const) {
-      assert.ok(!selectAvatarLayers({ classId, jobId, gear: [] }, 0).some((l) => l.slot === 'job'), `${classId}/${jobId}`);
+      const slots = selectAvatarLayers({ classId, jobId, gear: [] }, 0).map((l) => l.slot);
+      assert.ok(!slots.includes('job') && !slots.includes('trim'), `${classId}/${jobId}`);
     }
   });
 

@@ -48,9 +48,9 @@ Gate: min pairwise dE 25.1 (herald/summoner) >= 20; inside a class 33.2 (knight/
 ## Trim masks (opaque class pixels recoloured to the accent, z 15 under gear)
 Plan's belt candidates rejected: armor's bottom row (belt line) covers the belt on all 3 classes.
 - warrior f0: tabard flap (12,23)(13,23)(12,24)(13,24)(11,25)(12,25)(13,25); f1: (12,24)(13,24)(12,25)(13,25)
-- archer f0+f1: tunic yoke row 19 x11-19 + left edge x11 rows 20-22 (12 px)
+- archer f0+f1: tunic yoke row 18 x11-19 + front edge x11 rows 19-22 (13 px)
 - mage f0: robe bands row 23 x10-21, row 27 x10-22; f1: row 23 x10-21, row 27 x10-22 (staff column x23-24 excluded)
-All outside head/held boxes (phase 02 test enforces).
+All outside head/held boxes (phase 02 test enforces). Trim gate lowered from 8 to 4 px a frame: Warrior frame B has only 4 free tabard pixels (armor covers the belt).
 
 ## Motion table (frame A = rest/static, frame B = delta)
 | Job | Frame B |

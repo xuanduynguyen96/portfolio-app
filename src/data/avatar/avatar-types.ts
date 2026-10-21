@@ -1,12 +1,13 @@
 // Shapes for the layered 32x32 pixel avatar. Grids are rows of single-char palette keys
 // (`.` = transparent); a layer is a sub-rect placed at (x, y) on the 32x32 canvas.
 
-export type LayerSlot = 'base' | 'class' | 'armor' | 'amulet' | 'boots' | 'shield' | 'job' | 'fx';
+export type LayerSlot = 'base' | 'class' | 'trim' | 'armor' | 'amulet' | 'boots' | 'shield' | 'job' | 'fx';
 
 /** Paint order: higher z draws later; within a slot, list order. Last opaque pixel wins. */
 export const LAYER_Z: Readonly<Record<LayerSlot, number>> = {
   base: 0,
   class: 10,
+  trim: 15,
   armor: 20,
   amulet: 25,
   boots: 30,

@@ -30,7 +30,7 @@ npm run dev        # http://localhost:4321/portfolio-app/
 | `npm run build` | Static build to `dist/` |
 | `npm run preview` | Serve `dist/` locally |
 | `npm run check` | `astro check` (types + templates) |
-| `npm run test:unit` | `node --test` on `tests/unit/**/*.test.ts` (engine, classifier, snapshot, avatar, pixel icon, class-look pure modules; 326 tests, no build) |
+| `npm run test:unit` | `node --test` on `tests/unit/**/*.test.ts` (engine, classifier, snapshot, avatar, pixel icon, class-look pure modules; 329 tests, no build) |
 | `npm run test:e2e` | Playwright: builds, runs `astro preview`, 122 tests |
 | `npm run snapshot:fetch` | Refresh `src/data/github/github-snapshot.json` from GitHub GraphQL (needs `GITHUB_TOKEN` or `GH_SNAPSHOT_PAT`; no token = keeps file). Run `npm run test:unit` before committing |
 | `npm run character:explain` | Print class, job, per-domain scores, per-repo domain votes, class + job evidence and gear for the committed snapshot (or a path arg) |

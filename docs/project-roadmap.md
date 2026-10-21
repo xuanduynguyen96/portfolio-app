@@ -152,7 +152,7 @@ Plan: `plans/20261021-0208-distinct-job-art-per-job-props/` (phases 00-07, repor
 | 01 | Job-keyed data model refactor (`JOB_IDS`/`JobId`, look key `class/jobId`; commit b3c36ca) | Done |
 | 02 | Palette tokens (9 `--avatar-accent-<job>`), accent + trim layer, prop invariants | Done |
 | 03-05 | Art: Warrior, Archer, Mage props (3 each, 2 frames) + uniqueness checks (commit bab21ba) | Done |
-| 06 | Verification: 326 unit, 122 e2e; lazy chunk 5,421 B gz (was 4,580; budget <= 6,000); eager stub 3,034 B gz (was 2,992; <= +100); home HTML 13,629 B gz (was 13,515; <= +1,000); animated markup max 10,886 B raw / 1,979 B gz; colors max 15 | Done |
+| 06 | Verification: 329 unit, 122 e2e; lazy chunk 5,421 B gz (was 4,580; budget <= 6,000); eager stub 3,034 B gz (was 2,992; <= +100); home HTML 13,629 B gz (was 13,515; <= +1,000); animated markup max 10,886 B raw / 1,979 B gz; colors max 15 | Done |
 | 07 | Docs + changelog entry (`2026-10-21-distinct-job-art.md`) | Done |
 
 What shipped: 9 props keyed by job id (replace 3 shared slot props), each with a frame B motion; per-job accent colour (prop main hue + outfit trim via the `trim` layer, z 15); Adventurer unchanged (no prop, no trim). Accent contrast vs the outline 4.07-8.75:1 (gate >= 3:1); pairwise dE >= 25 (>= 33 within a class).
@@ -212,4 +212,4 @@ Behaviour changes:
 | 2026-10-18 | v1.3 GitHub-derived character + layered pixel avatar implemented (phases 00-07); live refresh run, blind-ID, OG image pending; docs updated |
 | 2026-10-18 | v1.4 Class/job switcher implemented (phases 00-06): 10 selectable looks, "GitHub pick" default + Reset, stats-derived gear on every look, saved choice, lazy browser-side compose; follow-ups listed above; docs updated |
 | 2026-10-20 | v1.5 Class = domain from skill matches, job = specific skills, Mage = DevOps (phases 01-05; 279 unit, 121 e2e; final gate pending); mobile hero caption CLS 0.085 -> 0; saved looks reset once; changelog entry added; docs updated |
-| 2026-10-21 | v1.6 Distinct art per job (phases 00-07; 326 unit, 122 e2e): 9 job-keyed props with own motion, per-job accent + outfit trim; look keys `class/jobId`, legacy keys reset once; lazy chunk 5,421 B gz; changelog entry added; docs updated |
+| 2026-10-21 | v1.6 Distinct art per job (phases 00-07; 329 unit, 122 e2e): 9 job-keyed props with own motion, per-job accent + outfit trim; look keys `class/jobId`, legacy keys reset once; lazy chunk 5,421 B gz; changelog entry added; docs updated |

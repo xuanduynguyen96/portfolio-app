@@ -146,7 +146,7 @@ Each of the 9 jobs now looks different. Art rules: [code-standards.md](code-stan
 ## Success metrics
 
 - Lighthouse (local preview; `/`, boss project, `/speedrun/`, `/credits/`): mobile 99-100 all categories, desktop 100/100/100/100; CLS <= 0.002.
-- 326 unit + 122 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
+- 329 unit + 122 Playwright tests green; `npm run check` clean; axe 0 serious/critical in both themes.
 - Home HTML gzip: v1.3 +3.4 KB (budget 6 KB); v1.4 13,790 B gz (+338 B vs 13,452 B); v1.6 13,629 B gz (v1.5: 13,515). Client JS: unchanged until v1.4; the switcher adds an eager stub (3,034 B gz) and a lazy chunk (5,421 B gz) fetched on first open. Lighthouse mobile home 99/100/100/100, CLS 0.0016 (v1.4; not re-run in v1.6, no Lighthouse in the build env; v1.6 Playwright CLS 0.0028 at 360 px, 0.0010 at 1280 px, same with a saved look).
 - Blind-ID: >=80% of 5 testers name the class at 128px in <=2s (pending, human).
 - Deploy from `master` push with no manual steps after one-time Pages setup.

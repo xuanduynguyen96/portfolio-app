@@ -36,7 +36,7 @@ const diff = (a: Mask, b: Mask) => {
 
 describe('avatar silhouettes', () => {
   for (const tiers of [[0, 0, 0, 0], [3, 3, 3, 3]] as const satisfies readonly Tiers[]) {
-    it(`classes sharing a job slot overlap <= ${MAX_IOU.full} (and ${MAX_IOU.pooled} at half size), tiers ${tiers.join('')}`, () => {
+    it(`classes at the same job slot overlap <= ${MAX_IOU.full} (and ${MAX_IOU.pooled} at half size), tiers ${tiers.join('')}`, () => {
       for (const slot of SLOTS) {
         const looks = COMBAT.map((classId) => ({ classId, mask: silhouette(classId, slot, tiers) }));
         for (let i = 0; i < looks.length; i++) {

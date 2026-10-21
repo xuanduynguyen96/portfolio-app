@@ -3,13 +3,13 @@ import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { CLASS_IDS, JOB_IDS, JOBS, type CombatClassId } from '../../src/data/character-job-rules.ts';
 import { classTrim, TRIM_MARK } from '../../src/data/avatar/avatar-class-trim.ts';
-import { JOB_ACCENT, JOB_PROP_ZONES } from '../../src/data/avatar/avatar-job-style.ts';
+import { JOB_ACCENT, JOB_PROP_NAMES, JOB_PROP_ZONES } from '../../src/data/avatar/avatar-job-style.ts';
 import { avatarCssVar, isPaletteKey, STICKER_KEY } from '../../src/data/avatar/avatar-palette.ts';
 import { classSprites, gearSprites, jobPropSprites } from '../../src/data/avatar/avatar-sprites.ts';
 import type { Box, PlacedSprite, PoseFrame } from '../../src/data/avatar/avatar-types.ts';
 import { composeAvatarGrid } from '../../src/utils/avatar/compose-avatar-grid.ts';
 import { selectAvatarLayers } from '../../src/utils/avatar/select-avatar-layers.ts';
-import { avatarProfile, isOpaque, TIERS } from './avatar-test-helpers.ts';
+import { ALL_TIER_SETS, avatarProfile, isOpaque, TIERS } from './avatar-test-helpers.ts';
 
 const COMBAT = CLASS_IDS.filter((id): id is CombatClassId => id !== 'adventurer');
 const FRAMES = [0, 1] as const;
@@ -18,6 +18,21 @@ const MIN_MOTION_PX = 4; // frame B must visibly move
 const MIN_ACCENT_SHARE = 0.15; // the accent is the prop's main hue
 const MIN_TRIM_PX = 4;
 const MIN_PROP_DIFF_PX = 20; // props of one class differ by shape, not just colour
+const OUTLINE_HEX = '#2a1f1d';
+const MIN_OUTLINE_CONTRAST = 3; // the outline is the accent's real neighbour
+const MIN_DE = { overall: 20, inClass: 30 }; // CIE76 distance between accents
+
+const rgb = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+const linear = (c: number) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+const luminance = (hex: string) => { const [r, g, b] = rgb(hex).map(linear); return 0.2126 * r + 0.7152 * g + 0.0722 * b; };
+const contrast = (a: string, b: string) => { const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
+function lab(hex: string): number[] {
+  const [r, g, b] = rgb(hex).map(linear);
+  const f = (t: number) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+  const [x, y, z] = [(0.4124 * r + 0.3576 * g + 0.1805 * b) / 0.95047, 0.2126 * r + 0.7152 * g + 0.0722 * b, (0.0193 * r + 0.1192 * g + 0.9505 * b) / 1.08883].map(f);
+  return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+}
+const deltaE = (a: string, b: string) => Math.hypot(...lab(a).map((v, i) => v - lab(b)[i]));
 
 type Cell = readonly [number, number];
 const key = ([x, y]: Cell) => `${x},${y}`;
@@ -102,13 +117,32 @@ describe('job props', () => {
 });
 
 describe('job accents and trim', () => {
-  it('9 distinct accent keys, each a plain hex token (same in both themes)', () => {
-    const css = readFileSync(new URL('../../src/styles/design-tokens.css', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../../src/styles/design-tokens.css', import.meta.url), 'utf8');
+  const hexOf = (jobId: string) => [...css.matchAll(new RegExp(`--avatar-accent-${jobId}:\\s*([^;]+);`, 'g'))].map((m) => m[1].trim());
+
+  it('9 distinct accent keys, each defined once as a plain hex (same in both themes)', () => {
     assert.equal(ACCENT_KEYS.size, JOB_IDS.length);
     for (const jobId of JOB_IDS) {
       assert.equal(avatarCssVar(JOB_ACCENT[jobId]), `--avatar-accent-${jobId}`);
-      assert.match(css, new RegExp(`--avatar-accent-${jobId}: #[0-9a-f]{6};`), jobId);
+      const defs = hexOf(jobId);
+      assert.equal(defs.length, 1, `${jobId}: ${defs.length} definitions`);
+      assert.match(defs[0], /^#[0-9a-f]{6}$/, jobId);
     }
+  });
+
+  it(`accents keep >= ${MIN_OUTLINE_CONTRAST}:1 vs the outline and dE >= ${MIN_DE.overall} (>= ${MIN_DE.inClass} in a class)`, () => {
+    for (const jobId of JOB_IDS) assert.ok(contrast(hexOf(jobId)[0], OUTLINE_HEX) >= MIN_OUTLINE_CONTRAST, jobId);
+    JOB_IDS.forEach((a, i) => JOB_IDS.slice(i + 1).forEach((b) => {
+      const sameClass = COMBAT.some((classId) => JOBS[classId].some((j) => j.id === a) && JOBS[classId].some((j) => j.id === b));
+      const de = deltaE(hexOf(a)[0], hexOf(b)[0]);
+      assert.ok(de >= (sameClass ? MIN_DE.inClass : MIN_DE.overall), `${a}/${b}: dE ${de.toFixed(1)}`);
+    }));
+  });
+
+  it('every job names its prop, names unique', () => {
+    const names = JOB_IDS.map((jobId) => JOB_PROP_NAMES[jobId]);
+    assert.ok(names.every((name) => name.length > 2));
+    assert.equal(new Set(names).size, names.length);
   });
 
   for (const classId of COMBAT) {
@@ -126,14 +160,20 @@ describe('job accents and trim', () => {
       });
     });
 
-    it(`${classId}: every job shows its accent on each trim pixel gear does not cover`, () => {
+    it(`${classId}: every job shows its accent on each trim pixel gear does not cover, >= ${MIN_TRIM_PX} px at every tier set`, () => {
       for (const { id } of JOBS[classId]) {
-        for (const f of FRAMES) {
-          const layers = selectAvatarLayers(avatarProfile(classId, id), f);
-          const grid = composeAvatarGrid(layers);
-          const gear = new Set(layers.filter((l) => !['class', 'trim', 'job'].includes(l.slot)).flatMap((l) => cells(l).map(key)));
-          for (const cell of cells(classTrim[classId][f], (char) => char === TRIM_MARK)) {
-            if (!gear.has(key(cell))) assert.equal(grid[cell[1]][cell[0]], JOB_ACCENT[id], `${id} f${f} ${cell}`);
+        for (const tiers of ALL_TIER_SETS) {
+          for (const f of FRAMES) {
+            const layers = selectAvatarLayers(avatarProfile(classId, id, tiers), f);
+            const grid = composeAvatarGrid(layers);
+            const gear = new Set(layers.filter((l) => !['class', 'trim', 'job'].includes(l.slot)).flatMap((l) => cells(l).map(key)));
+            let visible = 0;
+            for (const cell of cells(classTrim[classId][f], (char) => char === TRIM_MARK)) {
+              if (gear.has(key(cell))) continue;
+              assert.equal(grid[cell[1]][cell[0]], JOB_ACCENT[id], `${id} ${tiers.join('')} f${f} ${cell}`);
+              visible += 1;
+            }
+            assert.ok(visible >= MIN_TRIM_PX, `${id} ${tiers.join('')} f${f}: ${visible} visible trim px`);
           }
         }
       }

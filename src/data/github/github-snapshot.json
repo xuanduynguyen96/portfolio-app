@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "login": "xuanduynguyen96",
-  "asOf": "2026-10-19",
+  "asOf": "2026-10-26",
   "accountCreated": "2019-11-24",
   "pinned": [],
   "repos": [
@@ -133,22 +133,22 @@
       "description": null,
       "homepage": null,
       "createdWeek": "2026-10-12",
-      "pushedWeek": "2026-10-12",
+      "pushedWeek": "2026-10-19",
       "isArchived": false,
       "stars": 0,
       "primaryLanguage": "TypeScript",
       "languages": [
         {
           "name": "TypeScript",
-          "bytes": 404158
+          "bytes": 433482
         },
         {
           "name": "Astro",
-          "bytes": 98953
+          "bytes": 99578
         },
         {
           "name": "CSS",
-          "bytes": 14794
+          "bytes": 15404
         },
         {
           "name": "JavaScript",
@@ -184,7 +184,7 @@
         "deploy-to-github-pages.yml",
         "refresh-github-snapshot.yml"
       ],
-      "commits": 8
+      "commits": 10
     },
     {
       "name": "QrCodeScanner",
@@ -367,11 +367,15 @@
       {
         "start": "2026-10-12",
         "count": 16
+      },
+      {
+        "start": "2026-10-19",
+        "count": 4
       }
     ],
     "totals": {
-      "commits": 25,
-      "pullRequests": 7,
+      "commits": 27,
+      "pullRequests": 9,
       "reviews": 0,
       "issues": 0
     }
